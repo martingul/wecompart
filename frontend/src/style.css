@@ -1,0 +1,18 @@
+/*! @import */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  button:focus, input:focus, textarea:focus, select:focus {
+    @apply outline-none !important;
+  }
+
+  input {
+    @apply w-full py-2 px-4 appearance-none !important;
+  }
+
+  /* input:focus {
+    @apply shadow-md border-gray-400 !important;
+  } */
+}
