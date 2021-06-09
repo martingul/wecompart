@@ -7,6 +7,8 @@ from schemas.user import UserRead, UserCreate, UserUpdate
 from lib import auth, users
 from error import ApiError
 
+# TODO add permissions (only user itself can modify/access info)
+
 router = APIRouter()
 
 @router.get('/', response_model=List[UserRead])
