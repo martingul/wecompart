@@ -113,10 +113,10 @@ export default class ShipmentList {
                         Shipments
                     </div>
                     <div class="whitespace-nowrap">
-                        <button class="text-green-700 border-b border-dotted border-green-700"
-                            onclick={() => m.route.set('/shipments/new')}>
-                            + new
-                        </button>
+                        <m.route.Link class="text-green-700 border-b border-dotted border-green-700"
+                            href="/shipments/new">
+                            + create
+                        </m.route.Link>
                     </div>
                 </div>
                 <div class={this.shipments.length ? 'flex flex-col' : 'hidden'}>

@@ -99,6 +99,7 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
             raise e
 
     if owner_uuid is not None:
+        valid_access_token = shipment_db.access_token == access_token
         if not valid_access_token and shipment_db.owner_uuid != owner_uuid:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN

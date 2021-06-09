@@ -11,7 +11,7 @@ import LayoutView from './views/layout';
 
 // import css from './style.css';
 
-// m.route.prefix = ''
+// m.route.prefix = '?';
 
 class Main {
     constructor(vnode) {

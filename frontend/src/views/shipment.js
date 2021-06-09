@@ -6,6 +6,7 @@ import Icon from '../components/icon';
 import Loading from '../components/loading';
 import Dropdown from '../components/dropdown';
 import ShipmentEdit from '../components/shipment-edit';
+import QuoteEdit from '../components/quote-edit';
 
 export default class ShipmentView {
     constructor(vnode) {
@@ -26,6 +27,7 @@ export default class ShipmentView {
         this.show_show_more_actions = false;
         this.show_comments = false;
         this.show_items = false;
+        this.show_quote_form = false;
     }
 
     get status_style() {
@@ -63,12 +65,18 @@ export default class ShipmentView {
         }
 
         if (action === 'delete') {
-            m.route.set('/shipments');
+            /* add popup and loading indicator */
+            Api.delete_shipment({ shipment_id: this.id }).then(res => {
+                m.route.set('/shipments');
+            }).catch(e => {
+                console.log(e);
+            });
         }
     }
 
     oninit(vnode) {
         const access_token = m.route.param('access_token');
+        console.log('access_token: ', access_token);
         if (access_token) this.access_token = access_token;
 
         if (this.id) {
@@ -98,6 +106,8 @@ export default class ShipmentView {
                 console.log(e);
                 if (e.code === 401) {
                     m.route.set('/auth/signin');
+                } else if (e.code === 403) {
+                    m.route.set('/shipments');
                 } else {
                     this.error_shipment_not_found = true;
                 }
@@ -148,7 +158,19 @@ export default class ShipmentView {
                             </div>
                         </div>
                         <div class="flex items-center whitespace-nowrap text-sm">
-                            <div class="relative">
+                            <button class="flex flex-col items-center whitespace-nowrap
+                                text-gray-700 border-b border-dotted border-gray-700"
+                                // onclick={(e) => this.show_download = !this.show_download}
+                                onclick={(e) => this.download_shipment('pdf')}>
+                                <div class="flex items-center">
+                                    <Icon name="message-circle" class="w-4 h-4" />
+                                    <span class="mx-1">
+                                        Message client
+                                    </span>
+                                    {/* <Icon name="chevron-down" class="w-4 h-4" /> */}
+                                </div>
+                            </button>
+                            <div class="relative ml-4">
                                 <button class="flex flex-col items-center whitespace-nowrap
                                     text-gray-700 border-b border-dotted border-gray-700"
                                     // onclick={(e) => this.show_download = !this.show_download}
@@ -425,21 +447,27 @@ export default class ShipmentView {
                                 Quotes
                             </div>
                         </div>
-                        <div class="flex justify-center">
-                            <div class="flex flex-col items-center">
-                                <div class="my-4 text-gray-200">
-                                    <Icon name="clock" class="w-12 h-12" />
+                        {/* <div class={this.show_quote_form ? 'hidden' : 'block'}>
+                            <div class="flex justify-center">
+                                <div class="flex flex-col items-center">
+                                    <div class="my-4 text-gray-200">
+                                        <Icon name="clock" class="w-12 h-12" />
+                                    </div>
+                                    <div class="my-1 text-gray-600">
+                                        No quotes yet.
+                                    </div>
+                                    <div class={this.access_token ? 'block' : 'hidden'}>
+                                        <button class="mt-8 bg-yellow-100 font-bold font-lg px-4 py-1 rounded shadow-lg border border-gray-500"
+                                            onclick={() => {this.show_quote_form = true}}>
+                                            Place a quote
+                                        </button>
+                                    </div>
                                 </div>
-                                <div class="my-1 text-gray-600">
-                                    No quotes yet.
-                                </div>
-                                {/* Maybe show how many views the shipment got */}
-                                <div class={this.access_token ? 'block' : 'hidden'}>
-                                    <button class="mt-8 bg-yellow-100 font-bold font-lg px-4 py-1 rounded shadow-lg border border-gray-500"
-                                        onclick={() => m.route.set('/auth/signup')}>
-                                        Place a quote
-                                    </button>
-                                </div>
+                            </div>
+                        </div> */}
+                        <div class={this.show_quote_form ? 'block' : 'block'}>
+                            <div class="my-4">
+                                <QuoteEdit />
                             </div>
                         </div>
                     </div>

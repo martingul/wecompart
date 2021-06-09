@@ -40,6 +40,7 @@ export default class ShipmentEdit {
 
     handle_dropdown_input(e, field) {
         field.value = e.target.value;
+        field.dropdown = null;
 
         if (field.timeout !== null) {
             clearTimeout(field.timeout);
@@ -60,8 +61,6 @@ export default class ShipmentEdit {
 
         console.log('calling API');
         Api.read_locations({q: field.value}).then(locations => {
-            console.log(locations);
-
             const values = locations.map(l => l.address_long);
             const values_map = Object.fromEntries(
                 locations.map(l => [l.address_long, l.address_id])
@@ -149,7 +148,7 @@ export default class ShipmentEdit {
                 shipment.status = 'draft';
                 Api.create_shipment({shipment}).then(res => {
                     console.log(res);
-                    m.route.set('/shipments');
+                    m.route.set(`/shipments/${res.uuid}`);
                 }).catch(e => {
                     console.log(e);
                 });
@@ -197,12 +196,13 @@ export default class ShipmentEdit {
                         item_id: item_id
                     }).then(res => {
                         console.log(res);
+                        m.route.set(`/shipments/${this._shipment.uuid}`);
                     }).catch(e => {
                         console.log(e);
                     });
                 });
 
-                m.route.set('/shipments');
+                // m.route.set(`/shipments/${this._shipment.uuid}`);
             }
         } else {
             if (this.new) {
@@ -214,7 +214,7 @@ export default class ShipmentEdit {
                 shipment.status = 'pending';
                 Api.create_shipment({shipment}).then(res => {
                     console.log(res);
-                    m.route.set('/shipments');
+                    m.route.set(`/shipments/${res.uuid}`);
                 }).catch(e => {
                     console.log(e);
                 });
@@ -225,12 +225,11 @@ export default class ShipmentEdit {
                     patch: {status: 'pending'}
                 }).then(res => {
                     console.log(res);
+                    m.route.set(`/shipments/${res.uuid}`);
                 }).catch(e => {
                     console.log(e);
                 });
             }
-
-            m.route.set('/shipments');
         }
     }
 
@@ -287,20 +286,20 @@ export default class ShipmentEdit {
                             Edit Shipment
                         </div>
                     </div>
-                    <button class="flex items-center text-gray-600 border-b border-gray-500 border-dotted"
-                        onclick={() => m.route.set('/shipments')}>
+                    <m.route.Link class="flex items-center text-gray-600 border-b border-gray-500 border-dotted"
+                        href="/shipments">
                         <Icon name="chevron-left" class="w-4" />
                         <div class="ml-1">
                             back
                         </div>
-                    </button>
+                    </m.route.Link>
                 </div>
                 <div class={this.new ? 'flex' : 'hidden'}>
                     <div class="w-full my-2 px-4 py-2 flex items-center rounded shadow bg-gray-100">
                         message...
                     </div>
                 </div>
-                <form class="flex flex-col">
+                <form class="flex flex-col" onsubmit={(e) => e.preventDefault()}>
                     <div class="my-2 text-gray-600">
                         Shipment information
                     </div>
@@ -345,9 +344,9 @@ export default class ShipmentEdit {
                         </div>
                     </div>
                     <div class="m-2 flex flex-col items-center">
-                        <div class="w-full my-2 px-4 py-2 flex items-center rounded shadow bg-gray-100">
-                            <Icon name="info" class="w-4 text-gray-500" />
-                            <span class="text-gray-600 ml-4">
+                        <div class="w-full my-2 px-4 py-2 flex items-center rounded shadow bg-gray-100 text-gray-600">
+                            <Icon name="info" class="w-4" />
+                            <span class="ml-4">
                                 Exact pickup date and time will be set once you accept a shipper's quote.
                             </span>
                         </div>
@@ -443,13 +442,13 @@ export default class ShipmentEdit {
                             <button class={this.fields.need_insurance.value
                                 ? 'border-b border-dotted border-gray-800 text-gray-800 font-bold'
                                 : 'border-b border-dotted border-white text-gray-600'}
-                                onclick={() => this.fields.need_insurance.value = true}>
+                                onclick={(e) => {e.preventDefault(); this.fields.need_insurance.value = true}}>
                                 Yes
                             </button>
                             <button class={!this.fields.need_insurance.value
                                 ? 'ml-8 border-b border-dotted border-gray-800 text-gray-800 font-bold'
                                 : 'ml-8 border-b border-dotted border-white text-gray-600'}
-                                onclick={() => this.fields.need_insurance.value = false}>
+                                >
                                 No
                             </button>
                         </div>

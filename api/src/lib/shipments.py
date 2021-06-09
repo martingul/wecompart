@@ -19,6 +19,7 @@ def read_locations(q: str):
     # TODO handle errors
     try:
         r = requests.get(api_url, params=params)
+        print(r.json())
         predictions = r.json()['predictions'][:5]
 
         locations = [{'address_id': p['place_id'],
