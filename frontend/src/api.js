@@ -44,6 +44,14 @@ export default class Api {
         });
     }
 
+    static signout(args) {
+        return m.request({
+            method: 'DELETE',
+            url: `${this.API_ROOT}/auth/token`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`}
+        });
+    }
+
     static echo(args) {
         return m.request({
             method: 'GET',

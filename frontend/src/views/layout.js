@@ -14,10 +14,10 @@ export default class LayoutView {
     handle_action_dropdown(action) {
         console.log(action);
         if (action === 'sign out') {
-            console.log('sign out!');
-            localStorage.removeItem('token');
-            m.route.set('/auth/signin');
-            // send signout request to API to signal token deletion
+            Api.signout().finally(() => {
+                Api.remove_session();
+                m.route.set('/auth/signin');
+            });
         }
     }
 
