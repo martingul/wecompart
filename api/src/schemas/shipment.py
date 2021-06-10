@@ -3,6 +3,7 @@ from datetime import date, datetime
 from pydantic import BaseModel, validator
 
 from schemas.item import ItemRead, ItemCreate
+# from schemas.quote import QuoteRead
 
 class ShipmentDownload(BaseModel):
     uuid: str
@@ -28,7 +29,7 @@ class ShipmentDownload(BaseModel):
 class ShipmentRead(BaseModel):
     uuid: str
     owner_uuid: str
-    access_token: str
+    access_token: str # maybe do not return this
 
     pickup_address_id: str
     pickup_address_long: str
@@ -39,6 +40,8 @@ class ShipmentRead(BaseModel):
     delivery_address_long: str
     delivery_address_short: str
 
+    # country: str
+
     status: str
     currency: str
     total_value: float
@@ -47,6 +50,7 @@ class ShipmentRead(BaseModel):
     need_insurance: bool
     comments: str
     items: List[ItemRead]
+    # quotes: List[QuoteRead] # should not be accessible by other users than owner
 
     created_at: datetime
     updated_at: datetime
@@ -55,6 +59,8 @@ class ShipmentRead(BaseModel):
         orm_mode = True
 
 class ShipmentCreate(BaseModel):
+    access_token: Optional[str]
+    
     pickup_address_id: str
     pickup_address_short: Optional[str]
     pickup_address_long: Optional[str]
@@ -63,6 +69,8 @@ class ShipmentCreate(BaseModel):
     delivery_address_id: str
     delivery_address_short: Optional[str]
     delivery_address_long: Optional[str]
+
+    country: Optional[str]
 
     status: str
     currency: str

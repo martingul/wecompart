@@ -11,6 +11,27 @@ from lib import auth, shipments, items
 
 router = APIRouter()
 
+@router.get('/{shipment_id}/items/', response_model=List[ItemRead])
+def read_shipment_items(shipment_id: str,
+    auth_session: AuthSession = Depends(auth.auth_session),
+    db: DatabaseSession = Depends(db_session)) -> ItemRead:
+    """Read shipment items"""
+    try:
+        owner_uuid = auth_session.user_uuid
+        shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
+        if shipment_db is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='error_shipment_not_found'
+            )
+
+        items_list = [ItemRead.from_orm(x) for x in shipment_db.items]
+        return items_list
+    except Exception as e:
+        print(e)
+        if isinstance(e, HTTPException):
+            raise e 
+
 @router.post('/{shipment_id}/items/', response_model=ItemRead,
     status_code=status.HTTP_201_CREATED)
 def create_shipment_item(shipment_id: str, item: ItemCreate,
@@ -34,27 +55,6 @@ def create_shipment_item(shipment_id: str, item: ItemCreate,
         print(vars(e))
         if isinstance(e, HTTPException):
             raise e
-
-@router.get('/{shipment_id}/items/', response_model=List[ItemRead])
-def read_shipment_items(shipment_id: str,
-    auth_session: AuthSession = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> ItemRead:
-    """Read shipment items"""
-    try:
-        owner_uuid = auth_session.user_uuid
-        shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
-        if shipment_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='error_shipment_not_found'
-            )
-
-        items_list = [ItemRead.from_orm(x) for x in shipment_db.items]
-        return items_list
-    except Exception as e:
-        print(e)
-        if isinstance(e, HTTPException):
-            raise e 
 
 @router.get('/{shipment_id}/items/{item_id}', response_model=ItemRead)
 def read_shipment_item(shipment_id: str, item_id: str,

@@ -4,51 +4,25 @@ from fastapi import APIRouter, Header, Response, Depends, HTTPException, status
 from storage import db_session, DatabaseSession
 from schemas.auth import Session as AuthSession
 from schemas.shipment import ShipmentRead, ShipmentCreate, ShipmentUpdate
-from lib import auth, shipments, templates
+from lib import auth, shipments, templates, shippers
 
 router = APIRouter()
 
 @router.get('/locations')
 def read_locations(
-    q: str, auth_session: AuthSession = Depends(auth.auth_session)
+    q: str,
+    auth_session: AuthSession = Depends(auth.auth_session)
 ):
     # TODO validate query
     return shipments.read_locations(q)
 
 @router.get('/locations/{location_id}')
 def read_location(
-    location_id: str, auth_session: AuthSession = Depends(auth.auth_session)
+    location_id: str,
+    auth_session: AuthSession = Depends(auth.auth_session)
 ):
     # TODO validate query
     return shipments.read_location(location_id)
-
-@router.post('/', response_model=ShipmentRead, status_code=status.HTTP_201_CREATED)
-def create_shipment(shipment: ShipmentCreate,
-    auth_session: AuthSession = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> ShipmentRead:
-    """Create a new shipment"""
-    try:
-        print(auth_session)
-        # TODO validate shipment (use pydantic validator)
-        owner_uuid = auth_session.user_uuid
-
-        pickup_location = shipments.read_location(shipment.pickup_address_id)
-        shipment.pickup_address_long = pickup_location['long']
-        shipment.pickup_address_short = pickup_location['short']
-
-        delivery_location = shipments.read_location(shipment.delivery_address_id)
-        shipment.delivery_address_long = delivery_location['long']
-        shipment.delivery_address_short = delivery_location['short']
-
-        shipment_new_db = shipments.create_shipment(db, shipment, owner_uuid)
-        shipment_new = ShipmentRead.from_orm(shipment_new_db)
-        return shipment_new
-    except Exception as e:
-        print(vars(e))
-        raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail='error_invalid_shipment'
-            )
 
 @router.get('/', response_model=List[ShipmentRead])
 def read_shipments(skip: int = 0, limit: int = 100,
@@ -63,6 +37,40 @@ def read_shipments(skip: int = 0, limit: int = 100,
     except Exception as e:
         print(vars(e))
 
+@router.post('/', response_model=ShipmentRead, status_code=status.HTTP_201_CREATED)
+def create_shipment(shipment: ShipmentCreate,
+    auth_session: AuthSession = Depends(auth.auth_session),
+    db: DatabaseSession = Depends(db_session)) -> ShipmentRead:
+    """Create a new shipment"""
+    try:
+        # TODO validate shipment (use pydantic validator)
+        # TODO check for shipment status and act accordingly
+        owner_uuid = auth_session.user_uuid
+
+        pickup_location = shipments.read_location(shipment.pickup_address_id)
+        shipment.pickup_address_long = pickup_location['long']
+        shipment.pickup_address_short = pickup_location['short']
+
+        delivery_location = shipments.read_location(shipment.delivery_address_id)
+        shipment.delivery_address_long = delivery_location['long']
+        shipment.delivery_address_short = delivery_location['short']
+
+        shipment.country = pickup_location['country'] # or delivery_location?
+        candidate_shippers = shippers.read_candidate_shippers(db, shipment.country)
+        # TODO send to shipper.emails and notify each user with same email domain
+
+        shipment.access_token = auth.generate_token()
+
+        shipment_new_db = shipments.create_shipment(db, shipment, owner_uuid)
+        shipment_new = ShipmentRead.from_orm(shipment_new_db)
+        return shipment_new
+    except Exception as e:
+        print(vars(e))
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail='error_invalid_shipment'
+        )
+
 @router.get('/{shipment_id}', response_model=ShipmentRead)
 def read_shipment(shipment_id: str, access_token: Optional[str] = None,
     authorization: Optional[str] = Header(None),
@@ -73,7 +81,6 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
         shipment_db = shipments._read_shipment(db, shipment_id)
     except Exception as e:
         print(vars(e))
-        print('error db')
 
     if shipment_db is None:
         raise HTTPException(
@@ -89,7 +96,6 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
         owner_uuid = auth_session.user_uuid
         print(auth_session)
     except Exception as e:
-        print('error session')
         print(vars(e))
         if isinstance(e, HTTPException) and access_token is not None:
             valid_access_token = shipments.verify_access_token(db, shipment_id, access_token)
@@ -110,7 +116,6 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
         return shipment
     except Exception as e:
         print(vars(e))
-        print('error schema')
 
 @router.patch('/{shipment_id}', response_model=ShipmentRead)
 def update_shipment(shipment_id: str, patch: ShipmentUpdate,

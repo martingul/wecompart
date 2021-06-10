@@ -18,6 +18,8 @@ class Shipment(Base, Entity):
     delivery_address_long = Column(String, nullable=True)
     delivery_address_short = Column(String, nullable=True)
 
+    country = Column(String, nullable=False)
+
     currency = Column(String, nullable=True)
     total_value = Column(Float, nullable=True)
     need_packing = Column(Boolean, nullable=True)

@@ -19,7 +19,6 @@ def read_locations(q: str):
     # TODO handle errors
     try:
         r = requests.get(api_url, params=params)
-        print(r.json())
         predictions = r.json()['predictions'][:5]
 
         locations = [{'address_id': p['place_id'],
@@ -39,20 +38,26 @@ def read_location(id: str):
     # TODO handle errors
     res = requests.get(api_url, params={'place_id': id, 'key': key})
     res_json = res.json()
-        
     r = res_json['result']
 
     city = list(filter(lambda x: any(t in x['types'] for t in ['postal_town', 'locality', 'administrative_area_level_3']), r['address_components']))
     if len(city) > 0:
         city = city[0]['long_name']
+
     country = list(filter(lambda x: any(t in x['types'] for t in ['country']), r['address_components']))
+    country_long = ''
+    country_short = ''
     if len(country) > 0:
-        country = country[0]['short_name']
+        country_long = country[0]['long_name']
+        country_short = country[0]['short_name']
 
     location_long = r['formatted_address']
-    location_short = f'{city}, {country}'
+    location_short = f'{city}, {country_short}'
 
-    return {'long': location_long, 'short': location_short}
+    return {
+        'long': location_long,
+        'short': location_short,
+        'country': country_long}
 
 def create_shipment(db: DatabaseSession, shipment: ShipmentCreate, owner_uuid: str):
     _items = shipment.items or []
@@ -62,7 +67,6 @@ def create_shipment(db: DatabaseSession, shipment: ShipmentCreate, owner_uuid: s
         owner_uuid=owner_uuid,
         **shipment.dict()
     )
-    shipment_db.access_token = auth.generate_token()
 
     db.add(shipment_db)
     db.commit()

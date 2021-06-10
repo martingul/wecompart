@@ -23,6 +23,21 @@ router = APIRouter()
 #             detail='error_general'
 #         )
 
+@router.get('/', response_model=List[ShipperRead])
+def read_shippers(skip: int = 0, limit: int = 100,
+    auth_session: AuthSession = Depends(auth.auth_session),
+    db: DatabaseSession = Depends(db_session)) -> List[ShipperRead]:
+    """Read shippers"""
+    try:
+        # shippers.load_shippers(db)
+        shippers_db = shippers.read_shippers(db, skip=skip, limit=limit)
+        # shippers.load_email_domains(db, shippers_db)
+        shippers_list = [ShipperRead.from_orm(i) for i in shippers_db]
+        return shippers_list
+    except Exception as e:
+        print(e)
+        raise e
+
 @router.post('/', response_model=ShipperRead, status_code=status.HTTP_201_CREATED)
 def create_shipper(shipper: ShipperCreate,
     auth_session: AuthSession = Depends(auth.auth_session),
@@ -39,21 +54,6 @@ def create_shipper(shipper: ShipperCreate,
             status_code=status.HTTP_400_BAD_REQUEST,
             detail='error_invalid_shipper'
         )
-
-@router.get('/', response_model=List[ShipperRead])
-def read_shippers(skip: int = 0, limit: int = 100,
-    auth_session: AuthSession = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> List[ShipperRead]:
-    """Read shippers"""
-    try:
-        # shippers.load_shippers(db)
-        shippers_db = shippers.read_shippers(db, skip=skip, limit=limit)
-        # shippers.load_email_domains(db, shippers_db)
-        shippers_list = [ShipperRead.from_orm(i) for i in shippers_db]
-        return shippers_list
-    except Exception as e:
-        print(e)
-        raise e
 
 @router.get('/{shipper_id}', response_model=ShipperRead)
 def read_shipper(shipper_id: str,

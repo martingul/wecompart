@@ -34,6 +34,9 @@ def create_shipper(db: DatabaseSession, shipper: ShipperCreate):
 def read_shippers(db: DatabaseSession, skip: int = 0, limit: int = 100):
     return db.query(Shipper).offset(skip).limit(limit).all()
 
+def read_candidate_shippers(db: DatabaseSession, country: str):
+    return db.query(Shipper).filter(Shipper.country == country).all()
+
 def read_shipper(db: DatabaseSession, index: Any, by: str = 'uuid'):
     return db.query(Shipper).filter(getattr(Shipper, by) == index).first()
 

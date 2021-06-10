@@ -11,6 +11,27 @@ from lib import auth, shipments, quotes
 
 router = APIRouter()
 
+@router.get('/{shipment_id}/quotes/', response_model=List[QuoteRead])
+def read_shipment_quotes(shipment_id: str,
+    auth_session: AuthSession = Depends(auth.auth_session),
+    db: DatabaseSession = Depends(db_session)) -> List[QuoteRead]:
+    """Read shipment quotes"""
+    try:
+        owner_uuid = auth_session.user_uuid
+        shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
+        if shipment_db is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='error_shipment_not_found'
+            )
+
+        quotes_list = [QuoteRead.from_orm(x) for x in shipment_db.quotes]
+        return quotes_list
+    except Exception as e:
+        print(e)
+        if isinstance(e, HTTPException):
+            raise e 
+
 @router.post('/{shipment_id}/quotes/', response_model=QuoteRead,
     status_code=status.HTTP_201_CREATED)
 def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
@@ -34,27 +55,6 @@ def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
         print(vars(e))
         if isinstance(e, HTTPException):
             raise e
-
-@router.get('/{shipment_id}/quotes/', response_model=List[QuoteRead])
-def read_shipment_quotes(shipment_id: str,
-    auth_session: AuthSession = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> List[QuoteRead]:
-    """Read shipment quotes"""
-    try:
-        owner_uuid = auth_session.user_uuid
-        shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
-        if shipment_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='error_shipment_not_found'
-            )
-
-        quotes_list = [QuoteRead.from_orm(x) for x in shipment_db.quotes]
-        return quotes_list
-    except Exception as e:
-        print(e)
-        if isinstance(e, HTTPException):
-            raise e 
 
 @router.get('/{shipment_id}/quotes/{quote_id}', response_model=QuoteRead)
 def read_shipment_quote(shipment_id: str, quote_id: str,
