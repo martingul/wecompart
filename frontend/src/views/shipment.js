@@ -467,7 +467,7 @@ export default class ShipmentView {
                         </div> */}
                         <div class={this.show_quote_form ? 'block' : 'block'}>
                             <div class="my-4">
-                                <QuoteEdit />
+                                <QuoteEdit shipment_id={this.id} />
                             </div>
                         </div>
                     </div>

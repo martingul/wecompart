@@ -1,17 +1,31 @@
 import m from 'mithril';
 import Icon from '../components/icon';
+import Dropdown from '../components/dropdown';
+import Api from '../api';
 
 export default class LayoutView {
     constructor(vnode) {
         console.log('construct LayoutView');
         this.is_shipper = false;
+        this.show_user_dropdown = false;
+        this.show_notifications_dropdown = false;
+    }
+
+    handle_action_dropdown(action) {
+        console.log(action);
+        if (action === 'sign out') {
+            console.log('sign out!');
+            localStorage.removeItem('token');
+            m.route.set('/auth/signin');
+            // send signout request to API to signal token deletion
+        }
     }
 
     view(vnode) {
         return (
             <main class="flex flex-col items-center">
                 <div class="w-full px-4 md:w-4/5 lg:w-1/2">
-                    <div class="flex flex-row py-2 -mx-6 px-6">
+                    <div class="flex flex-row justify-between py-2 -mx-6 px-6">
                         <div class="flex items-baseline">
                             <button class="flex items-center whitespace-nowrap text-xl font-bold"
                                 onclick={() => m.route.set('/shipments')}>
@@ -24,7 +38,7 @@ export default class LayoutView {
                                 </button>
                             </div> */}
                         </div>
-                        <div class="w-full flex justify-end">
+                        <div class="flex">
                             <div class={this.is_shipper ? 'block' : 'hidden'}>
                                 <button class="text-yellow-700 border-b border-dotted border-yellow-700"
                                     onclick={() => m.route.set('/auth/signup')}>
@@ -32,12 +46,19 @@ export default class LayoutView {
                                 </button>
                             </div>
                             <div class={!this.is_shipper ? 'flex' : 'hidden'}>
-                                <button class="flex items-center px-1 text-gray-600 border-b border-gray-500 border-dotted">
-                                    <Icon name="user" class="w-4" />
-                                    {/* <div class="ml-1">
-                                        account
-                                    </div> */}
-                                </button>
+                                <div class="relative flex flex-col">
+                                    <button class="flex items-center px-1 text-gray-600 border-b border-gray-500 border-dotted"
+                                        onclick={(e) => this.show_user_dropdown = !this.show_user_dropdown}>
+                                        <Icon name="user" class="w-4" />
+                                        {/* <div class="ml-1">
+                                            account
+                                        </div> */}
+                                    </button>
+                                    <div class={this.show_user_dropdown ? 'block' : 'hidden'}>
+                                        <Dropdown fullwidth={false} values={['Profile', 'Sign out']}
+                                            callback={(v) => this.handle_action_dropdown(v.toLowerCase())} />
+                                    </div>
+                                </div>
                                 <button class="flex items-center px-1 ml-6 text-gray-600 border-b border-gray-500 border-dotted">
                                     <Icon name="bell" class="w-4" />
                                     {/* <div class="ml-1 flex items-start">

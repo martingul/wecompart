@@ -48,11 +48,12 @@ export default class ShipmentEdit {
 
         if (field.value.length === 0) {
             delete field.dropdown;
+            field.loading = false;
             return;
+        } else {
+            field.loading = true;
+            field.timeout = setTimeout(this.handle_dropdown_timeout, 1000, field);
         }
-
-        field.loading = true;
-        field.timeout = setTimeout(this.handle_dropdown_timeout, 1000, field);
     }
 
     handle_dropdown_timeout(field) {
@@ -138,8 +139,6 @@ export default class ShipmentEdit {
             need_insurance: this.fields.need_insurance.value,
             comments: this.fields.comments.value,
         };
-
-        console.log('shipment', shipment);
 
         if (this.save) {
             if (this.new) {
@@ -294,11 +293,11 @@ export default class ShipmentEdit {
                         </div>
                     </m.route.Link>
                 </div>
-                <div class={this.new ? 'flex' : 'hidden'}>
+                {/* <div class={this.new ? 'flex' : 'hidden'}>
                     <div class="w-full my-2 px-4 py-2 flex items-center rounded shadow bg-gray-100">
                         message...
                     </div>
-                </div>
+                </div> */}
                 <form class="flex flex-col" onsubmit={(e) => e.preventDefault()}>
                     <div class="my-2 text-gray-600">
                         Shipment information
@@ -442,13 +441,13 @@ export default class ShipmentEdit {
                             <button class={this.fields.need_insurance.value
                                 ? 'border-b border-dotted border-gray-800 text-gray-800 font-bold'
                                 : 'border-b border-dotted border-white text-gray-600'}
-                                onclick={(e) => {e.preventDefault(); this.fields.need_insurance.value = true}}>
+                                onclick={() => this.fields.need_insurance.value = true}>
                                 Yes
                             </button>
                             <button class={!this.fields.need_insurance.value
                                 ? 'ml-8 border-b border-dotted border-gray-800 text-gray-800 font-bold'
                                 : 'ml-8 border-b border-dotted border-white text-gray-600'}
-                                >
+                                onclick={() => this.fields.need_insurance.value = false}>
                                 No
                             </button>
                         </div>
@@ -503,4 +502,4 @@ export default class ShipmentEdit {
             </div>
         )
     }
-}
+}``

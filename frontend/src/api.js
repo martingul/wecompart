@@ -1,7 +1,5 @@
 import m from 'mithril';
 
-/* TODO make `args` a stricter and clearer interface */
-
 export default class Api {
     static API_ROOT = 'http://localhost:5000';
 
@@ -145,7 +143,7 @@ export default class Api {
     static create_shipment_item(args) {
         return m.request({
             method: 'POST',
-            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/items`,
+            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/items/`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
             body: args.item,
         });
@@ -169,6 +167,15 @@ export default class Api {
             method: 'DELETE',
             url: `${Api.API_ROOT}/shipments/${args.shipment_id}/items/${args.item_id}`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+        });
+    }
+
+    static create_shiptment_quote(args) {
+        return m.request({
+            method: 'POST',
+            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+            body: args.quote,
         });
     }
 }
