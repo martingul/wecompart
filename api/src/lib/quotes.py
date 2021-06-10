@@ -18,8 +18,8 @@ def create_quote(db: Session, quote: QuoteCreate,
 
     return quote_db
 
-def read_quotes(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(Quote).offset(skip).limit(limit).all()
+# def read_quotes(db: Session, skip: int = 0, limit: int = 100):
+#     return db.query(Quote).offset(skip).limit(limit).all()
 
 def read_quote(db: Session, quote_uuid: str, shipment_uuid: str):
     return db.query(Quote).filter(Quote.uuid == quote_uuid,

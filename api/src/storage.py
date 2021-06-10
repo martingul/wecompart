@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session as DatabaseSession
-from models import base, shipper, user, session, shipment, item, quote
+from models import base, shipper, user, session, shipment, item, quote, notification
 import config
 
 engine = create_engine(

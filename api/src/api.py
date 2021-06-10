@@ -1,7 +1,7 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, shippers, users, shipments, items, quotes
+from routers import auth, shippers, users, shipments, items, quotes, notifications
 import config
 
 api = FastAPI()
@@ -35,6 +35,11 @@ api.include_router(
     quotes.router,
     tags=['quotes'],
     prefix='/shipments'
+)
+api.include_router(
+    notifications.router,
+    tags=['notifications'],
+    prefix='/notifications'
 )
 
 origins = [
