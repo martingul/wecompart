@@ -10,7 +10,7 @@ router = APIRouter()
 @router.post('/token',
     status_code=status.HTTP_201_CREATED,
     response_model=SessionRead, response_model_exclude_unset=True)
-def token(credentials: Credentials,
+def create_token(credentials: Credentials,
     db: DatabaseSession = Depends(db_session)) -> SessionRead:
     """Grant new session token"""
     user = None
@@ -45,6 +45,20 @@ def token(credentials: Credentials,
         expires_in=session.expires_in,
         created_at=session.created_at
     )
+
+@router.delete('/token')
+def delete_token(db: DatabaseSession = Depends(db_session),
+    auth_session: Session = Depends(auth.auth_session)):
+    """Delete a session token"""
+    try:
+        session_db = auth.read_session(db, auth_session.user_uuid)
+        auth.delete_session(db, session_db)
+    except Exception as e:
+        print(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail='error_general'
+        )
 
 @router.get('/echo')
 def echo(db: DatabaseSession = Depends(db_session),
