@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from storage import db_session, DatabaseSession
-from schemas.auth import Session as AuthSession
+from schemas.session import Session
 from schemas.quote import QuoteRead, QuoteCreate, QuoteUpdate
 from lib import auth, shipments, quotes
 
@@ -13,11 +13,11 @@ router = APIRouter()
 
 @router.get('/{shipment_id}/quotes/', response_model=List[QuoteRead])
 def read_shipment_quotes(shipment_id: str,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> List[QuoteRead]:
     """Read shipment quotes"""
     try:
-        owner_uuid = auth_session.user_uuid
+        owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
         if shipment_db is None:
             raise HTTPException(
@@ -35,11 +35,11 @@ def read_shipment_quotes(shipment_id: str,
 @router.post('/{shipment_id}/quotes/', response_model=QuoteRead,
     status_code=status.HTTP_201_CREATED)
 def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Create a new shipment quote"""
     try:
-        owner_uuid = auth_session.user_uuid
+        owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
 
         if shipment_db is None:
@@ -58,11 +58,11 @@ def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
 
 @router.get('/{shipment_id}/quotes/{quote_id}', response_model=QuoteRead)
 def read_shipment_quote(shipment_id: str, quote_id: str,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Read a shipment quote"""
     try:
-        owner_uuid = auth_session.user_uuid
+        owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
         if shipment_db is None:
             raise HTTPException(
@@ -87,11 +87,11 @@ def read_shipment_quote(shipment_id: str, quote_id: str,
 
 @router.patch('/{shipment_id}/quotes/{quote_id}', response_model=QuoteRead)
 def update_shipment_quote(shipment_id: str, quote_id: str, patch: QuoteUpdate,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Update a shipment quote"""
     try:
-        owner_uuid = auth_session.user_uuid
+        owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
 
         if shipment_db is None:
@@ -116,11 +116,11 @@ def update_shipment_quote(shipment_id: str, quote_id: str, patch: QuoteUpdate,
 
 @router.delete('/{shipment_id}/quotes/{quote_id}', response_model=QuoteRead)
 def delete_shipment_quote(shipment_id: str, quote_id: str,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Delete a shipment quote"""
     try:
-        owner_uuid = auth_session.user_uuid
+        owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
 
         if shipment_db is None:

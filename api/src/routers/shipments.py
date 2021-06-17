@@ -2,7 +2,7 @@ from typing import List, Optional
 from fastapi import APIRouter, Header, Response, Depends, HTTPException, status
 
 from storage import db_session, DatabaseSession
-from schemas.auth import Session as AuthSession
+from schemas.session import Session
 from schemas.shipment import ShipmentRead, ShipmentCreate, ShipmentUpdate
 from lib import auth, shipments, templates, shippers
 
@@ -11,7 +11,7 @@ router = APIRouter()
 @router.get('/locations')
 def read_locations(
     q: str,
-    auth_session: AuthSession = Depends(auth.auth_session)
+    session: Session = Depends(auth.auth_session)
 ):
     # TODO validate query
     return shipments.read_locations(q)
@@ -19,33 +19,34 @@ def read_locations(
 @router.get('/locations/{location_id}')
 def read_location(
     location_id: str,
-    auth_session: AuthSession = Depends(auth.auth_session)
+    session: Session = Depends(auth.auth_session)
 ):
     # TODO validate query
     return shipments.read_location(location_id)
 
 @router.get('/', response_model=List[ShipmentRead])
 def read_shipments(skip: int = 0, limit: int = 100,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> List[ShipmentRead]:
     """Read all shipments of a user"""
     try:
-        owner_uuid = auth_session.user_uuid
+        owner_uuid = session.user_uuid
         shipments_db = shipments.read_shipments(db, owner_uuid, skip=skip, limit=limit)
         shipments_list = [ShipmentRead.from_orm(i) for i in shipments_db]
         return shipments_list
     except Exception as e:
         print(vars(e))
+        raise e
 
 @router.post('/', response_model=ShipmentRead, status_code=status.HTTP_201_CREATED)
 def create_shipment(shipment: ShipmentCreate,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> ShipmentRead:
     """Create a new shipment"""
     try:
         # TODO validate shipment (use pydantic validator)
         # TODO check for shipment status and act accordingly
-        owner_uuid = auth_session.user_uuid
+        owner_uuid = session.user_uuid
 
         pickup_location = shipments.read_location(shipment.pickup_address_id)
         shipment.pickup_address_long = pickup_location['long']
@@ -92,9 +93,8 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
     valid_access_token = False
 
     try:
-        auth_session = auth.parse_authorization(db, authorization)
-        owner_uuid = auth_session.user_uuid
-        print(auth_session)
+        session = auth.parse_authorization(db, authorization)
+        owner_uuid = session.user_uuid
     except Exception as e:
         print(vars(e))
         if isinstance(e, HTTPException) and access_token is not None:
@@ -116,14 +116,15 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
         return shipment
     except Exception as e:
         print(vars(e))
+        raise e
 
 @router.patch('/{shipment_id}', response_model=ShipmentRead)
 def update_shipment(shipment_id: str, patch: ShipmentUpdate,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> ShipmentRead:
     """Update a user's shipment"""
     try:
-        owner_uuid = auth_session.user_uuid
+        owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
 
         if shipment_db is None:
@@ -141,12 +142,12 @@ def update_shipment(shipment_id: str, patch: ShipmentUpdate,
 
 @router.delete('/{shipment_id}', response_model=ShipmentRead)
 def delete_shipment(shipment_id: str,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> ShipmentRead:
     """Delete a user's shipment"""
     # TODO don't delete but disable
     try:
-        owner_uuid = auth_session.user_uuid
+        owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
 
         if shipment_db is None:
@@ -165,11 +166,11 @@ def delete_shipment(shipment_id: str,
 
 @router.get('/{shipment_id}/download')
 def download_shipment(shipment_id: str, format: str,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> Response:
     """Download a user's shipment"""
     try:
-        owner_uuid = auth_session.user_uuid
+        owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
 
         if shipment_db is None:
@@ -222,7 +223,7 @@ def download_shipment(shipment_id: str, format: str,
 
 # @router.get('/{shipment_id}/test')
 # def test(shipment_id: str,
-#     auth_session: AuthSession = Depends(auth.auth_session),
+#     session: AuthSession = Depends(auth.auth_session),
 #     db: DatabaseSession = Depends(db_session)):
 #     try:
 #         shipment_db = shipments._read_shipment(db, shipment_id)

@@ -53,10 +53,10 @@ def create_session(credentials: UserCredentials, response: Response,
 @router.delete('/')
 def delete_session(response: Response,
     db: DatabaseSession = Depends(db_session),
-    auth_session: Session = Depends(auth.auth_session)):
+    session: Session = Depends(auth.auth_session)):
     """Delete a session"""
     try:
-        session_db = sessions.read_session(db, auth_session.user_uuid)
+        session_db = sessions.read_session(db, session.user_uuid)
         sessions.delete_session(db, session_db)
     except Exception as e:
         print(e)
@@ -69,6 +69,6 @@ def delete_session(response: Response,
 
 @router.get('/')
 def read_session(db: DatabaseSession = Depends(db_session),
-    auth_session: Session = Depends(auth.auth_session)
+    session: Session = Depends(auth.auth_session)
 ):
     return True

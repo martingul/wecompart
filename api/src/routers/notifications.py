@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from storage import db_session, DatabaseSession
-from schemas.auth import Session as AuthSession
+from schemas.session import Session
 from schemas.notification import NotificationRead, NotificationCreate
 from lib import auth, users, notifications
 
@@ -11,7 +11,7 @@ router = APIRouter()
 @router.post('/', response_model=NotificationRead,
     status_code=status.HTTP_201_CREATED)
 def create_notification(notification: NotificationCreate,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> NotificationRead:
     """Create a new notification"""
     try:
@@ -28,11 +28,11 @@ def create_notification(notification: NotificationCreate,
         )
 
 @router.get('/', response_model=List[NotificationRead])
-def read_notifications(auth_session: AuthSession = Depends(auth.auth_session),
+def read_notifications(session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> List[NotificationRead]:
     """Read notifications"""
     try:
-        user_db = users.read_user(db, index=auth_session.user_uuid, by='uuid')
+        user_db = users.read_user(db, index=session.user_uuid, by='uuid')
         notifications_db = [NotificationRead.from_orm(x) for x in user_db.notifications]
         return notifications_db
     except Exception as e:

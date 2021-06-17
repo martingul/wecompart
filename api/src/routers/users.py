@@ -2,7 +2,7 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from storage import db_session, DatabaseSession
-from schemas.auth import SessionRead as AuthSession
+from schemas.session import Session
 from schemas.user import UserRead, UserCreate, UserUpdate
 from lib import auth, users
 from error import ApiError
@@ -13,7 +13,7 @@ router = APIRouter()
 
 @router.get('/', response_model=List[UserRead])
 def read_users(skip: int = 0, limit: int = 100,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> List[UserRead]:
     """Read all users"""
     try:
@@ -43,12 +43,11 @@ def create_user(user: UserCreate,
 
 @router.get('/{user_id}', response_model=UserRead)
 def read_user(user_id: str,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> UserRead:
     """Read a user"""
     try:
         user_db = users.read_user(db, user_id, by='uuid')
-        user = UserRead.from_orm(user_db)
     except Exception as e:
         print(e)
         raise e
@@ -59,11 +58,17 @@ def read_user(user_id: str,
             detail='error_user_not_found'
         )
 
+    try:
+        user = UserRead.from_orm(user_db)
+    except Exception as e:
+        print(e)
+        raise e
+        
     return user
 
 @router.patch('/{user_id}', response_model=UserRead)
 def update_user(user_id: str, patch: UserUpdate,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> UserRead:
     """Update a user"""
     # TODO invalidate access_token after update:
@@ -89,7 +94,7 @@ def update_user(user_id: str, patch: UserUpdate,
 
 @router.delete('/{user_id}', response_model=UserRead)
 def delete_user(user_id: str,
-    auth_session: AuthSession = Depends(auth.auth_session),
+    session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> UserRead:
     """Delete a user"""
     user_db = users.read_user(db, user_id, by='uuid')

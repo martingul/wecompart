@@ -55,3 +55,7 @@ class UserUpdate(BaseModel):
     def verify_role(cls, v: str):
         assert v in user_roles
         return v
+
+class UserCredentials(BaseModel):
+    username: str
+    password: str
