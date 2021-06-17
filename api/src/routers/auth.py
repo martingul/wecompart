@@ -1,22 +1,23 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, Response, HTTPException, status
 import base64
 
 from storage import db_session, DatabaseSession
-from schemas.auth import Credentials, Session, SessionRead
-from lib import auth
+from schemas.session import Session, SessionEncoded
+from schemas.user import UserCredentials
+from lib import auth, sessions
 
 router = APIRouter()
 
-@router.post('/token',
+@router.post('/',
     status_code=status.HTTP_201_CREATED,
-    response_model=SessionRead, response_model_exclude_unset=True)
-def create_token(credentials: Credentials,
-    db: DatabaseSession = Depends(db_session)) -> SessionRead:
-    """Grant new session token"""
+    response_model=SessionEncoded, response_model_exclude_unset=True)
+def create_session(credentials: UserCredentials, response: Response,
+    db: DatabaseSession = Depends(db_session)) -> SessionEncoded:
+    """Create new session"""
     user = None
     try:
         # TODO validate credentials before checking
-        user = auth.authenticate(db, credentials.username, credentials.password)
+        user = auth.authenticate(db, credentials)
     except Exception as e:
         print(vars(e))
 
@@ -30,8 +31,8 @@ def create_token(credentials: Credentials,
         )
 
     try:
-        session: Session = auth.create_session(db, user.uuid)
-        session_raw = ':'.join([session.token, session.user_uuid])
+        session_db, token = sessions.create_session(db, user.uuid)
+        session_raw = ':'.join([token, session_db.user_uuid])
         session_b64 = base64.b64encode(str.encode(session_raw)).decode('utf-8')
     except Exception as e:
         print(e)
@@ -39,20 +40,24 @@ def create_token(credentials: Credentials,
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail='error_general'
         )
-        
-    return SessionRead(
+
+    # TODO set as secure and http-only
+    response.set_cookie(key='session', value=session_b64)
+    
+    return SessionEncoded(
         session=session_b64,
-        expires_in=session.expires_in,
-        created_at=session.created_at
+        expires_in=session_db.expires_in,
+        created_at=session_db.created_at
     )
 
-@router.delete('/token')
-def delete_token(db: DatabaseSession = Depends(db_session),
+@router.delete('/')
+def delete_session(response: Response,
+    db: DatabaseSession = Depends(db_session),
     auth_session: Session = Depends(auth.auth_session)):
-    """Delete a session token"""
+    """Delete a session"""
     try:
-        session_db = auth.read_session(db, auth_session.user_uuid)
-        auth.delete_session(db, session_db)
+        session_db = sessions.read_session(db, auth_session.user_uuid)
+        sessions.delete_session(db, session_db)
     except Exception as e:
         print(e)
         raise HTTPException(
@@ -60,8 +65,10 @@ def delete_token(db: DatabaseSession = Depends(db_session),
             detail='error_general'
         )
 
-@router.get('/echo')
-def echo(db: DatabaseSession = Depends(db_session),
+    response.delete_cookie(key='session')
+
+@router.get('/')
+def read_session(db: DatabaseSession = Depends(db_session),
     auth_session: Session = Depends(auth.auth_session)
 ):
     return True
