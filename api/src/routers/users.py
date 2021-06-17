@@ -24,6 +24,11 @@ def read_users(skip: int = 0, limit: int = 100,
         print(e)
         raise e
 
+@router.get('/me', response_model=UserRead)
+def read_self(session: Session = Depends(auth.auth_session),
+    db: DatabaseSession = Depends(db_session)) -> UserRead:
+    return read_user(session.user_uuid, session, db)
+
 @router.post('/', status_code=status.HTTP_201_CREATED,
     response_model=UserRead, response_model_exclude_unset=True)
 def create_user(user: UserCreate,
@@ -35,10 +40,9 @@ def create_user(user: UserCreate,
         return user
     except ApiError as e:
         print(e)
+        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         if e.detail == 'error_username_taken':
             status_code = status.HTTP_400_BAD_REQUEST
-        else:
-            status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         raise HTTPException(status_code=status_code, detail=e.detail)
 
 @router.get('/{user_id}', response_model=UserRead)

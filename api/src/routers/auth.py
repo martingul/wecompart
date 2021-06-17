@@ -66,9 +66,3 @@ def delete_session(response: Response,
         )
 
     response.delete_cookie(key='session')
-
-@router.get('/')
-def read_session(db: DatabaseSession = Depends(db_session),
-    session: Session = Depends(auth.auth_session)
-):
-    return True
