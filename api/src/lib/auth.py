@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import Depends, Header, Cookie, HTTPException, status
+from fastapi import Depends, Header, Cookie, Query, HTTPException, status
 
 import base64
 from passlib import pwd
@@ -20,13 +20,16 @@ credentials_exception = HTTPException(
     headers={'WWW-Authenticate': 'Bearer'},
 )
 
-def parse_cookie(cookie: str):
+# def parse_cookie(cookie: str): # maybe change type to Cookie
+
+def parse_session(session: str):
     try:
-        cookie_b64 = cookie.strip()
-        cookie_raw = base64.b64decode(str.encode(cookie_b64)).decode('utf-8')
-        session = cookie_raw.split(':')
-        token = session[0]
-        user_uuid = session[1]
+        session_b64 = session.strip()
+        session_raw = base64.b64decode(str.encode(session_b64)).decode('utf-8')
+        session_decoded = session_raw.split(':')
+
+        token = session_decoded[0]
+        user_uuid = session_decoded[1]
 
         if user_uuid is None or token is None:
             raise Exception
@@ -34,7 +37,7 @@ def parse_cookie(cookie: str):
         raise credentials_exception
     return token, user_uuid
 
-def parse_header(header: str):
+def parse_header(header: str): # maybe change type to Header
     if header is None or len(header) < 10:
         raise credentials_exception
 
@@ -44,9 +47,10 @@ def parse_header(header: str):
     try:
         session_b64 = header[7:].strip()
         session_raw = base64.b64decode(str.encode(session_b64)).decode('utf-8')
-        session = session_raw.split(':')
-        token = session[0]
-        user_uuid = session[1]
+        session_decoded = session_raw.split(':')
+
+        token = session_decoded[0]
+        user_uuid = session_decoded[1]
 
         if user_uuid is None or token is None:
             raise Exception
@@ -58,11 +62,14 @@ def parse_header(header: str):
 def auth_session(
     session: Optional[str] = Cookie(None),
     authorization: Optional[str] = Header(None),
+    key: Optional[str] = Query(None),
     db: DatabaseSession = Depends(db_session)) -> Session:
     if session:
-        token, user_uuid = parse_cookie(session)
+        token, user_uuid = parse_session(session)
     elif authorization:
         token, user_uuid = parse_header(authorization)
+    elif key:
+        token, user_uuid = parse_session(key)
 
     try:
         s = sessions.validate_session(db, token, user_uuid)
