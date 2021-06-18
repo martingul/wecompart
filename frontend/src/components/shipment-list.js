@@ -95,7 +95,9 @@ export default class ShipmentList {
                             <Icon name="wind" class="w-12 h-12" />
                         </div>
                         <div class="my-1 text-gray-600">
-                            No shipments yet.
+                            <span>
+                                No shipments yet.
+                            </span>
                             <button class="ml-4 text-green-700 border-b border-dotted border-green-700"
                                 onclick={() => m.route.set('/shipments/new')}>
                                 + create

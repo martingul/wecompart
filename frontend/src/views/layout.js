@@ -79,7 +79,7 @@ export default class LayoutView {
                     <div class="my-4">
                         {vnode.children}
                     </div>
-                    <div class="flex flex-col my-10 text-center text-sm">
+                    <div class="flex flex-col my-8 text-center text-sm">
                         <span class="mt-4 text-gray-500">
                             <button class="focus:outline-none hover:text-gray-600">
                                 © Wecompart
