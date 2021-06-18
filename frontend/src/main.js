@@ -8,10 +8,7 @@ import ShipmentView from './views/shipment';
 import ShipmentList from './components/shipment-list';
 import ShipmentEdit from './components/shipment-edit';
 import LayoutView from './views/layout';
-
-// import css from './style.css';
-
-// m.route.prefix = '?';
+import MessagesView from './views/messages';
 
 class Main {
     constructor(vnode) {
@@ -21,13 +18,15 @@ class Main {
 
     oninit(vnode) {
         this.loading = true;
-        Api.echo().then(res => {
-            console.log(res);
+        
+        Api.read_self().then(res => {
             this.signed_in = true;
+            // TODO connect websocket here
         }).catch(e => {
-            console.log(e.response);
+            Api.clear_storage();
             this.signed_in = false;
         }).finally(() => {
+            console.log('signed in: ', this.signed_in);
             this.loading = false;
             setTimeout(() => m.redraw(), 2000);
         });
@@ -59,5 +58,6 @@ m.route(document.body, '/', {
     '/shipments': {render: () => <LayoutView><ShipmentList /></LayoutView>},
     '/shipments/new': {render: () => <LayoutView><ShipmentEdit /></LayoutView>},
     '/shipments/:id': {render: (vnode) => <LayoutView><ShipmentView id={vnode.attrs.id} /></LayoutView>},
+    '/messages': {render: () => <LayoutView><MessagesView /></LayoutView>}
     // '/:404...': errorPageComponent
 });

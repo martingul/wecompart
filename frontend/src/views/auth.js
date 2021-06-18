@@ -22,7 +22,7 @@ export default class AuthView {
     }
 
     oninit(vnode) {
-        Api.echo().then(res => {
+        Api.read_self().then(res => {
             // m.route.set('/');
         }).catch(_ => null);
     }

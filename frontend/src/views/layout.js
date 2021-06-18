@@ -9,15 +9,20 @@ export default class LayoutView {
         this.is_shipper = false;
         this.show_user_dropdown = false;
         this.show_notifications_dropdown = false;
+        this.username = Api.get_username();
     }
 
     handle_action_dropdown(action) {
-        console.log(action);
+        console.log('action:', action);
         if (action === 'sign out') {
             Api.signout().finally(() => {
-                Api.remove_session();
+                Api.clear_storage();
                 m.route.set('/auth/signin');
             });
+        }
+
+        if (action === 'messages') {
+            m.route.set('/messages');
         }
     }
 
@@ -55,7 +60,7 @@ export default class LayoutView {
                                         </div> */}
                                     </button>
                                     <div class={this.show_user_dropdown ? 'block' : 'hidden'}>
-                                        <Dropdown fullwidth={false} values={['Profile', 'Sign out']}
+                                        <Dropdown fullwidth={false} values={[`Signed in as ${this.username}`,'Profile', 'Messages', 'Sign out']}
                                             callback={(v) => this.handle_action_dropdown(v.toLowerCase())} />
                                     </div>
                                 </div>

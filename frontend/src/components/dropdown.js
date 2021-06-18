@@ -5,7 +5,6 @@ export default class Dropdown {
         console.log('construct Dropdown');
         this.callback = vnode.attrs.callback;
         this.values = vnode.attrs.values;
-        console.log(vnode.attrs.fullwidth);
         this.fullwidth = vnode.attrs.fullwidth !== undefined ? vnode.attrs.fullwidth : true;
     }
 

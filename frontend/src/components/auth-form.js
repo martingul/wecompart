@@ -38,8 +38,9 @@ export default class AuthForm {
     authenticate(username, password) {
         this.show_loading = true;
         return Api.authenticate({username, password})
-            .then(res => Api.set_session(Api.decode_session(res.session)))
-            .then(_ => {
+            .then(res => {
+                Api.set_session(Api.decode_session(res.session));
+                Api.set_username(username);
                 m.route.set('/'); 
             }).catch(e => {
                 if (e.response) {

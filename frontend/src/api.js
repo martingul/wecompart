@@ -3,6 +3,10 @@ import m from 'mithril';
 export default class Api {
     static API_ROOT = 'http://localhost:5000';
 
+    static websocket = new WebSocket(
+        `ws://localhost:5000/?key=${Api.encode_session(Api.get_session())}`
+    );
+
     static get_session() {
         const token = localStorage.getItem('token');
         const uuid = localStorage.getItem('uuid');
@@ -32,11 +36,28 @@ export default class Api {
             uuid: session[1],
         };
     }
+
+    static get_username() {
+        return localStorage.getItem('username');
+    }
+
+    static set_username(username) {
+        localStorage.setItem('username', username);
+    }
+
+    static remove_username() {
+        localStorage.removeItem('username');
+    }
+
+    static clear_storage() {
+        Api.remove_session();
+        Api.remove_username();
+    }
     
     static authenticate(args) {
         return m.request({
             method: 'POST',
-            url: `${this.API_ROOT}/auth/token`,
+            url: `${this.API_ROOT}/auth/`,
             body: {
                 username: args.username,
                 password: args.password
@@ -47,16 +68,8 @@ export default class Api {
     static signout(args) {
         return m.request({
             method: 'DELETE',
-            url: `${this.API_ROOT}/auth/token`,
+            url: `${this.API_ROOT}/auth/`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`}
-        });
-    }
-
-    static echo(args) {
-        return m.request({
-            method: 'GET',
-            url: `${Api.API_ROOT}/auth/echo`,
-            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
         });
     }
 
@@ -66,6 +79,14 @@ export default class Api {
             url: `${Api.API_ROOT}/shippers/`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
         });
+    }
+
+    static read_self(args) {
+        return m.request({
+            method: 'GET',
+            url: `${Api.API_ROOT}/users/me`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`}
+        })
     }
 
     static create_user(args) {
@@ -82,7 +103,7 @@ export default class Api {
     static read_user(args) {
         return m.request({
             method: 'GET',
-            url: `${Api.API_ROOT}/users/me`,
+            url: `${Api.API_ROOT}/users/${args.user_id}`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
         });
     }
@@ -184,6 +205,23 @@ export default class Api {
             url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
             body: args.quote,
+        });
+    }
+
+    static read_messages(args) {
+        return m.request({
+            method: 'GET',
+            url: `${Api.API_ROOT}/messages/`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+        });
+    }
+
+    static create_message(args) {
+        return m.request({
+            method: 'POST',
+            url: `${Api.API_ROOT}/messages/`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+            body: args.message,
         });
     }
 }
