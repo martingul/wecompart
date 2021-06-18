@@ -1,6 +1,6 @@
 import json
 
-db_host = '172.10.0.01'
+db_host = 'localhost'
 db_port = 5432
 
 http_host: str = '0.0.0.0'

@@ -5,6 +5,7 @@ from uuid import uuid4
 from datetime import datetime
 import base58
 
+# TODO switch to posgres native uuid type
 def generate_uuid():
     return base58.b58encode(uuid4().bytes).decode('ascii')
 
