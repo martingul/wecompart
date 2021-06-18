@@ -14,7 +14,7 @@ router = APIRouter()
 @router.get('/{shipment_id}/items/', response_model=List[ItemRead])
 def read_shipment_items(shipment_id: str,
     session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> ItemRead:
+    db: DatabaseSession = Depends(db_session)) -> List[ItemRead]:
     """Read shipment items"""
     try:
         owner_uuid = session.user_uuid

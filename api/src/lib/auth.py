@@ -11,7 +11,7 @@ def generate_token():
 from storage import db_session, DatabaseSession
 from models.user import User
 from schemas.session import Session
-from schemas.user import UserCredentials
+from schemas.user import UserCredentials, UserRead
 from lib import users, sessions
 
 credentials_exception = HTTPException(
@@ -76,8 +76,11 @@ def auth_session(
     except Exception:
         raise credentials_exception
 
+    # print(vars(s.user))
+
     return Session(
         uuid=s.uuid,
+        user=UserRead.from_orm(s.user),
         user_uuid=s.user_uuid,
         created_at=s.created_at,
         updated_at=s.updated_at

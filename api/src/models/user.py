@@ -15,8 +15,9 @@ class User(Base, Entity):
     name = Column(String, nullable=True)
     role = Column(String, nullable=False, default='standard')
 
+    session = relationship('Session', back_populates='user', uselist=False)
     shipper = relationship('Shipper', back_populates='users')
-    items = relationship('Item', back_populates='owner')
     shipments = relationship('Shipment', back_populates='owner')
+    items = relationship('Item', back_populates='owner')
     quotes = relationship('Quote', back_populates='owner')
     notifications = relationship('Notification', back_populates='user')

@@ -2,8 +2,11 @@ from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 
+from schemas.user import UserRead
+
 class Session(BaseModel):
     uuid: str
+    user: UserRead
     user_uuid: str
     expires_in: Optional[datetime]
 

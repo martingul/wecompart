@@ -2,9 +2,9 @@ from datetime import datetime
 import requests
 
 from storage import DatabaseSession
-from schemas.shipment import ShipmentRead, ShipmentCreate, ShipmentUpdate, ShipmentDownload
+from schemas.shipment import ShipmentCreate, ShipmentUpdate, ShipmentDownload
 from models.shipment import Shipment
-from lib import auth, items, templates
+from lib import items
 import config
 
 def read_locations(q: str):
@@ -106,14 +106,14 @@ def verify_access_token(db: DatabaseSession, uuid: str, access_token: str):
     shipment_db = _read_shipment(db, uuid)
     return shipment_db.access_token == access_token.strip().lower()
 
-def generate_html(shipment_db):
-    html = None
-    try:
-        template = templates.env.get_template('shipment.html')
-        shipment = ShipmentDownload.from_orm(shipment_db).dict()
-        html = template.render(shipment=shipment)
-    except Exception as e:
-        print(vars(e))
-        raise e
+# def generate_html(shipment_db):
+#     html = None
+#     try:
+#         template = templates.env.get_template('shipment.html')
+#         shipment = ShipmentDownload.from_orm(shipment_db).dict()
+#         html = template.render(shipment=shipment)
+#     except Exception as e:
+#         print(vars(e))
+#         raise e
 
-    if html: return html
+#     if html: return html

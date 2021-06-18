@@ -4,7 +4,7 @@ from fastapi import APIRouter, Header, Response, Depends, HTTPException, status
 from storage import db_session, DatabaseSession
 from schemas.session import Session
 from schemas.shipment import ShipmentRead, ShipmentCreate, ShipmentUpdate
-from lib import auth, shipments, templates, shippers
+from lib import auth, shipments, shippers
 
 router = APIRouter()
 
@@ -164,62 +164,62 @@ def delete_shipment(shipment_id: str,
         if isinstance(e, HTTPException): raise e
         # else raise HTTPException...
 
-@router.get('/{shipment_id}/download')
-def download_shipment(shipment_id: str, format: str,
-    session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> Response:
-    """Download a user's shipment"""
-    try:
-        owner_uuid = session.user_uuid
-        shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
+# @router.get('/{shipment_id}/download')
+# def download_shipment(shipment_id: str, format: str,
+#     session: Session = Depends(auth.auth_session),
+#     db: DatabaseSession = Depends(db_session)) -> Response:
+#     """Download a user's shipment"""
+#     try:
+#         owner_uuid = session.user_uuid
+#         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
 
-        if shipment_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='error_shipment_not_found'
-            )
-    except Exception as e:
-        print(vars(e))
-        if isinstance(e, HTTPException): raise e
-        else: raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST
-        )
+#         if shipment_db is None:
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail='error_shipment_not_found'
+#             )
+#     except Exception as e:
+#         print(vars(e))
+#         if isinstance(e, HTTPException): raise e
+#         else: raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST
+#         )
 
-    formats = ['html', 'pdf', 'text']
-    format = format.lower()
-    if format not in formats:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
-            detail='error_invalid_format'
-        )
+#     formats = ['html', 'pdf', 'text']
+#     format = format.lower()
+#     if format not in formats:
+#         raise HTTPException(
+#             status_code=status.HTTP_400_BAD_REQUEST,
+#             detail='error_invalid_format'
+#         )
 
-    error = HTTPException(
-        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        detail='error_general'
-    )
+#     error = HTTPException(
+#         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#         detail='error_general'
+#     )
 
-    try:
-        html = shipments.generate_html(shipment_db)
-    except Exception as e:
-        print(vars(e))
-        raise error
+#     try:
+#         html = shipments.generate_html(shipment_db)
+#     except Exception as e:
+#         print(vars(e))
+#         raise error
 
-    content = None
+#     content = None
 
-    if format == 'html':
-        content = html
+#     if format == 'html':
+#         content = html
 
-    if format == 'pdf':
-        try:
-            content = templates.html_to_pdf(html)
-        except Exception as e:
-            print(vars(e))
-            raise error
+#     if format == 'pdf':
+#         try:
+#             content = templates.html_to_pdf(html)
+#         except Exception as e:
+#             print(vars(e))
+#             raise error
 
-    return Response(
-        content=content,
-        media_type='application/octet-stream'
-    )
+#     return Response(
+#         content=content,
+#         media_type='application/octet-stream'
+#    )
 
 # @router.get('/{shipment_id}/test')
 # def test(shipment_id: str,

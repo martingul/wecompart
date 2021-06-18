@@ -1,7 +1,8 @@
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, shippers, users, shipments, items, quotes, notifications
+from routers import auth, shippers, users, shipments, items, quotes,\
+    notifications, messages, websockets
 import config
 
 api = FastAPI()
@@ -41,15 +42,19 @@ api.include_router(
     tags=['notifications'],
     prefix='/notifications'
 )
-
-origins = [
-    'http://localhost:8080',
-    'http://127.0.0.1:8080',
-]
+api.include_router(
+    messages.router,
+    tags=['messages'],
+    prefix='/messages'
+)
+api.include_router(
+    websockets.router,
+    tags=['websockets']
+)
 
 api.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=['*'],
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
@@ -64,5 +69,6 @@ def serve():
         'api:api',
         host=config.http_host,
         port=config.http_port,
-        reload=True
+        reload=True,
+        reload_dirs=['src']
     )
