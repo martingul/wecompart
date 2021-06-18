@@ -7,6 +7,8 @@ from schemas.session import Session
 from schemas.message import MessageRead, MessageCreate
 from lib import auth, users, messages
 
+from lib.websockets import manager
+
 import pandas as pd
 
 router = APIRouter()
@@ -17,8 +19,8 @@ def read_messages(session: Session = Depends(auth.auth_session),
     try:
         messages_db = messages.read_user_messages(db, session.user.uuid)
         messages_list = [MessageRead.from_orm(x).dict() for x in messages_db]
-        keys = []
         
+        keys = []
         for m in messages_list:
             if m['src_user_uuid'] != session.user.uuid:
                 keys.append(m['src_user_uuid'])
@@ -26,9 +28,12 @@ def read_messages(session: Session = Depends(auth.auth_session),
                 keys.append(m['dst_user_uuid'])
 
         messages_series = Series(messages_list, index=keys)
-        messages_grouped = messages_series.groupby(keys).apply(list).to_dict()
-
-        return messages_grouped
+        messages_grouped = messages_series.groupby(keys).apply(list)
+        
+        print([c.user_uuid for c in manager.active_connections])
+        
+        # FIXME return a list and not a dictionary (better perf as we need to iterate)
+        return messages_grouped.to_dict()
     except Exception as e:
         print(e)
         if isinstance(e, HTTPException):
@@ -36,7 +41,7 @@ def read_messages(session: Session = Depends(auth.auth_session),
 
 @router.post('/', response_model=MessageRead,
     status_code=status.HTTP_201_CREATED)
-def create_message(message: MessageCreate,
+async def create_message(message: MessageCreate,
     session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> MessageRead:
     try:
@@ -58,6 +63,8 @@ def create_message(message: MessageCreate,
             message_db = messages.create_message(db, src_user_uuid, message)
             message = MessageRead.from_orm(message_db)
             # TODO notify dst_user if they are online, else create notification
+            await manager.send_message(message)
+            
             return message
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
