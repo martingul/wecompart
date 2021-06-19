@@ -10,6 +10,25 @@ export default class LayoutView {
         this.show_user_dropdown = false;
         this.show_notifications_dropdown = false;
         this.username = Api.get_username();
+
+        this.notifications = [];
+
+        Api.websocket.onmessage = (e) => {
+            const notification = JSON.parse(e.data);
+            notification.content = JSON.parse(notification.content);
+            console.log(notification);
+            // TODO display notificiation according to its type
+
+            m.redraw();
+        }
+
+        Api.websocket.onopen = (e) => {
+            console.log('websocket open');
+        }
+        
+        Api.websocket.onclose = (e) => {
+            console.log('websocket close');
+        }
     }
 
     handle_action_dropdown(action) {

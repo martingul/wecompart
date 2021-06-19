@@ -5,11 +5,10 @@ from pandas import Series
 from storage import db_session, DatabaseSession
 from schemas.session import Session
 from schemas.message import MessageRead, MessageCreate
-from lib import auth, users, messages
-
+from schemas.notification import NotificationRead, NotificationCreate
+from lib import auth, users, messages, notifications
 from lib.websockets import manager
 
-import pandas as pd
 
 router = APIRouter()
 
@@ -63,7 +62,20 @@ async def create_message(message: MessageCreate,
             message_db = messages.create_message(db, src_user_uuid, message)
             message = MessageRead.from_orm(message_db)
             # TODO notify dst_user if they are online, else create notification
-            await manager.send_message(message)
+
+            notification_new = NotificationCreate(
+                user_uuid=message.dst_user_uuid,
+                type='new_message',
+                content=message.json()
+            )
+
+            notification_db = notifications.create_notification(db, notification_new)
+            notification = NotificationRead.from_orm(notification_db)
+
+            dst_conn = manager.get_connection(message.dst_user_uuid)
+            if dst_conn:
+                dst_conn = dst_conn[0]
+                await manager.send_message(dst_conn, notification.json())
             
             return message
         else:

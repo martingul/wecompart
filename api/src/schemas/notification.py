@@ -5,7 +5,7 @@ from pydantic import BaseModel
 class NotificationRead(BaseModel):
     uuid: str
     user_uuid: str
-
+    type: str
     content: str
     read: bool
 
@@ -17,6 +17,7 @@ class NotificationRead(BaseModel):
 
 class NotificationCreate(BaseModel):
     user_uuid: str
+    type: str
     content: str
 
 class NotificationUpdate(BaseModel):

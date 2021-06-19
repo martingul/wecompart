@@ -14,24 +14,22 @@ export default class MessagesView {
         this.user_uuid = Api.get_session().uuid;
 
         Api.websocket.onmessage = (e) => {
-            const message = JSON.parse(e.data);
+            const notification = JSON.parse(e.data);
+            if (notification.type === 'new_message') {
+                const message = JSON.parse(notification.content);
 
-            let target = '';
-            if (message.src_user_uuid !== this.user_uuid) {
-                target = message.src_user_uuid
-            } else {
-                target = message.dst_user_uuid
+                let target = '';
+                if (message.src_user_uuid !== this.user_uuid) {
+                    target = message.src_user_uuid
+                } else {
+                    target = message.dst_user_uuid
+                }
+
+                this.messages[target].push(message);
             }
 
-            this.messages[target].push(message);
             m.redraw();
             // TODO scroll to new bottom if user is already at bottom otherwise indicate new message
-        }
-        Api.websocket.onopen = (e) => {
-            console.log('websocket open');
-        }
-        Api.websocket.onclose = (e) => {
-            console.log('websocket close');
         }
     }
 
@@ -46,12 +44,17 @@ export default class MessagesView {
 
         Api.create_message({ message: message_payload }).then(res => {
             // maybe append to messages when user gets new_message event
-            this.messages[this.selected_messages].push(res);
+            const message = res;
+            this.messages[this.selected_messages].push(message);
             this.message = '';
             // TODO scroll to new bottom if user is already at bottom otherwise indicate new message
         }).catch(e => {
             console.log(e);
         });
+    }
+
+    switch_messages(selected_messages) {
+        this.selected_messages = selected_messages;
     }
 
     oninit(vnode) {
@@ -66,10 +69,6 @@ export default class MessagesView {
         }).finally(() => {
             this.loading = false;
         });
-    }
-
-    switch_messages(selected_messages) {
-        this.selected_messages = selected_messages;
     }
 
     view(vnode) {
@@ -142,7 +141,7 @@ export default class MessagesView {
                             {message_entries.length > 0 ? this.messages[this.selected_messages].map(msg => {
                                 const is_own_message = msg.src_user_uuid === this.user_uuid;
                                 return (
-                                    <div key={msg.uuid} class={'w-1/2 py-2 px-3 my-2 rounded ' + (is_own_message ? 'self-end bg-yellow-50' : 'bg-gray-50')}>
+                                    <div id={msg.uuid} key={msg.uuid} class={'w-1/2 py-2 px-3 my-2 rounded ' + (is_own_message ? 'self-end bg-yellow-50' : 'bg-gray-50')}>
                                         <div class="text-xs">
                                             from ..., {utils.relative_date(msg.created_at)}
                                         </div>
