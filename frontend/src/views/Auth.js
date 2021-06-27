@@ -11,8 +11,8 @@ import google from '../assets/google.svg';
 
 export default class AuthView {
     constructor(vnode) {
-        Auth.action = vnode.attrs.action;
-        console.log(`construct AuthView (${Auth.action})`);
+        this.auth = new Auth(vnode.attrs.action)
+        console.log(`construct AuthView (${this.auth.action})`);
     }
 
     oninit(vnode) {
@@ -44,7 +44,7 @@ export default class AuthView {
                         </div>
                     </div>
                     <div class="flex flex-col mx-2 p-4 rounded border border-gray-300">
-                        {Auth.action === 'signin' ? <SignInForm /> : <SignUpForm />}
+                        {this.auth.action === 'signin' ? <SignInForm auth={this.auth} /> : <SignUpForm auth={this.auth} />}
                     </div>
                     {/* <Footer /> */}
                 </div>

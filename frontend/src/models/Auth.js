@@ -1,84 +1,84 @@
 import Api from '../api';
 
 export default class Auth {
-    static email = '';
-    static password = '';
-    
-    static action = '';
-    static error = '';
-    static busy = false;
+    constructor(action) {
+        this.email = '';
+        this.password = '';
+        
+        this.action = action;
+        this.error = '';
+        this.busy = false;
+    }
 
-    static validate_email(email) {
+    validate_email() {
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return email && re.test(String(email).toLowerCase());
+        return this.email && re.test(String(this.email).toLowerCase());
     }
 
-    static validate_password(password) {
-        return password && (String(password.length) >= 6);
+    validate_password() {
+        return this.password && (String(this.password.length) >= 6);
     }
 
-    static authenticate() {
-        Auth.busy = true;
+    authenticate() {
+        this.busy = true;
         return Api.authenticate({
-            username: Auth.email,
-            password: Auth.password
+            username: this.email,
+            password: this.password
         }).then(res => {
             Api.set_session(Api.decode_session(res.session));
-            Api.set_username(Auth.email);
+            Api.set_username(this.email);
             return true;
             // m.route.set('/'); 
         }).catch(e => {
             if (e.response) {
                 if (e.response.detail === 'error_invalid_credentials') {
-                    Auth.error = 'Invalid credentials.';
+                    this.error = 'Invalid credentials.';
                 }
             }
         }).finally(() => {
-            Auth.busy = false;
+            this.busy = false;
         });
     }
 
-    static switch_action() {
-        Auth.password = '';
-        Auth.error = '';
-        Auth.action = Auth.action === 'signup' ? 'signin' : 'signup'; 
+    switch_action() {
+        this.password = '';
+        this.error = '';
+        this.action = this.action === 'signup' ? 'signin' : 'signup'; 
     }
 
-    static can_submit() {
-        return Auth.email !== '' && Auth.password !== '';
+    can_submit() {
+        return this.email !== '' && this.password !== '';
     }
 
-    static submit() {
-        console.log(Auth.email, Auth.password);
-        Auth.error = '';
-        const email = Auth.email;
-        const password = Auth.password;
+    submit() {
+        console.log(this.email, this.password);
+        this.error = '';
 
-        if (!Auth.validate_email(email)) {
-            Auth.error = 'Please enter a valid email address.';
+        if (!this.validate_email()) {
+            this.error = 'Please enter a valid email address.';
             return Promise.reject(new Error('invalid_email'));
         }
-        if (!Auth.validate_password(password)) {
-            Auth.error = 'Please enter a valid password.';
+        if (!this.validate_password()) {
+            this.error = 'Please enter a valid password.';
             return Promise.reject(new Error('invalid_password'));
         }
 
-        if (Auth.action === 'signin') {
-            return Auth.authenticate(email, password);
+        if (this.action === 'signin') {
+            return this.authenticate();
         } else {
-            Auth.busy = true;
+            this.busy = true;
             return Api.create_user({
-                username: email,
-                password: password
+                username: this.email,
+                password: this.password
             }).then(res => {
-                return Auth.authenticate(email, password);
+                return this.authenticate();
             }).catch(e => {
                 if (e.response.detail === 'error_username_taken') {
-                    Auth.error = 'An account with this email already exists.';
+                    this.error = 'An account with this email already exists.';
                 }
                 return false;
             }).finally(() => {
-                Auth.busy = false;
+                this.busy = false;
             });
         }
     }
