@@ -1,9 +1,8 @@
 import m from 'mithril';
 import Api from './api';
-import Loading from './components/loading';
+import Loading from './components/Loading';
 import LandingView from './views/landing';
-import AuthView from './views/auth';
-import AdminView from './views/admin';
+import AuthView from './views/Auth';
 import ShipmentView from './views/shipment';
 import ShipmentList from './components/shipment-list';
 import ShipmentEdit from './components/shipment-edit';
@@ -53,8 +52,8 @@ class Main {
 
 m.route(document.body, '/', {
     '/': {render: () => <Main />},
-    '/auth/:action': {render: () => <AuthView action={m.route.param('action')}/>},
-    '/admin': {render: () => <AdminView />},
+    '/auth/signup': {render: () => <AuthView action="signup" />},
+    '/auth/signin': {render: () => <AuthView action="signin" />},
     '/shipments': {render: () => <LayoutView><ShipmentList /></LayoutView>},
     '/shipments/new': {render: () => <LayoutView><ShipmentEdit /></LayoutView>},
     '/shipments/:id': {render: (vnode) => <LayoutView><ShipmentView id={vnode.attrs.id} /></LayoutView>},
