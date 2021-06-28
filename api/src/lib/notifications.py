@@ -11,9 +11,6 @@ def create_notification(db: DatabaseSession, notification: NotificationCreate):
     db.refresh(notification_db)
     return notification_db
 
-# def read_notifications(db: DatabaseSession, skip: int = 0, limit: int = 100):
-#     return db.query(Notification).offset(skip).limit(limit).all()
-
 def read_notification(db: DatabaseSession, notification_uuid: str):
     return db.query(Notification)\
         .filter(Notification.uuid == notification_uuid).first()

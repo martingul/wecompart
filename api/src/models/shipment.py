@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, Float, Boolean, Date, ForeignKey
 from sqlalchemy.orm import relationship
+from sqlalchemy.dialects.postgresql import ARRAY
 from models.base import Base, Entity
 
 class Shipment(Base, Entity):
@@ -22,8 +23,7 @@ class Shipment(Base, Entity):
 
     currency = Column(String, nullable=True)
     total_value = Column(Float, nullable=True)
-    need_packing = Column(Boolean, nullable=True)
-    need_insurance = Column(Boolean, nullable=True)
+    services = Column(ARRAY(String), default=[], nullable=False)
     comments = Column(String, nullable=True)
 
     owner = relationship('User', back_populates='shipments')

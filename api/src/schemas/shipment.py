@@ -15,8 +15,7 @@ class ShipmentDownload(BaseModel):
     status: str
     currency: str
     total_value: float
-    need_packing: bool
-    need_insurance: bool
+    services: List[str]
     comments: str
     items: List[ItemRead]
 
@@ -45,10 +44,9 @@ class ShipmentRead(BaseModel):
     status: str
     currency: str
     total_value: float
-    # services: List[str] = ['packing', 'insurance', ...]
-    need_packing: bool
-    need_insurance: bool
     comments: str
+
+    services: List[str]
     items: List[ItemRead]
     # quotes: List[QuoteRead] # should not be accessible by other users than owner
 
@@ -75,9 +73,9 @@ class ShipmentCreate(BaseModel):
     status: str
     currency: str
     total_value: float
-    need_packing: bool
-    need_insurance: bool
     comments: str
+
+    services: List[str]
     items: List[ItemCreate]
 
 class ShipmentUpdate(BaseModel):
@@ -87,6 +85,5 @@ class ShipmentUpdate(BaseModel):
     status: Optional[str] = None
     currency: Optional[str] = None
     total_value: Optional[float] = None
-    need_packing: Optional[bool] = None
-    need_insurance: Optional[bool] = None
+    services: Optional[List[str]] = None
     comments: Optional[str] = None

@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, WebSocket, Depends
 from starlette.websockets import WebSocketDisconnect
 

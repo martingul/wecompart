@@ -9,7 +9,6 @@ from schemas.notification import NotificationRead, NotificationCreate
 from lib import auth, users, messages, notifications
 from lib.websockets import manager
 
-
 router = APIRouter()
 
 @router.get('/')
@@ -28,9 +27,7 @@ def read_messages(session: Session = Depends(auth.auth_session),
 
         messages_series = Series(messages_list, index=keys)
         messages_grouped = messages_series.groupby(keys).apply(list)
-        
-        print([c.user_uuid for c in manager.active_connections])
-        
+                
         # FIXME return a list and not a dictionary (better perf as we need to iterate)
         return messages_grouped.to_dict()
     except Exception as e:
