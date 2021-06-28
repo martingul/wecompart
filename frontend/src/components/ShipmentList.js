@@ -1,12 +1,12 @@
 import m from 'mithril';
-import Api from '../api';
-import Icon from './icon';
-import Loading from './loading';
-import Shipment from './shipment';
+import Icon from './Icon';
+import ShipmentListElement from './ShipmentListElement';
+import ShipmentEdit from './ShipmentEdit';
 
 export default class ShipmentList {
     constructor(vnode) {
         console.log('construct ShipmentList');
+        this.shipments = vnode.attrs.shipments;
 
         this.sortable = {
             pickup_address: {
@@ -36,9 +36,11 @@ export default class ShipmentList {
             }
         };
 
-        this.shipments = [];
         this._sort_state = null;
         this.loading = false;
+
+        this.new_shipment = false;
+        this.selected_shipment = null;
     }
 
     get sort_state() {
@@ -63,66 +65,33 @@ export default class ShipmentList {
         this.shipments.sort(this._sort_state.cmp);
     }
 
-    oninit(vnode) {
-        this.loading = true;
-        Api.read_shipments().then(res => {
-            if (res === null) this.shipments = [];
-            else this.shipments = res;
-        }).catch(e => {
-            console.log(e);
-            m.route.set('/auth/signin');
-        }).finally(() => {
-            this.loading = false;
-        });
-    }
-
     view(vnode) {
-        if (this.shipments.length === 0 && this.loading) {
-            return (
-                <div class="flex justify-center">
-                    <div class="my-8 flex items-center text-gray-600">
-                        <Loading class="w-12" />
-                    </div>
-                </div>
-            );
+        if (this.new_shipment) {
+            return <ShipmentEdit close={() => this.new_shipment = false} />
         }
 
-        if (this.shipments.length === 0 && !this.loading) {
-            return (
-                <div class="flex justify-center">
-                    <div class="my-2 flex flex-col items-center">
-                        <div class="my-4 text-gray-200">
-                            <Icon name="wind" class="w-12 h-12" />
-                        </div>
-                        <div class="my-1 text-gray-600">
-                            <span>
-                                No shipments yet.
-                            </span>
-                            <button class="ml-4 text-green-700 border-b border-dotted border-green-700"
-                                onclick={() => m.route.set('/shipments/new')}>
-                                + create
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
+        if (this.selected_shipment) {
+            return <ShipmentEdit shipment={this.selected_shipment}
+                close={() => this.selected_shipment = null} />
         }
 
         return (
-            <div class="my-2 flex flex-col">
-                <div class="my-2 flex justify-between">
+            <div class="flex flex-col">
+                <div class="my-4 flex items-center justify-between">
                     <div class="px-2 rounded font-bold bg-yellow-100 text-black">
                         Shipments
                     </div>
-                    <div class="whitespace-nowrap">
-                        <m.route.Link class="text-green-700 border-b border-dotted border-green-700"
-                            href="/shipments/new">
-                            + create
-                        </m.route.Link>
-                    </div>
+                    <button class="flex items-center px-4 rounded whitespace-nowrap
+                        text-gray-800 hover:text-black bg-green-100 hover:bg-green-200 hover:shadow transition-all"
+                        onclick={() => this.new_shipment = true}>
+                        <Icon name="plus" class="w-4" />
+                        <span class="ml-2">
+                            New shipment
+                        </span>
+                    </button>
                 </div>
-                <div class={this.shipments.length ? 'flex flex-col' : 'hidden'}>
-                    <div class="my-2">
+                <div class="flex flex-col">
+                    <div class="my-4">
                         <div class="flex items-center justify-between my-2 w-full px-2 whitespace-nowrap text-xs">
                             <div class="w-2/12">
                                 <button class="flex items-center border-b border-dotted border-gray-600"
@@ -186,22 +155,9 @@ export default class ShipmentList {
                             </div>
                         </div>
                         <div class="my-2">
-                            {this.shipments.map(o =>
-                                <Shipment
-                                    key={o.uuid}
-                                    status={o.status}
-                                    owner_uuid={o.owner_uuid}
-                                    pickup_address={o.pickup_address_short}
-                                    delivery_address={o.delivery_address_short}
-                                    currency={o.currency}
-                                    total_value={o.total_value}
-                                    need_packing={o.need_packing}
-                                    need_insurance={o.need_insurance}
-                                    comments={o.comments}
-                                    items={o.items.length}
-                                    created_at={o.created_at}
-                                    updated_at={o.updated_at}
-                                />
+                            {this.shipments.map(s =>
+                                <ShipmentListElement key={s.uuid} shipment={s} 
+                                    callback={(s) => this.selected_shipment = s} />
                             )}
                         </div>
                     </div>

@@ -1,25 +1,23 @@
 import m from 'mithril';
-import Api from '../api'
-import Icon from '../components/icon';
-import Logo from '../components/logo';
+import Icon from '../components/Icon';
 import notepad from '../assets/notepad.svg';
 import clock from '../assets/clock.svg';
 import money from '../assets/money.svg';
 
 export default class LandingView {
-    constructor(_vnode) {
+    constructor(vnode) {
         console.log('construct LandingView');
     }
 
-    view(_vnode) {
+    view(vnode) {
         return (
             <main>
                 <div class="flex flex-col items-center">
                     <div class="px-8 w-full md:w-5/6 lg:w-2/3">
                         {/* header */}
                         <div class="flex justify-between items-center p-3 bg-white text-sm">
-                            <m.route.Link href="/" options={{ replace: true }}>
-                                <Logo />
+                            <m.route.Link href="/" options={{ replace: true }} class="flex items-center whi=tespace-nowrap text-xl font-bold">
+                                wecompart &trade;
                             </m.route.Link>
                             <div class="flex items-center">
                                 <div>

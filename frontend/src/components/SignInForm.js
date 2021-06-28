@@ -23,7 +23,7 @@ export default class SignInForm {
                     <label class="text-gray-600" for="email-input">
                         Email
                     </label>
-                    <input class="mt-1 border transition duration-150 border-gray-300 bg-gray-50 rounded"
+                    <input class="mt-1"
                         id="email-input" type="email" spellcheck="false" required
                         value={this.auth.email}
                         oninput={(e) => this.auth.email = e.target.value}/>

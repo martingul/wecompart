@@ -1,20 +1,22 @@
 import m from 'mithril';
-import Api from '../api';
+import Api from '../Api';
 import Loading from './Loading';
-import Dropdown from './dropdown';
-import utils from '../utils';
+import Utils from '../Utils';
 
 export default class LocationInput {
     constructor(vnode) {
         console.log('construct LocationInput');
-        this.model = vnode.attrs.location;
+        this.model = vnode.attrs.bind;
+        this.input_id = vnode.attrs.id;
         this.placeholder = vnode.attrs.placeholder;
+        this.id = Utils.generate_key();
+        this.event_controller = new AbortController();
+
+        this.values = [];
         this.timeout = null;
         this.loading = false;
-        this.values = [];
         this.show_dropdown = false;
         this.callback = null;
-        this.id = utils.generate_key();
     }
 
     handle_input(e) {
@@ -35,16 +37,11 @@ export default class LocationInput {
                 this.timeout = null;
                 this.loading = false;
 
-                Api.read_locations({
-                    q: this.model.value
-                }).then(locations => {
-                    const values = locations.map(l => l.address_long);
-                    const values_map = Object.fromEntries(
+                Api.read_locations({ q: this.model.value }).then(locations => {
+                    this.values = locations.map(l => l.address_long);;
+                    this.values_map = Object.fromEntries(
                         locations.map(l => [l.address_long, l.address_id])
                     );
-
-                    this.values = values;
-                    this.values_map = values_map;
                     this.show_dropdown = true;
                     this.callback = (v) => {
                         this.model.value = v;
@@ -63,18 +60,21 @@ export default class LocationInput {
     oninit(vnode) {
         document.addEventListener('click', (e) => {
             const input = document.getElementById('location-input-' + this.id);
-            if (!input.contains(e.target)) {
-                this.show_dropdown = false;
-                m.redraw();
+            if (input) {
+                if (input && !input.contains(e.target)) {
+                    this.show_dropdown = false;
+                    m.redraw();
+                }
+            } else {
+                this.event_controller.abort();
             }
-        });
+        }, { signal: this.event_controller.signal });
     }
     
     view(vnode) {
         return (
             <div id={'location-input-' + this.id} class="relative">
-                <input class="w-full h-8 pl-2 py-1 pr-10 box-border border border-gray-400 focus:border-gray-500"
-                    id="from-input" type="text" placeholder={this.placeholder} autocomplete="off" spellcheck="false"
+                <input id={this.input_id} type="text" placeholder={this.placeholder} autocomplete="off" spellcheck="false"
                     value={this.model.value}
                     oninput={(e) => this.handle_input(e)}  />
                 <div class={this.loading ? '' : 'hidden'}>

@@ -9,8 +9,7 @@ export default class PasswordInput {
     view(vnode) {
         return (
             <div class="relative">
-                <input class="mt-1 border transition duration-150 border-gray-300 bg-gray-50 rounded"
-                    id="password-input" spellcheck="false" minlength="6" required
+                <input id="password-input" spellcheck="false" minlength="6" required
                     type={this.show_password ? 'text' : 'password'}
                     placeholder={vnode.attrs.placeholder}
                     value={vnode.attrs.value}

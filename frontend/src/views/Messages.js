@@ -1,8 +1,8 @@
 import m from 'mithril';
-import Api from '../api';
-import utils from '../utils';
-import Icon from '../components/icon';
-import Loading from '../components/loading';
+import Api from '../Api';
+import Utils from '../Utils';
+import Icon from '../components/Icon';
+import Loading from '../components/Loading';
 
 export default class MessagesView {
     constructor(vnode) {
@@ -123,7 +123,7 @@ export default class MessagesView {
                                         </div>
                                         <div class="self-end">
                                             <span class={this.selected_messages === key ? 'text-gray-600' : 'text-gray-400'}>
-                                                {utils.relative_date(value[0].created_at)}
+                                                {Utils.relative_date(value[0].created_at)}
                                             </span>
                                         </div>
                                     </div>
@@ -143,7 +143,7 @@ export default class MessagesView {
                                 return (
                                     <div id={msg.uuid} key={msg.uuid} class={'w-1/2 py-2 px-3 my-2 rounded ' + (is_own_message ? 'self-end bg-yellow-50' : 'bg-gray-50')}>
                                         <div class="text-xs">
-                                            from ..., {utils.relative_date(msg.created_at)}
+                                            from ..., {Utils.relative_date(msg.created_at)}
                                         </div>
                                         <div>
                                             {msg.content}
@@ -157,8 +157,7 @@ export default class MessagesView {
                             )}
                         </div>
                         <div class="flex mt-6">
-                            <input type="text" placeholder="Message..." class="bg-gray-100 focus:bg-gray-50 transition-colors rounded"
-                                value={this.message}
+                            <input type="text" placeholder="Message..." value={this.message}
                                 oninput={(e) => this.message = e.target.value }/>
                             <button class="flex items-center ml-2 bg-green-50 px-3 rounded"
                                 onclick={(e) => this.send_message(this.message)}>

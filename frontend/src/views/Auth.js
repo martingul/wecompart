@@ -1,5 +1,5 @@
 import m from 'mithril';
-import Api from '../api';
+import Api from '../Api';
 // import AuthForm from '../components/auth-form';
 import Auth from '../models/Auth';
 import Icon from '../components/Icon';

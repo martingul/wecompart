@@ -1,4 +1,4 @@
-import Api from '../api';
+import Api from '../Api';
 
 export default class Auth {
     constructor(action) {

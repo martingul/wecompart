@@ -224,4 +224,12 @@ export default class Api {
             body: args.message,
         });
     }
+
+    static read_notifications(args) {
+        return m.request({
+            method: 'GET',
+            url: `${Api.API_ROOT}/notifications/`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+        }); 
+    }
 }

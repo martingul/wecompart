@@ -1,12 +1,11 @@
 import m from 'mithril';
 import FileSaver from 'file-saver';
-import Api from '../api';
-import utils from '../utils';
-import Icon from '../components/icon';
-import Loading from '../components/loading';
-import Dropdown from '../components/dropdown';
-import ShipmentEdit from '../components/shipment-edit';
-import QuoteEdit from '../components/quote-edit';
+import Api from '../Api';
+import Utils from '../Utils';
+import Icon from '../components/Icon';
+import Loading from '../components/Loading';
+import ShipmentEdit from '../components/ShipmentEdit';
+import QuoteEdit from '../components/QuoteEdit';
 
 export default class ShipmentView {
     constructor(vnode) {
@@ -93,7 +92,7 @@ export default class ShipmentView {
                 });
                 this._shipment.total_value_fmt = fmt.format(this._shipment.total_value);
 
-                const comments_short = utils.truncate(this._shipment.comments, 25);
+                const comments_short = Utils.truncate(this._shipment.comments, 25);
                 if (comments_short === this._shipment.comments) {
                     this.show_comments = true;
                 } else {
@@ -152,9 +151,9 @@ export default class ShipmentView {
                                 Shipment information
                             </div>
                             <div class="my-1 px-2 whitespace-nowrap text-sm text-gray-400">
-                                created {utils.relative_date(this._shipment.created_at)}
+                                created {Utils.relative_date(this._shipment.created_at)}
                                 {this.created_at !== this.updated_at ?
-                                    'last updated ' + utils.relative_date(this._shipment.updated_at) : ''}
+                                    'last updated ' + Utils.relative_date(this._shipment.updated_at) : ''}
                             </div>
                         </div>
                         <div class="flex items-center whitespace-nowrap text-sm">
@@ -197,8 +196,8 @@ export default class ShipmentView {
                                         <span class="mx-1">More</span>
                                     </button>
                                     <div class={this.show_more_actions ? 'block' : 'hidden'}>
-                                        <Dropdown values={['Edit', 'Delete']}
-                                            callback={(v) => this.handle_action_dropdown(v.toLowerCase())} />
+                                        {/* <Dropdown values={['Edit', 'Delete']}
+                                            callback={(v) => this.handle_action_dropdown(v.toLowerCase())} /> */}
                                     </div>
                                 </div>
                             </div>
@@ -227,9 +226,9 @@ export default class ShipmentView {
                                     Shipment information
                                 </div>
                                 <div class="whitespace-nowrap text-sm text-gray-400">
-                                    created {utils.relative_date(this._shipment.created_at)}
+                                    created {Utils.relative_date(this._shipment.created_at)}
                                     {this.created_at !== this.updated_at ?
-                                        'last updated ' + utils.relative_date(this._shipment.updated_at) : ''}
+                                        'last updated ' + Utils.relative_date(this._shipment.updated_at) : ''}
                                 </div>
                             </div> */}
                             <div class="flex justify-between px-4">

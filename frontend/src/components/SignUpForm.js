@@ -20,16 +20,15 @@ export default class SignUpForm {
         return (
             <form onsubmit={(e) => this.submit(e)}>
                 <div class="flex flex-col">
-                    <label class="text-gray-600" for="email-input">
+                    <label class="text-gray-600 mb-1" for="email-input">
                         Enter your email
                     </label>
-                    <input class="mt-1 border transition duration-150 border-gray-300 bg-gray-50 rounded"
-                        id="email-input" type="email" placeholder="user@example.com" spellcheck="false" required
+                    <input id="email-input" type="email" placeholder="user@example.com" spellcheck="false" required
                         value={this.auth.email}
                         oninput={(e) => this.auth.email = e.target.value}/>
                 </div>
                 <div class="flex flex-col mt-4">
-                    <label class="text-gray-600" for="password-input">
+                    <label class="text-gray-600 mb-1" for="password-input">
                         Choose a password
                     </label>
                     <PasswordInput placeholder="6 characters min."

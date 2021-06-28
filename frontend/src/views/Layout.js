@@ -1,17 +1,24 @@
 import m from 'mithril';
-import Icon from '../components/icon';
-import Dropdown from '../components/dropdown';
-import Api from '../api';
+import Icon from '../components/Icon';
+import Api from '../Api';
 
 export default class LayoutView {
     constructor(vnode) {
         console.log('construct LayoutView');
+
         this.is_shipper = false;
         this.show_user_dropdown = false;
         this.show_notifications_dropdown = false;
         this.username = Api.get_username();
 
         this.notifications = [];
+
+        Api.read_notifications().then(res => {
+            console.log(res);
+            this.notifications = res.map(n => n.uuid);
+        }).catch(e => {
+            console.log(e);
+        })
 
         Api.websocket.onmessage = (e) => {
             const notification = JSON.parse(e.data);
@@ -47,7 +54,7 @@ export default class LayoutView {
 
     view(vnode) {
         return (
-            <main class="flex flex-col items-center">
+            <div class="flex flex-col items-center">
                 <div class="w-full px-4 md:w-4/5 lg:w-1/2">
                     <div class="flex flex-row justify-between py-2 -mx-6 px-6">
                         <div class="flex items-baseline">
@@ -79,19 +86,26 @@ export default class LayoutView {
                                         </div> */}
                                     </button>
                                     <div class={this.show_user_dropdown ? 'block' : 'hidden'}>
-                                        <Dropdown fullwidth={false} values={[`Signed in as ${this.username}`,'Profile', 'Messages', 'Sign out']}
-                                            callback={(v) => this.handle_action_dropdown(v.toLowerCase())} />
+                                        {/* <Dropdown fullwidth={false} values={[`Signed in as ${this.username}`,'Profile', 'Messages', 'Sign out']}
+                                            callback={(v) => this.handle_action_dropdown(v.toLowerCase())} /> */}
                                     </div>
                                 </div>
-                                <button class="flex items-center px-1 ml-6 text-gray-600 border-b border-gray-500 border-dotted">
-                                    <Icon name="bell" class="w-4" />
-                                    {/* <div class="ml-1 flex items-start">
-                                        alerts */}
-                                        {/* <pre class="ml-1 text-xs text-white bg-red-400 opacity-80 rounded-full w-4 h-4 text-center align-middle">
-                                            1
-                                        </pre> */}
-                                    {/* </div> */}
-                                </button>
+                                <div class="relative flex flex-col">
+                                    <button class="flex items-center px-1 ml-6 text-gray-600 border-b border-gray-500 border-dotted"
+                                        onclick={(e) => this.show_notifications_dropdown = !this.show_notifications_dropdown}>
+                                        <Icon name="bell" class="w-4" />
+                                        {/* <div class="ml-1 flex items-start">
+                                            alerts */}
+                                            {/* <pre class="ml-1 text-xs text-white bg-red-400 opacity-80 rounded-full w-4 h-4 text-center align-middle">
+                                                1
+                                            </pre> */}
+                                        {/* </div> */}
+                                    </button>
+                                    <div class={this.show_notifications_dropdown ? 'block' : 'hidden'}>
+                                        {/* <Dropdown fullwidth={false} values={this.notifications}
+                                            callback={(v) => this.handle_action_dropdown(v.toLowerCase())} /> */}
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -114,7 +128,7 @@ export default class LayoutView {
                         </span>
                     </div>
                 </div>
-            </main>
+            </div>
         );
     }
 }

@@ -1,5 +1,5 @@
 import m from 'mithril';
-import Api from '../api';
+import Api from '../Api';
 
 export default class ShipperList {
     constructor(vnode) {

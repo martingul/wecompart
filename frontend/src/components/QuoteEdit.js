@@ -1,5 +1,5 @@
 import m from 'mithril';
-import Api from '../api';
+import Api from '../Api';
 
 export default class QuoteEdit {
     constructor(vnode) {
@@ -26,8 +26,7 @@ export default class QuoteEdit {
             <form class="py-2 px-4 bg-yellow-50 rounded shadow" onsubmit={(e) => {e.preventDefault()}}>
                 <div class="flex items-center">
                     <label for="quote-price-input">Price</label>
-                    <input class="ml-4 py-1 border border-gray-200 rounded-sm"
-                        id="quote-price-input" type="number" min="0" step="any"
+                    <input id="quote-price-input" type="number" min="0" step="any"
                         oninput={(e) => this.price = e.target.value} />
                     <button class="ml-4"
                         onclick={() => this.create_quote(this.price)}>
