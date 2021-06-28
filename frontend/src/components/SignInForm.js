@@ -16,21 +16,34 @@ export default class SignInForm {
         }).catch(_ => {});
     }
 
+    oncreate(vnode) {
+        vnode.dom.querySelector('#email-input').focus();
+    }
+
     view(vnode) {
         return (
             <form onsubmit={(e) => this.submit(e)}>
+                <div class="mb-4 font-bold text-xl">
+                    Log in
+                </div>
                 <div class="flex flex-col">
-                    <label class="text-gray-600" for="email-input">
+                    <label class="text-gray-600 mb-1" for="email-input">
                         Email
                     </label>
-                    <input class="mt-1"
-                        id="email-input" type="email" spellcheck="false" required
-                        value={this.auth.email}
-                        oninput={(e) => this.auth.email = e.target.value}/>
+                    <input id="email-input" type="email" spellcheck="false" required
+                        value={this.auth.email.value}
+                        oninput={(e) => this.auth.email.value = e.target.value}
+                        onblur={() => {
+                            if (this.auth.validate_email()) {
+                                this.auth.error = '';
+                            } else {
+                                this.auth.error = 'Please enter a valid email address.';
+                            }
+                        }}/>
                 </div>
                 <div class="flex flex-col mt-4">
                     <div class="flex">
-                        <label class="text-gray-600" for="password-input">
+                        <label class="text-gray-600 mb-1" for="password-input">
                             Password
                         </label>
                         {/* <div class="flex flex-grow justify-end">
@@ -40,20 +53,11 @@ export default class SignInForm {
                             </button>
                         </div> */}
                     </div>
-                    <PasswordInput value={this.auth.password}
-                        oninput={(e) => this.auth.password = e.target.value}/>
-                </div>
-                <div class={this.auth.error !== '' ? 'block' : 'hidden'}>
-                    <div class="mt-4 flex items-center px-2 py-1 rounded bg-red-100 text-red-600" id="form-error">
-                        <Icon name="alert-triangle" class="w-4" />
-                        <span class="ml-2">
-                            {this.auth.error}
-                        </span>
-                    </div>
+                    <PasswordInput bind={this.auth.password} />
                 </div>
                 <input class="hidden" type="submit"/>
                 <div class="mt-4">
-                    <button type="button" class="flex items-center justify-center w-full px-4 xs:px-10 py-2 rounded shadow-md hover:shadow-lg
+                    <button type="button" class="my-2 flex items-center justify-center w-full px-4 xs:px-10 py-2 rounded shadow-md hover:shadow-lg
                         transition duration-150 bg-indigo-500 hover:bg-indigo-400 text-white"
                         onclick={(e) => this.submit(e)}
                         disabled={this.auth.can_submit() ? '' : 'disabled'}>
@@ -61,10 +65,20 @@ export default class SignInForm {
                             <Loading color="light" class="w-8" />
                         </div>
                         <span class="font-bold">
-                            Login
+                            Log in
                         </span>
                         <Icon name="arrow-right" class="w-4 ml-2" />
                     </button>
+                    <div class="mt-4">
+                        <div class={this.auth.error !== '' ? 'block' : 'hidden'}>
+                            <div class="flex items-center px-2 py-1 rounded bg-red-100 text-red-600" id="form-error">
+                                <Icon name="alert-triangle" class="w-4" />
+                                <span class="ml-2">
+                                    {this.auth.error}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                     <div class="mt-4 text-center">
                         <span class="text-gray-700">
                             Don't have an account?

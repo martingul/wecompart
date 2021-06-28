@@ -21,7 +21,7 @@ export default class ShipmentsView {
             console.log(this.shipments);
         }).catch(e => {
             console.log(e);
-            m.route.set('/auth/signin');
+            m.route.set('/auth/login');
         }).finally(() => {
             this.loading = false;
         });

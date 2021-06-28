@@ -104,7 +104,7 @@ export default class ShipmentView {
             }).catch(e => {
                 console.log(e);
                 if (e.code === 401) {
-                    m.route.set('/auth/signin');
+                    m.route.set('/auth/login');
                 } else if (e.code === 403) {
                     m.route.set('/shipments');
                 } else {

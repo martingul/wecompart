@@ -43,7 +43,7 @@ export default class LayoutView {
         if (action === 'sign out') {
             Api.signout().finally(() => {
                 Api.clear_storage();
-                m.route.set('/auth/signin');
+                m.route.set('/auth/login');
             });
         }
 

@@ -2,8 +2,8 @@ import Item from "./Item";
 
 export default class Shipment {
     constructor({
-        uuid = '',
-        owner_uuid = '',
+        uuid = null,
+        owner_uuid = null,
         status = '',
         pickup_address_id = '',
         pickup_address_short = '',

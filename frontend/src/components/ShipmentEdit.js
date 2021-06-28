@@ -26,12 +26,11 @@ export default class ShipmentEdit {
         this.loading = false;
         this.error_shipment_not_found = false;
         this.save = false;
-        this._shipment = null;
     }
 
     delete() {
         console.log('delete');
-        Api.delete_shipment({shipment_id: this._shipment.uuid}).then(res => {
+        Api.delete_shipment({shipment_id: this.shipment.uuid}).then(res => {
             console.log(res);
             m.route.set('/shipments');
         }).catch(e => {
@@ -57,14 +56,15 @@ export default class ShipmentEdit {
                 shipment.status = 'draft';
                 Api.create_shipment({shipment}).then(res => {
                     console.log(res);
-                    m.route.set(`/shipments/${res.uuid}`);
+                    this.close();
+                    // m.route.set(`/shipments/${res.uuid}`);
                 }).catch(e => {
                     console.log(e);
                 });
             } else {
                 console.log('edit current shipment');
                 Api.update_shipment({
-                    shipment_id: this._shipment.uuid,
+                    shipment_id: this.shipment.uuid,
                     patch: shipment
                 }).then(res => {
                     console.log(res);
@@ -72,9 +72,9 @@ export default class ShipmentEdit {
                     console.log(e);
                 });
 
-                items.filter(item => item.id === null).forEach(item => {
+                items.filter(item => item.uuid === null).forEach(item => {
                     Api.create_shipment_item({
-                        shipment_id: this._shipment.uuid,
+                        shipment_id: this.shipment.uuid,
                         item: item
                     }).then(res => {
                         console.log(res);
@@ -83,10 +83,10 @@ export default class ShipmentEdit {
                     });
                 });
 
-                items.filter(item => item.id !== null).forEach(item => {
+                items.filter(item => item.uuid !== null).forEach(item => {
                     Api.update_shipment_item({
-                        shipment_id: this._shipment.uuid,
-                        item_id: item.id,
+                        shipment_id: this.shipment.uuid,
+                        item_id: item.uuid,
                         patch: item
                     }).then(res => {
                         console.log(res);
@@ -95,23 +95,24 @@ export default class ShipmentEdit {
                     });
                 });
                 
-                const items_before = new Set(this._shipment.items.map(item => item.uuid));
-                const items_after = new Set(items.map(item => item.id));
+                const items_before = new Set(this.shipment.items.map(item => item.uuid));
+                const items_after = new Set(items.map(item => item.uuid));
                 const items_diff = new Set([...items_before].filter(x => !items_after.has(x)));
 
                 items_diff.forEach(item_id => {
                     Api.delete_shipment_item({
-                        shipment_id: this._shipment.uuid,
+                        shipment_id: this.shipment.uuid,
                         item_id: item_id
                     }).then(res => {
                         console.log(res);
-                        m.route.set(`/shipments/${this._shipment.uuid}`);
+                        // m.route.set(`/shipments/${this.shipment.uuid}`);
                     }).catch(e => {
                         console.log(e);
                     });
                 });
 
-                // m.route.set(`/shipments/${this._shipment.uuid}`);
+                // this.close(); // XXX will close even on error (does not wait)
+                // m.route.set(`/shipments/${this.shipment.uuid}`);
             }
         } else {
             if (this.new) {
@@ -130,7 +131,7 @@ export default class ShipmentEdit {
             } else {
                 console.log('create from draft');
                 Api.update_shipment({
-                    shipment_id: this._shipment.uuid,
+                    shipment_id: this.shipment.uuid,
                     patch: {status: 'pending'}
                 }).then(res => {
                     console.log(res);
@@ -147,21 +148,21 @@ export default class ShipmentEdit {
     //         this.loading = true;
     //         Api.read_shipment({ shipment_id: this.id}).then(res => {
     //             console.log(res);
-    //             this._shipment = res;
+    //             this.shipment = res;
                 
-    //             this.shipment.pickup_address.value = this._shipment.pickup_address_long;
-    //             this.shipment.pickup_address.place_id = this._shipment.pickup_address_id;
+    //             this.shipment.pickup_address.value = this.shipment.pickup_address_long;
+    //             this.shipment.pickup_address.place_id = this.shipment.pickup_address_id;
 
-    //             this.shipment.delivery_address.value = this._shipment.delivery_address_long;
-    //             this.shipment.delivery_address.place_id = this._shipment.delivery_address_id;
+    //             this.shipment.delivery_address.value = this.shipment.delivery_address_long;
+    //             this.shipment.delivery_address.place_id = this.shipment.delivery_address_id;
 
-    //             this.shipment.currency.value = this._shipment.currency;
-    //             this.shipment.total_value.value = this._shipment.total_value;
-    //             this.shipment.need_packing.value = this._shipment.need_packing;
-    //             this.shipment.need_insurance.value = this._shipment.need_insurance;
-    //             this.shipment.comments.value = this._shipment.comments;
+    //             this.shipment.currency.value = this.shipment.currency;
+    //             this.shipment.total_value.value = this.shipment.total_value;
+    //             this.shipment.need_packing.value = this.shipment.need_packing;
+    //             this.shipment.need_insurance.value = this.shipment.need_insurance;
+    //             this.shipment.comments.value = this.shipment.comments;
 
-    //             this.items = this._shipment.items.map(item => {
+    //             this.items = this.shipment.items.map(item => {
     //                 return {key: Utils.generate_key(), _item: item}
     //             });
     //         }).catch(e => {
@@ -174,7 +175,7 @@ export default class ShipmentEdit {
     // }
 
     view(vnode) {
-        if (!this._shipment && this.loading) {
+        if (!this.shipment && this.loading) {
             return (
                 <div class="flex justify-center">
                     <div class="my-8 flex items-center text-gray-600">
@@ -301,7 +302,7 @@ export default class ShipmentEdit {
                                         Save <span class={this.new ? '' : 'hidden'}>as draft</span>
                                     </span>
                                 </button>
-                                <div class={!this._shipment || this._shipment.status === 'draft' ? 'block' : 'hidden'}>
+                                <div class={!this.shipment || this.shipment.status === 'draft' ? 'block' : 'hidden'}>
                                     <button class="flex justify-center items-center whitespace-nowrap mx-2 px-4 py-2 rounded
                                         text-gray-800 hover:text-black bg-blue-200 hover:bg-blue-300 hover:shadow transition-all"
                                         onclick={(e) => {this.save = false; this.submit(e)}}>
@@ -318,4 +319,4 @@ export default class ShipmentEdit {
             </div>
         );
     }
-}``
+}

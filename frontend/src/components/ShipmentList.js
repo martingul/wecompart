@@ -165,7 +165,7 @@ export default class ShipmentList {
                         <span class="text-black font-bold">
                             {this.shipments.length}
                         </span>
-                        <span class="text-gray-600 ml-1">
+                        <span class="text-gray-600 ml-2">
                             {this.shipments.length === 1 ? 'shipment' : 'shipments'}
                         </span>
                     </div>

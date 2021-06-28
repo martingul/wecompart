@@ -2,8 +2,8 @@ import Api from '../Api';
 
 export default class Auth {
     constructor(action) {
-        this.email = '';
-        this.password = '';
+        this.email = {value: ''};
+        this.password = {value: ''};
         
         this.action = action;
         this.error = '';
@@ -12,21 +12,21 @@ export default class Auth {
 
     validate_email() {
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        return this.email && re.test(String(this.email).toLowerCase());
+        return this.email.value && re.test(String(this.email.value).toLowerCase());
     }
 
     validate_password() {
-        return this.password && (String(this.password.length) >= 6);
+        return this.password.value && (String(this.password.value.length) >= 6);
     }
 
     authenticate() {
         this.busy = true;
         return Api.authenticate({
-            username: this.email,
-            password: this.password
+            username: this.email.value,
+            password: this.password.value
         }).then(res => {
             Api.set_session(Api.decode_session(res.session));
-            Api.set_username(this.email);
+            Api.set_username(this.email.value);
             return true;
             // m.route.set('/'); 
         }).catch(e => {
@@ -41,17 +41,17 @@ export default class Auth {
     }
 
     switch_action() {
-        this.password = '';
+        this.password.value = '';
         this.error = '';
         this.action = this.action === 'signup' ? 'signin' : 'signup'; 
     }
 
     can_submit() {
-        return this.email !== '' && this.password !== '';
+        return this.email.value !== '' && this.password.value !== '';
     }
 
     submit() {
-        console.log(this.email, this.password);
+        console.log(this.email.value, this.password.value);
         this.error = '';
 
         if (!this.validate_email()) {
@@ -68,8 +68,8 @@ export default class Auth {
         } else {
             this.busy = true;
             return Api.create_user({
-                username: this.email,
-                password: this.password
+                username: this.email.value,
+                password: this.password.value
             }).then(res => {
                 return this.authenticate();
             }).catch(e => {

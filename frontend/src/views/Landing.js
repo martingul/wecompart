@@ -28,9 +28,9 @@ export default class LandingView {
                                     </m.route.Link>
                                 </div>
                                 <div>
-                                    <m.route.Link href="/auth/signin">
+                                    <m.route.Link href="/auth/login">
                                         <button class="p-3 text-gray-600 hover:text-gray-800">
-                                            Sign in
+                                            Log in
                                         </button>
                                     </m.route.Link>
                                 </div>

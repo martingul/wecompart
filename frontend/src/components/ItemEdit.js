@@ -22,7 +22,7 @@ export default class ItemEdit {
                             {this.item.index + 1}
                         </span>
                         <span class='text-gray-500 ml-1'>
-                            {this.item.id}
+                            {this.item.uuid}
                         </span>
                     </div>
                     <div class="flex items-center justify-between select-none whitespace-nowrap">
