@@ -4,8 +4,13 @@ import Api from '../Api';
 import Utils from '../Utils';
 import Icon from './Icon';
 import Loading from './Loading';
+import IconButton from './IconButton';
 import ShipmentEdit from './ShipmentEdit';
+import ShipmentActions from './ShipmentActions';
+import ShipmentComments from './ShipmentComments';
 import QuoteEdit from './QuoteEdit';
+import Modal from './Modal';
+import ShipmentStorage from '../models/ShipmentStorage';
 
 export default class ShipmentRead {
     constructor(vnode) {
@@ -18,17 +23,8 @@ export default class ShipmentRead {
         this.error_shipment_not_found = false;
         this.loading = false;
         this.edit = false;
-        this.show_more_actions = false;
-        this.show_comments = false;
         this.show_items = false;
         this.show_quote_form = false;
-
-        const comments_short = Utils.truncate(this.shipment.comments.value, 25);
-        if (comments_short === this.shipment.comments.value) {
-            this.show_comments = true;
-        } else {
-            this.shipment.comments_short = comments_short + '...';
-        }
 
         this.total_items_quantity = this.shipment.items
             .map(item => item.quantity)
@@ -58,22 +54,6 @@ export default class ShipmentRead {
     //     }).catch(e => {
     //         console.log(e);
     //     });
-    // }
-
-    // handle_action_dropdown(action) {
-    //     console.log(action);
-    //     if (action === 'edit') {
-    //         this.edit = !this.edit;
-    //     }
-
-    //     if (action === 'delete') {
-    //         /* add popup and loading indicator */
-    //         Api.delete_shipment({ shipment_id: this.id }).then(res => {
-    //             m.route.set('/shipments');
-    //         }).catch(e => {
-    //             console.log(e);
-    //         });
-    //     }
     // }
 
     // oninit(vnode) {
@@ -119,6 +99,20 @@ export default class ShipmentRead {
     //     }
     // }
 
+    download() {
+
+    }
+
+    delete_shipment() {
+        console.log('delete');
+        this.shipment.delete().then(_ => {
+            ShipmentStorage.delete_shipment(this.shipment);
+            this.close();
+        }).catch(e => {
+            console.log(e);
+        });
+    }
+
     view(vnode) {
         if (this.shipment === null && this.loading) {
             return (
@@ -136,7 +130,8 @@ export default class ShipmentRead {
             }
 
             if (this.edit) {
-                return <ShipmentEdit id={vnode.attrs.id} />;
+                return <ShipmentEdit shipment={this.shipment}
+                    close={() => this.edit = false} />;
             }
         }
 
@@ -148,7 +143,7 @@ export default class ShipmentRead {
                     </div>
                 </div>
                 <div class={(!this.loading && this.shipment !== null) ? 'flex flex-col' : 'hidden'}>
-                    <div class="my-2 flex justify-between items-start">
+                    <div class="my-2 flex justify-between items-center">
                         <div class="flex flex-col">
                             <div class="px-2 rounded font-bold bg-yellow-100 text-black">
                                 Shipment information
@@ -159,7 +154,7 @@ export default class ShipmentRead {
                                     'last updated ' + Utils.relative_date(this.shipment.updated_at) : ''}
                             </div>
                         </div>
-                        <div class="flex items-center whitespace-nowrap text-sm">
+                        <div class="flex items-center whitespace-nowrap">
                             <div class={!this.is_owner ? 'block' : 'hidden'}>
                                 <button class="flex flex-col items-center whitespace-nowrap
                                     text-gray-700 border-b border-dotted border-gray-700"
@@ -174,73 +169,21 @@ export default class ShipmentRead {
                                     </div>
                                 </button>
                             </div>
-                            <div class="relative ml-4">
-                                <button class="flex flex-col items-center whitespace-nowrap
-                                    text-gray-700 border-b border-dotted border-gray-700"
-                                    // onclick={(e) => this.show_download = !this.show_download}
-                                    onclick={(e) => this.download_shipment('pdf')}>
-                                    <div class="flex items-center">
-                                        <Icon name="download" class="w-4 h-4" />
-                                        <span class="mx-1">
-                                            Download PDF
-                                        </span>
-                                        {/* <Icon name="chevron-down" class="w-4 h-4" /> */}
-                                    </div>
-                                    {/* <div class={this.show_download ? 'block' : 'hidden'}>
-                                        <Dropdown values={['PDF', 'HTML', 'Text']}
-                                            callback={(v) => this.download_shipment(v.toLowerCase())} />
-                                    </div> */}
-                                </button>
-                            </div>
-                            <div class={!this.access_token ? 'block' : 'hidden'}>
-                                <div class="relative flex flex-col">
-                                    <button class="ml-6 flex items-center whitespace-nowrap
-                                        text-gray-700 border-b border-dotted border-gray-700"
-                                        onclick={(e) => this.show_more_actions = !this.show_more_actions}>
-                                        <Icon name="chevron-down" class="w-4 h-4" />
-                                        <span class="mx-1">More</span>
-                                    </button>
-                                    <div class={this.show_more_actions ? 'block' : 'hidden'}>
-                                        {/* <Dropdown values={['Edit', 'Delete']}
-                                            callback={(v) => this.handle_action_dropdown(v.toLowerCase())} /> */}
-                                    </div>
-                                </div>
-                            </div>
-                            <button class="ml-4 flex items-center px-2 rounded-md transition-colors
-                                text-gray-600 hover:text-gray-800 bg-gray-50 hover:bg-gray-200"
-                                onclick={() => this.close()}>
-                                <Icon name="x" class="w-5" />
-                            </button>
-                            {/* <button class="ml-6 flex items-center whitespace-nowrap
-                                text-gray-700 border-b border-dotted border-gray-700"
-                                onclick={(e) => this.edit = !this.edit}>
-                                <Icon name="edit-3" class="w-4 h-4" />
-                                <span class="ml-1">
-                                    Edit
-                                </span>
-                            </button>
-                            <button class="ml-6 flex items-center whitespace-nowrap
-                                text-red-700 border-b border-dotted border-red-700"
-                                onclick={(e) => m.route.set('/shipments')}>
-                                <Icon name="trash-2" class="w-4 h-4" />
-                                <span class="ml-1">
-                                    Delete
-                                </span>
-                            </button> */}
+                            <ShipmentActions
+                                edit={() => this.edit = true}
+                                download={() => console.log('download')}
+                                delete={() => Modal.create({
+                                    message: 'Are you sure you want to delete this shipment?',
+                                    confirm_label: 'Delete',
+                                    confirm_color: 'red',
+                                    confirm: () => this.delete_shipment()
+                                })} />
+                            <IconButton class="ml-6" icon="x"
+                                callback={() => this.close()} />
                         </div>
                     </div>
                     <div class="my-2 flex flex-col">
                         <div class="my-2">
-                            {/* <div class="my-2 flex justify-between items-start">
-                                <div class="px-2 rounded font-bold bg-yellow-100 text-black">
-                                    Shipment information
-                                </div>
-                                <div class="whitespace-nowrap text-sm text-gray-400">
-                                    created {Utils.relative_date(this.shipment.created_at)}
-                                    {this.created_at !== this.updated_at ?
-                                        'last updated ' + Utils.relative_date(this.shipment.updated_at) : ''}
-                                </div>
-                            </div> */}
                             <div class="flex justify-between px-4">
                                 <div class="flex flex-col">
                                     <div class="my-1">
@@ -393,15 +336,7 @@ export default class ShipmentRead {
                                         Additional comments
                                     </span>
                                 </div>
-                                <div class="py-2 px-4 leading-relaxed text-gray-800">
-                                    {this.show_comments ? this.shipment.comments.value : this.shipment.comments_short}
-                                    <div class={this.shipment.comments_short ? 'inline-block' : 'hidden'}>
-                                        <button class="leading-tight ml-2 text-gray-500 border-b border-gray-500 border-dotted"
-                                            onclick={() => this.show_comments = !this.show_comments}>
-                                            {this.show_comments ? 'less' : 'more'}
-                                        </button>
-                                    </div>
-                                </div>
+                                <ShipmentComments comments={this.shipment.comments.value} />
                             </div>
                             <div class="flex flex-col sm:ml-4">
                                 <div class="my-1">

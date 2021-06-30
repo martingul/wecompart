@@ -1,6 +1,7 @@
 import m from 'mithril';
 import Icon from './Icon';
 import SwitchInput from './SwitchInput';
+import IconButton from './IconButton';
 
 export default class ItemEdit {
     constructor(vnode) {
@@ -14,7 +15,7 @@ export default class ItemEdit {
             <div id={`item-${this.item.key}`}
                 class={'flex flex-col my-2 px-4 py-2 rounded-sm border border-gray-200 text-gray-800'
                     + (this.item.delete ? ' bg-red-50' : '')}>
-                <div class="flex flex-row mb-1">
+                <div class="flex flex-row items-center mb-1">
                     <div class="w-full">
                         <span>
                             Item
@@ -26,10 +27,10 @@ export default class ItemEdit {
                             {this.item.uuid}
                         </span>
                     </div>
-                    <div class="flex items-center justify-between select-none whitespace-nowrap">
+                    <div class="flex items-center align-middle justify-between select-none whitespace-nowrap">
                         <SwitchInput bind={this.item.dim_unit} on="cm" off="in" />
                         <div class={this.item.delete ? 'block' : 'hidden'}>
-                            <button class="flex item-center justify-center ml-8 px-2 rounded text-red-800 hover:bg-red-100 transition-colors"
+                            <button class="flex item-center justify-center ml-8 px-4 py-1 rounded text-red-800 hover:bg-red-100 transition-colors"
                                 onclick={() => this.delete(this.item.index)}>
                                 <Icon name="rotate-ccw" class="w-4" />
                                 <span class="ml-2">
@@ -38,10 +39,8 @@ export default class ItemEdit {
                             </button>
                         </div>
                         <div class={!this.item.delete ? 'block' : 'hidden'}>
-                            <button class="flex item-center justify-center ml-8 px-2 rounded text-red-800 hover:bg-red-100 transition-colors"
-                                onclick={() => this.delete(this.item.index)}>
-                                <Icon name="x" class="w-4" />
-                            </button>
+                            <IconButton class="ml-8" icon="trash-2" width="4" color="red"
+                                callback={() => this.delete(this.item.index)} />
                         </div>
                     </div>
                 </div>

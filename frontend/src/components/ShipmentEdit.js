@@ -8,6 +8,7 @@ import LocationInput from './LocationInput';
 import DateInput from './DateInput';
 import ShipmentServicesInput from './ShipmentServicesInput';
 import SelectInput from './SelectInput';
+import IconButton from './IconButton';
 import Shipment from '../models/Shipment';
 import Item from '../models/Item';
 import ShipmentStorage from '../models/ShipmentStorage';
@@ -19,6 +20,7 @@ export default class ShipmentEdit {
         this.is_new = vnode.attrs.shipment === undefined;
         console.log('contruct ShipmentEdit', this.is_new);
 
+        
         if (this.is_new) {
             this.shipment.items.push(new Item({key: Utils.generate_key()}));
             this.shipment.services.push('shipping');
@@ -29,12 +31,15 @@ export default class ShipmentEdit {
         this.save = false;
     }
 
+    // TODO move all flags to shipment model and move all methods
+
     create_shipment() {
         if (this.is_new) {
             /* TODO add progress bar and undo option, makes user feel there
             is a lot of stuff going on in the back scene
             not saying there isn't */
             console.log('create new');
+            this.shipment.status = 'pending';
             console.log(this.shipment.serialize());
             this.shipment.create().then(s => {
                 console.log(s);
@@ -84,8 +89,7 @@ export default class ShipmentEdit {
 
     delete_shipment() {
         console.log('delete');
-        this.shipment.delete().then(s => {
-            console.log(s);
+        this.shipment.delete().then(_ => {
             ShipmentStorage.delete_shipment(this.shipment);
             this.close();
         }).catch(e => {
@@ -148,7 +152,7 @@ export default class ShipmentEdit {
         
         return (
             <div class="mt-2 mb-10 flex flex-col">
-                <div class="my-2 flex justify-between">
+                <div class="my-2 flex justify-between items-center">
                     <div class="px-2 rounded font-bold bg-yellow-100 text-black">
                         <div class={this.is_new ? 'block' : 'hidden'}>
                             New Shipment
@@ -157,11 +161,7 @@ export default class ShipmentEdit {
                             Edit Shipment
                         </div>
                     </div>
-                    <button class="flex items-center px-2 rounded-md transition-colors
-                        text-gray-600 hover:text-gray-800 bg-gray-50 hover:bg-gray-200"
-                        onclick={() => this.close()}>
-                        <Icon name="x" class="w-5" />
-                    </button>
+                    <IconButton icon="x" callback={() => this.close()} />
                 </div>
                 {/* <div class={this.is_new ? 'flex' : 'hidden'}>
                     <div class="w-full my-2 px-4 py-2 flex items-center rounded shadow bg-gray-100">
@@ -247,7 +247,7 @@ export default class ShipmentEdit {
                             <div class={!this.is_new ? 'block' : 'hidden'}>
                                 <button class="flex justify-center items-center whitespace-nowrap px-4 py-1 rounded
                                     text-red-800 hover:text-red-900 bg-red-200 hover:bg-red-300 hover:shadow transition-all"
-                                    onclick={(e) => {this.delete_shipment(e)}}>
+                                    onclick={() => {this.delete_shipment()}}>
                                     <Icon name="trash-2" class="w-4 h-4" />
                                     <span class="ml-2">
                                         Delete

@@ -48,6 +48,8 @@ export default class Shipment {
         this.updated_at = updated_at;
     }
 
+    // static from_uuid() {}
+
     get_total_value_fmt() {
         return Utils.format_money(
             this.total_value.value, this.currency.value
