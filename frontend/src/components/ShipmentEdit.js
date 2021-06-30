@@ -10,17 +10,18 @@ import ShipmentServicesInput from './ShipmentServicesInput';
 import SelectInput from './SelectInput';
 import Shipment from '../models/Shipment';
 import Item from '../models/Item';
+import ShipmentStorage from '../models/ShipmentStorage';
 
 export default class ShipmentEdit {
     constructor(vnode) {
-        this.close = vnode.attrs.close;
+        this.close = vnode.attrs.close ? vnode.attrs.close : (() => {});
         this.shipment = vnode.attrs.shipment ? vnode.attrs.shipment : new Shipment({});
-        this.new = vnode.attrs.shipment === undefined;
-        console.log('contruct ShipmentEdit', this.shipment.uuid, this.new);
+        this.is_new = vnode.attrs.shipment === undefined;
+        console.log('contruct ShipmentEdit', this.is_new);
 
-        if (this.new) {
+        if (this.is_new) {
             this.shipment.items.push(new Item({key: Utils.generate_key()}));
-            this.shipment.services.push('transportation');
+            this.shipment.services.push('shipping');
         }
 
         this.loading = false;
@@ -28,11 +29,65 @@ export default class ShipmentEdit {
         this.save = false;
     }
 
-    delete() {
+    create_shipment() {
+        if (this.is_new) {
+            /* TODO add progress bar and undo option, makes user feel there
+            is a lot of stuff going on in the back scene
+            not saying there isn't */
+            console.log('create new');
+            console.log(this.shipment.serialize());
+            this.shipment.create().then(s => {
+                console.log(s);
+                ShipmentStorage.create_shipment(new Shipment(s));
+                this.close();
+            }).catch(e => {
+                console.log(e);
+            });
+        } else {
+            console.log('create from draft');
+            this.shipment.status = 'pending';
+            this.shipment.update().then(s => {
+                console.log(s);
+                this.close(this.shipment);
+            }).catch(e => {
+                console.log(e);
+            });
+        }
+    }
+
+    save_shipment() {
+        if (this.is_new) {
+            console.log('save new draft');
+            this.shipment.status = 'draft';
+            this.shipment.create().then(s => {
+                console.log(s);
+                ShipmentStorage.create_shipment(new Shipment(s))
+                this.close();
+            }).catch(e => {
+                console.log(e);
+            });
+        } else {
+            console.log('edit current shipment');
+            this.shipment.update().then(s => {
+                console.log(s);
+                this.close();
+            }).catch(e => {
+                console.log(e);
+            });
+
+            // maybe put this is this.shipment.update()
+            this.shipment.create_items();
+            this.shipment.update_items();
+            this.shipment.delete_items();
+        }
+    }
+
+    delete_shipment() {
         console.log('delete');
-        Api.delete_shipment({shipment_id: this.shipment.uuid}).then(res => {
-            console.log(res);
-            m.route.set('/shipments');
+        this.shipment.delete().then(s => {
+            console.log(s);
+            ShipmentStorage.delete_shipment(this.shipment);
+            this.close();
         }).catch(e => {
             console.log(e);
         });
@@ -41,105 +96,11 @@ export default class ShipmentEdit {
     submit(e) {
         e.preventDefault();
         console.log('submit shipment', this.save);
-        console.log(this.shipment);
-
-        const items = this.shipment.items.map(item => item.serialize());
-        console.log(items);
-
-        const shipment = this.shipment.serialize();
-        console.log(shipment);
 
         if (this.save) {
-            if (this.new) {
-                console.log('save new draft');
-                shipment.items = items;
-                shipment.status = 'draft';
-                Api.create_shipment({shipment}).then(res => {
-                    console.log(res);
-                    this.close();
-                    // m.route.set(`/shipments/${res.uuid}`);
-                }).catch(e => {
-                    console.log(e);
-                });
-            } else {
-                console.log('edit current shipment');
-                Api.update_shipment({
-                    shipment_id: this.shipment.uuid,
-                    patch: shipment
-                }).then(res => {
-                    console.log(res);
-                }).catch(e => {
-                    console.log(e);
-                });
-
-                items.filter(item => item.uuid === null).forEach(item => {
-                    Api.create_shipment_item({
-                        shipment_id: this.shipment.uuid,
-                        item: item
-                    }).then(res => {
-                        console.log(res);
-                    }).catch(e => {
-                        console.log(e);
-                    });
-                });
-
-                items.filter(item => item.uuid !== null).forEach(item => {
-                    Api.update_shipment_item({
-                        shipment_id: this.shipment.uuid,
-                        item_id: item.uuid,
-                        patch: item
-                    }).then(res => {
-                        console.log(res);
-                    }).catch(e => {
-                        console.log(e);
-                    });
-                });
-                
-                const items_before = new Set(this.shipment.items.map(item => item.uuid));
-                const items_after = new Set(items.map(item => item.uuid));
-                const items_diff = new Set([...items_before].filter(x => !items_after.has(x)));
-
-                items_diff.forEach(item_id => {
-                    Api.delete_shipment_item({
-                        shipment_id: this.shipment.uuid,
-                        item_id: item_id
-                    }).then(res => {
-                        console.log(res);
-                        // m.route.set(`/shipments/${this.shipment.uuid}`);
-                    }).catch(e => {
-                        console.log(e);
-                    });
-                });
-
-                // this.close(); // XXX will close even on error (does not wait)
-                // m.route.set(`/shipments/${this.shipment.uuid}`);
-            }
+            this.save_shipment();
         } else {
-            if (this.new) {
-                /* TODO add progress bar and undo option, makes user feel there
-                is a lot of stuff going on in the back scene
-                not saying there isn't */
-                console.log('create new');
-                shipment.items = items;
-                shipment.status = 'pending';
-                Api.create_shipment({shipment}).then(res => {
-                    console.log(res);
-                    m.route.set(`/shipments/${res.uuid}`);
-                }).catch(e => {
-                    console.log(e);
-                });
-            } else {
-                console.log('create from draft');
-                Api.update_shipment({
-                    shipment_id: this.shipment.uuid,
-                    patch: {status: 'pending'}
-                }).then(res => {
-                    console.log(res);
-                    m.route.set(`/shipments/${res.uuid}`);
-                }).catch(e => {
-                    console.log(e);
-                });
-            }
+            this.create_shipment();
         }
     }
 
@@ -189,10 +150,10 @@ export default class ShipmentEdit {
             <div class="my-2 flex flex-col">
                 <div class="my-2 flex justify-between">
                     <div class="px-2 rounded font-bold bg-yellow-100 text-black">
-                        <div class={this.new ? 'block' : 'hidden'}>
+                        <div class={this.is_new ? 'block' : 'hidden'}>
                             New Shipment
                         </div>
-                        <div class={!this.new ? 'block' : 'hidden'}>
+                        <div class={!this.is_new ? 'block' : 'hidden'}>
                             Edit Shipment
                         </div>
                     </div>
@@ -202,7 +163,7 @@ export default class ShipmentEdit {
                         <Icon name="x" class="w-5" />
                     </button>
                 </div>
-                {/* <div class={this.new ? 'flex' : 'hidden'}>
+                {/* <div class={this.is_new ? 'flex' : 'hidden'}>
                     <div class="w-full my-2 px-4 py-2 flex items-center rounded shadow bg-gray-100">
                         message...
                     </div>
@@ -234,7 +195,7 @@ export default class ShipmentEdit {
                         <DateInput bind={this.shipment.pickup_date} future={true}
                             id="pickup-date-input" />
                     </div>
-                    <div class="flex items-center my-4 py-1 px-4 rounded shadow bg-gray-100 text-gray-600">
+                    <div class="flex items-center my-4 py-1 px-4 rounded shadow bg-gray-50 text-gray-600">
                         <Icon name="info" class="w-5" />
                         <span class="ml-4">
                             Exact pickup date and time will be set once you accept a shipper's quote.
@@ -244,7 +205,7 @@ export default class ShipmentEdit {
                         <div class="text-gray-600 w-full">
                             What items are you shipping?
                             <span class="ml-1 italic">
-                                ({this.shipment.items.length} total)
+                                ({this.shipment.items.length} total) {/* add individual item's qty as well */}
                             </span>
                         </div>
                         <ItemsEdit bind={this.shipment.items} />
@@ -283,10 +244,10 @@ export default class ShipmentEdit {
                     </div>
                     <div class="mt-8">
                         <div class="flex">
-                            <div class={!this.new ? 'block' : 'hidden'}>
+                            <div class={!this.is_new ? 'block' : 'hidden'}>
                                 <button class="flex justify-center items-center whitespace-nowrap px-4 py-2 rounded
                                     text-red-800 hover:text-red-900 bg-red-200 hover:bg-red-300 hover:shadow transition-all"
-                                    onclick={(e) => {this.delete(e)}}>
+                                    onclick={(e) => {this.delete_shipment(e)}}>
                                     <Icon name="trash-2" class="w-4 h-4" />
                                     <span class="ml-2">
                                         Delete
@@ -299,10 +260,10 @@ export default class ShipmentEdit {
                                     onclick={(e) => {this.save = true; this.submit(e)}}>
                                     <Icon name="save" class="w-4" />
                                     <span class="ml-2">
-                                        Save <span class={this.new ? '' : 'hidden'}>as draft</span>
+                                        Save <span class={this.is_new ? '' : 'hidden'}>as draft</span>
                                     </span>
                                 </button>
-                                <div class={!this.shipment || this.shipment.status === 'draft' ? 'block' : 'hidden'}>
+                                <div class={this.is_new || this.shipment.status === 'draft' ? 'block' : 'hidden'}>
                                     <button class="flex justify-center items-center whitespace-nowrap mx-2 px-4 py-2 rounded
                                         text-gray-800 hover:text-black bg-blue-200 hover:bg-blue-300 hover:shadow transition-all"
                                         onclick={(e) => {this.save = false; this.submit(e)}}>

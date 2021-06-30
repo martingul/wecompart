@@ -38,7 +38,7 @@ export default class ShipmentListElement {
                     {this.shipment.delivery_address.short}
                 </div>
                 <div class="w-2/12">
-                    {Utils.absolute_date(this.shipment.created_at)}
+                    {Utils.absolute_date(this.shipment.pickup_date.value)}
                 </div>
                 <div class="w-2/12">
                     <div class={this.status_style()}>

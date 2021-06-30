@@ -7,6 +7,10 @@ import Item from '../models/Item';
 export default class ItemsEdit {
     constructor(vnode) {
         this.items = vnode.attrs.bind;
+
+        if (this.items.length > 1) {
+            this.items.forEach((item, i) => item.index = i);
+        }
     }
 
     create() {
@@ -21,8 +25,15 @@ export default class ItemsEdit {
             if (this.items.length === 1) {
                 return;
             }
-            this.items.splice(index, 1);
-            this.items.forEach((item, i) => item.index = i);
+
+            const item = this.items[index];
+            
+            if (item.uuid) {
+                item.delete = !item.delete;
+            } else {
+                this.items.splice(index, 1);
+                this.items.forEach((item, i) => item.index = i);
+            }
         }
     }
 
@@ -31,7 +42,8 @@ export default class ItemsEdit {
             <div class="flex flex-col">
                 <div class="flex flex-col p-2">
                     {this.items.map(item => (
-                        <ItemEdit key={item.key} item={item} delete={this.delete()} />
+                        <ItemEdit key={item.uuid === null ? item.key : item.uuid}
+                            item={item} delete={this.delete()} />
                     ))}
                 </div>
                 <button class="flex justify-center items-center whitespace-nowrap mx-2 px-2 py-1 rounded

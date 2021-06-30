@@ -5,7 +5,7 @@ export default class ShipmentServicesInput {
     constructor(vnode) {
         this.services = vnode.attrs.bind;
         this.services_all = [
-            {name: 'transportation', icon: 'truck'},
+            {name: 'shipping', icon: 'truck'},
             {name: 'packaging', icon: 'box'},
             {name: 'insurance', icon: 'shield'}
         ];

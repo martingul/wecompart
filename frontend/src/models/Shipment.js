@@ -1,3 +1,4 @@
+import Api from '../Api';
 import Utils from '../Utils';
 import Item from "./Item";
 
@@ -55,7 +56,7 @@ export default class Shipment {
 
     serialize() {
         return {
-            // status: this.save ? 'draft' : 'pending',
+            status: this.status,
             pickup_address_id: this.pickup_address.place_id,
             delivery_address_id: this.delivery_address.place_id,
             pickup_date: this.pickup_date.value,
@@ -65,5 +66,67 @@ export default class Shipment {
             services: this.services,
             items: this.items.map(item => item.serialize()),
         };
+    }
+
+    create() {
+        return Api.create_shipment({
+            shipment: this.serialize()
+        });
+    }
+
+    update() {
+        return Api.update_shipment({
+            shipment_id: this.uuid,
+            patch: this.serialize()
+        });
+    }
+
+    delete() {
+        return Api.delete_shipment({
+            shipment_id: this.uuid
+        });
+    }
+
+    create_items() {
+        this.items.filter(item => item.uuid === null).forEach(item => {
+            Api.create_shipment_item({
+                shipment_id: this.uuid,
+                item: item.serialize()
+            }).then(res => {
+                item.uuid = res.uuid;
+                console.log(res);
+            }).catch(e => {
+                console.log(e);
+            });
+        });
+    }
+
+    update_items() {
+        /* TODO only update items that have changed? (How to know if it changed) */
+        this.items.filter(item => item.uuid !== null).forEach(item => {
+            Api.update_shipment_item({
+                shipment_id: this.uuid,
+                item_id: item.uuid,
+                patch: item.serialize()
+            }).then(res => {
+                console.log(res);
+            }).catch(e => {
+                console.log(e);
+            });
+        });
+    }
+
+    delete_items() {
+        this.items.filter(item => item.delete).forEach(item => {
+            Api.delete_shipment_item({
+                shipment_id: this.uuid,
+                item_id: item.uuid
+            }).then(res => {
+                console.log(res);
+            }).catch(e => {
+                console.log(e);
+            });
+        });
+        this.items = this.items.filter(item => !item.delete);
     }
 }

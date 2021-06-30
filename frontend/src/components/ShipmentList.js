@@ -3,30 +3,30 @@ import Icon from './Icon';
 import ShipmentListElement from './ShipmentListElement';
 import ShipmentEdit from './ShipmentEdit';
 import ShipmentRead from './ShipmentRead';
+import ShipmentStorage from '../models/ShipmentStorage';
 
 export default class ShipmentList {
     constructor(vnode) {
         console.log('construct ShipmentList');
-        this.shipments = vnode.attrs.shipments;
 
         this.sortable = {
             pickup_address: {
-                cmp: (l, r) => l.pickup_address_short.localeCompare(r.pickup_address_short),
+                cmp: (l, r) => l.pickup_address.short.localeCompare(r.pickup_address_short),
                 active: false,
                 desc: true
             },
             delivery_address: {
-                cmp: (l, r) => l.delivery_address_short.localeCompare(r.delivery_address_short),
+                cmp: (l, r) => l.delivery_address.short.localeCompare(r.delivery_address_short),
                 active: false,
                 desc: true
             },
             total_value: {
-                cmp: (l, r) => r.total_value - l.total_value,
+                cmp: (l, r) => r.total_value.value - l.total_value.value,
                 active: false,
                 desc: true
             },
             date: {
-                cmp: (l, r) => Date.parse(r.created_at) - Date.parse(l.created_at),
+                cmp: (l, r) => Date.parse(r.pickup_date.value) - Date.parse(l.pickup_date.value),
                 active: false,
                 desc: true
             },
@@ -58,12 +58,12 @@ export default class ShipmentList {
 
         if (this._sort_state.active) {
             this._sort_state.desc = !this._sort_state.desc;
-            this.shipments.reverse();
+            ShipmentStorage.shipments.reverse();
             return;
         }
 
         this._sort_state.active = true;
-        this.shipments.sort(this._sort_state.cmp);
+        ShipmentStorage.shipments.sort(this._sort_state.cmp);
     }
 
     view(vnode) {
@@ -74,7 +74,13 @@ export default class ShipmentList {
         if (this.selected_shipment) {
             if (this.selected_shipment.status === 'draft') {
                 return <ShipmentEdit shipment={this.selected_shipment}
-                    close={() => this.selected_shipment = null} />
+                    close={(s) => {
+                        if (s) {
+                            this.selected_shipment = s;
+                        } else {
+                            this.selected_shipment = null;
+                        }
+                    }} />
             } else {
                 return <ShipmentRead shipment={this.selected_shipment}
                     close={() => this.selected_shipment = null} />
@@ -138,7 +144,7 @@ export default class ShipmentList {
                             <div class="w-2/12">
                                 <button class="flex border-b border-dotted border-gray-600"
                                     onclick={() => this.sort_state = this.sortable.date}>
-                                    <b class="uppercase">created</b>
+                                    <b class="uppercase">date</b>
                                     <div class={this.sortable.date.active && this.sort_state.desc ? 'block' : 'hidden'}>
                                         <span class="ml-2">▾</span>
                                     </div>
@@ -161,7 +167,7 @@ export default class ShipmentList {
                             </div>
                         </div>
                         <div class="my-2">
-                            {this.shipments.map(s =>
+                            {ShipmentStorage.shipments.map(s =>
                                 <ShipmentListElement key={s.uuid} shipment={s} 
                                     callback={(s) => this.selected_shipment = s} />
                             )}
@@ -169,10 +175,10 @@ export default class ShipmentList {
                     </div>
                     <div class="my-2">
                         <span class="text-black font-bold">
-                            {this.shipments.length}
+                            {ShipmentStorage.shipments.length}
                         </span>
                         <span class="text-gray-600 ml-1.5">
-                            {this.shipments.length === 1 ? 'shipment' : 'shipments'}
+                            {ShipmentStorage.shipments.length === 1 ? 'shipment' : 'shipments'}
                         </span>
                     </div>
                 </div>

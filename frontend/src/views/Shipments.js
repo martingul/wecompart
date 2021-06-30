@@ -5,11 +5,11 @@ import Loading from '../components/Loading';
 import ShipmentEdit from '../components/ShipmentEdit';
 import ShipmentList from '../components/ShipmentList';
 import Shipment from '../models/Shipment';
+import ShipmentStorage from '../models/ShipmentStorage';
 
 export default class ShipmentsView {
     constructor(vnode) {
         console.log('construct ShipmentsView');
-        this.shipments = [];
         this.loading = false;
         this.new_shipment = false;
     }
@@ -17,8 +17,9 @@ export default class ShipmentsView {
     oninit(vnode) {
         this.loading = true;
         Api.read_shipments().then(res => {
-            this.shipments = res === null ? [] : res.map(s => new Shipment(s));
-            console.log(this.shipments);
+            const shipments = res === null ? [] : res.map(s => new Shipment(s));
+            ShipmentStorage.shipments = shipments;
+            // ShipmentStorage.store_shipments();
         }).catch(e => {
             console.log(e);
             m.route.set('/auth/login');
@@ -26,13 +27,13 @@ export default class ShipmentsView {
             this.loading = false;
         });
     }
-    
+
     view(vnode) {
         if (this.new_shipment) {
             return <ShipmentEdit close={() => this.new_shipment = false} />
         }
 
-        if (this.shipments.length === 0 && this.loading) {
+        if (ShipmentStorage.shipments.length === 0 && this.loading) {
             return (
                 <div class="flex justify-center">
                     <div class="my-8 flex items-center text-gray-600">
@@ -42,7 +43,7 @@ export default class ShipmentsView {
             );
         }
 
-        if (this.shipments.length === 0 && !this.loading) {
+        if (ShipmentStorage.shipments.length === 0 && !this.loading) {
             return (
                 <div class="flex justify-center">
                     <div class="my-2 flex flex-col items-center">
@@ -68,7 +69,7 @@ export default class ShipmentsView {
         }
 
         return (
-            <ShipmentList shipments={this.shipments} />
+            <ShipmentList />
         );
     }
 }

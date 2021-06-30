@@ -1,10 +1,11 @@
 export default class Item {
     constructor({
-        index = 0,
+        index = 0, key = null,
         uuid = null, description = '', quantity = 1, dim_unit = 'cm',
         length = 0, width = 0, height = 0, weight = 0,
     }) {
         this.index = index;
+        this.key = key
 
         this.uuid = uuid;
         this.description = description;
@@ -14,11 +15,12 @@ export default class Item {
         this.width = width;
         this.height = height;
         this.weight = weight;
+
+        this.delete = false;
     }
 
     serialize() {
         return {
-            uuid: this.uuid,
             description: this.description,
             quantity: this.quantity,
             dim_unit: this.dim_unit.value,

@@ -12,7 +12,8 @@ export default class ItemEdit {
     view(vnode) {
         return (
             <div id={`item-${this.item.key}`}
-                class="flex flex-col my-2 px-4 py-2 border border-gray-200 rounded-sm text-gray-800">
+                class={'flex flex-col my-2 px-4 py-2 rounded-sm border border-gray-200 text-gray-800'
+                    + (this.item.delete ? ' bg-red-50' : '')}>
                 <div class="flex flex-row mb-1">
                     <div class="w-full">
                         <span>
@@ -27,10 +28,21 @@ export default class ItemEdit {
                     </div>
                     <div class="flex items-center justify-between select-none whitespace-nowrap">
                         <SwitchInput bind={this.item.dim_unit} on="cm" off="in" />
-                        <button class="ml-8 px-1 rounded text-red-800 hover:bg-red-100 transition-colors"
-                            onclick={() => this.delete(this.item.index)}>
-                            <Icon name="x" class="w-4" />
-                        </button> 
+                        <div class={this.item.delete ? 'block' : 'hidden'}>
+                            <button class="flex item-center justify-center ml-8 px-2 rounded text-red-800 hover:bg-red-100 transition-colors"
+                                onclick={() => this.delete(this.item.index)}>
+                                <Icon name="rotate-ccw" class="w-4" />
+                                <span class="ml-2">
+                                    undo
+                                </span>
+                            </button>
+                        </div>
+                        <div class={!this.item.delete ? 'block' : 'hidden'}>
+                            <button class="flex item-center justify-center ml-8 px-2 rounded text-red-800 hover:bg-red-100 transition-colors"
+                                onclick={() => this.delete(this.item.index)}>
+                                <Icon name="x" class="w-4" />
+                            </button>
+                        </div>
                     </div>
                 </div>
                 <div class="flex flex-row my-2">
