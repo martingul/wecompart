@@ -9,22 +9,32 @@ export default class Modal {
         confirm_color = '',
         confirm,
     }) {
+        // TODO handle click outside
         const modal = document.createElement('div');
+        const event_controller = new AbortController();
+
         modal.id = 'modal';
         modal.className = 'fixed top-0 left-0 w-full h-full flex justify-center items-center bg-black bg-opacity-30'
+        modal.close = () => modal.parentNode.removeChild(modal);
+        
         document.body.appendChild(modal);
+        document.addEventListener('click', (e) => {
+            // const _modal = document.getElementById('modal');
+            const modal_content = document.getElementById('modal-content');
+            if (modal_content) {
+                if (modal.contains(e.target) && !modal_content.contains(e.target)) {
+                    modal.parentNode.removeChild(modal);
+                }
+            } else {
+                event_controller.abort();
+            }
+        }, { signal: event_controller.signal });
 
         m.mount(modal, {view: () => {
             return (
-                <div class="flex flex-col bg-white shadow-lg rounded py-4 px-6">
+                <div id="modal-content" class="flex flex-col bg-white shadow-lg rounded py-4 px-6">
                     <div class="flex justify-end">
-                        <IconButton icon="x" callback={() => {
-                            console.log('close');
-                            const _modal = document.getElementById('modal');
-                            if (_modal) {
-                                _modal.parentNode.removeChild(_modal);
-                            }
-                        }} />
+                        <IconButton icon="x" callback={() => modal.close()} />
                     </div>
                     <div class="flex my-10 px-2 text-base">
                         {message}
@@ -32,24 +42,14 @@ export default class Modal {
                     <div class="flex justify-between mt-2">
                         <button class="flex justify-center items-center whitespace-nowrap px-4 py-1 rounded hover:shadow transition-all
                             text-gray-600 hover:text-gray-800 bg-gray-200 hover:bg-gray-300"
-                            onclick={() => {
-                                console.log('cancel');
-                                const _modal = document.getElementById('modal');
-                                if (_modal) {
-                                    _modal.parentNode.removeChild(_modal);
-                                }
-                            }}>
+                            onclick={() => modal.close()}>
                             Cancel
                         </button>
                         <button class="flex justify-center items-center whitespace-nowrap px-4 py-1 rounded hover:shadow transition-all
                             text-red-600 hover:text-red-800 bg-red-200 hover:bg-red-300"
                             onclick={() => {
-                                console.log('confirm');
                                 confirm();
-                                const _modal = document.getElementById('modal');
-                                if (_modal) {
-                                    _modal.parentNode.removeChild(_modal);
-                                }
+                                modal.close()
                             }}>
                             {confirm_label}
                         </button>
