@@ -140,7 +140,7 @@ def update_shipment(shipment_id: str, patch: ShipmentUpdate,
         print(vars(e))
         if isinstance(e, HTTPException): raise e
 
-@router.delete('/{shipment_id}', response_model=ShipmentRead)
+@router.delete('/{shipment_id}')
 def delete_shipment(shipment_id: str,
     session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> ShipmentRead:
@@ -157,10 +157,9 @@ def delete_shipment(shipment_id: str,
             )
 
         shipments.delete_shipment(db, shipment_db)
-        shipment = ShipmentRead.from_orm(shipment_db)
-        return shipment
+        return Response(status.HTTP_200_OK)
     except Exception as e:
-        print(vars(e))
+        print(e)
         if isinstance(e, HTTPException): raise e
         # else raise HTTPException...
 
