@@ -40,9 +40,15 @@ def read_location(id: str):
     res_json = res.json()
     r = res_json['result']
 
+    print(r)
+
     city = list(filter(lambda x: any(t in x['types'] for t in ['postal_town', 'locality', 'administrative_area_level_3']), r['address_components']))
     if len(city) > 0:
         city = city[0]['long_name']
+    else:
+        city = list(filter(lambda x: any(t in x['types'] for t in ['administrative_area_level_2']), r['address_components']))
+        if len(city) > 0:
+            city = city[0]['long_name']
 
     country = list(filter(lambda x: any(t in x['types'] for t in ['country']), r['address_components']))
     country_long = ''
