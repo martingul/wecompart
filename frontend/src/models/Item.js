@@ -5,7 +5,8 @@ export default class Item {
         length = 0, width = 0, height = 0, weight = 0,
     }) {
         this.index = index;
-        this.key = key
+        this.key = key;
+        this.delete = false;
 
         this.uuid = uuid;
         this.description = description;
@@ -15,8 +16,6 @@ export default class Item {
         this.width = width;
         this.height = height;
         this.weight = weight;
-
-        this.delete = false;
     }
 
     serialize() {

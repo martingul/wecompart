@@ -1,4 +1,5 @@
 import m from 'mithril';
+import Utils from '../Utils';
 import Icon from './Icon';
 
 export default class ShipmentServicesInput {
@@ -20,11 +21,15 @@ export default class ShipmentServicesInput {
         }
     }
 
-    color(service) {
+    style(service) {
+        if (service === 'shipping') {
+            return 'bg-yellow-100 text-yellow-700 cursor-not-allowed';
+        }
+
         if (this.services.includes(service)) {
-            return 'bg-yellow-100 hover:bg-yellow-50 text-yellow-700 hover:text-yellow-600'
+            return 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700 hover:text-yellow-800'
         } else {
-            return 'bg-gray-100 hover:bg-yellow-100 text-gray-600 hover:text-yellow-700'
+            return 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800'
         }
     }
     
@@ -32,11 +37,12 @@ export default class ShipmentServicesInput {
         return (
             <div class="flex justify-evenly">
                 {this.services_all.map(s => (
-                    <button class={'flex items-center px-4 py-1 rounded transition-colors ' + this.color(s.name)}
-                        onclick={() => this.toggle(s.name)}>
+                    <button class={'flex items-center px-4 py-1 rounded transition-colors ' + this.style(s.name)}
+                        onclick={() => this.toggle(s.name)}
+                        disabled={s.name === 'shipping'}>
                         <Icon name={s.icon} class="w-4" />
                         <span class="ml-4">
-                            {s.name.toUpperCase()}
+                            {Utils.capitalize(s.name)}
                         </span>
                     </button>
                 ))}

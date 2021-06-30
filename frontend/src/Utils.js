@@ -90,4 +90,8 @@ export default class Utils {
         });
         return fmt.format(value);
     }
+
+    static capitalize(s) {
+        return s[0].toUpperCase() + s.slice(1);
+    }
 }
