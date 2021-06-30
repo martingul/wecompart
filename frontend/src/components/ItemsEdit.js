@@ -27,7 +27,7 @@ export default class ItemsEdit {
             }
 
             const item = this.items[index];
-            
+
             if (item.uuid) {
                 item.delete = !item.delete;
             } else {
@@ -46,14 +46,16 @@ export default class ItemsEdit {
                             item={item} delete={this.delete()} />
                     ))}
                 </div>
-                <button class="flex justify-center items-center whitespace-nowrap mx-2 px-2 py-1 rounded
-                    text-gray-800 hover:text-black bg-green-100 hover:bg-green-200 hover:shadow transition-all"
-                    onclick={() => this.create()}>
-                    <Icon name="plus" class="w-4" />
-                    <span class="ml-2">
-                        Add item
-                    </span>
-                </button>
+                <div class="flex justify-start">
+                    <button class="flex justify-center items-center whitespace-nowrap mx-2 px-4 py-1 rounded
+                        text-gray-800 hover:text-black bg-green-100 hover:bg-green-200 hover:shadow transition-all"
+                        onclick={() => this.create()}>
+                        <Icon name="plus" class="w-4" />
+                        <span class="ml-2">
+                            Add item
+                        </span>
+                    </button>
+                </div>
             </div>
         );
     }

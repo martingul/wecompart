@@ -30,9 +30,10 @@ export default class Notifications {
     view(vnode) {
         return (
             <div id="notifications-button" class="relative flex flex-col">
-                <button class="flex items-center px-1 text-gray-600 border-b border-gray-500 border-dotted"
+                <button class="flex items-center px-2 py-1 rounded-full transition-colors
+                    text-gray-600 hover:text-gray-800 bg-gray-50 hover:bg-gray-200"
                     onclick={(e) => this.toggle()}>
-                    <Icon name="bell" class="w-4" />
+                    <Icon name="bell" class="w-5" />
                 </button>
                 <div id="notifications-dropdown" class={this.show_dropdown ? 'block' : 'hidden'}>
                     <div class="absolute overflow-y-auto -ml-32 w-40 z-10 mt-1 shadow border border-gray-200 bg-white">

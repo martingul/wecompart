@@ -94,4 +94,15 @@ export default class Utils {
     static capitalize(s) {
         return s[0].toUpperCase() + s.slice(1);
     }
+
+    static get_status_style(status) {
+        const status_colors = {
+            'draft': 'gray',
+            'pending': 'yellow',
+            'ready': 'green',
+        };
+        const color = status_colors[status];
+        return 'py-1 rounded text-xs text-center font-bold uppercase '
+            + `bg-${color}-100 text-${color}-500`;
+    }
 }

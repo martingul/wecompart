@@ -147,7 +147,7 @@ export default class ShipmentEdit {
         }
         
         return (
-            <div class="my-2 flex flex-col">
+            <div class="mt-2 mb-10 flex flex-col">
                 <div class="my-2 flex justify-between">
                     <div class="px-2 rounded font-bold bg-yellow-100 text-black">
                         <div class={this.is_new ? 'block' : 'hidden'}>
@@ -205,7 +205,7 @@ export default class ShipmentEdit {
                         <div class="text-gray-600 w-full">
                             What items are you shipping?
                             <span class="ml-1 italic">
-                                ({this.shipment.items.length} total) {/* add individual item's qty as well */}
+                                ({this.shipment.items.map(item => item.quantity).reduce((a, b) => a + b, 0)} total)
                             </span>
                         </div>
                         <ItemsEdit bind={this.shipment.items} />
@@ -245,7 +245,7 @@ export default class ShipmentEdit {
                     <div class="mt-8">
                         <div class="flex">
                             <div class={!this.is_new ? 'block' : 'hidden'}>
-                                <button class="flex justify-center items-center whitespace-nowrap px-4 py-2 rounded
+                                <button class="flex justify-center items-center whitespace-nowrap px-4 py-1 rounded
                                     text-red-800 hover:text-red-900 bg-red-200 hover:bg-red-300 hover:shadow transition-all"
                                     onclick={(e) => {this.delete_shipment(e)}}>
                                     <Icon name="trash-2" class="w-4 h-4" />
@@ -255,7 +255,7 @@ export default class ShipmentEdit {
                                 </button>
                             </div>
                             <div class="flex justify-end w-full select-none">
-                                <button class="flex justify-center items-center whitespace-nowrap mx-2 px-4 py-2 rounded
+                                <button class="flex justify-center items-center whitespace-nowrap mx-2 px-4 py-1 rounded
                                     text-gray-800 hover:text-black bg-gray-100 hover:bg-gray-200 hover:shadow transition-all"
                                     onclick={(e) => {this.save = true; this.submit(e)}}>
                                     <Icon name="save" class="w-4" />
@@ -264,8 +264,8 @@ export default class ShipmentEdit {
                                     </span>
                                 </button>
                                 <div class={this.is_new || this.shipment.status === 'draft' ? 'block' : 'hidden'}>
-                                    <button class="flex justify-center items-center whitespace-nowrap mx-2 px-4 py-2 rounded
-                                        text-gray-800 hover:text-black bg-blue-200 hover:bg-blue-300 hover:shadow transition-all"
+                                    <button class="flex justify-center items-center whitespace-nowrap mx-2 px-4 py-1 rounded
+                                        text-gray-800 hover:text-black bg-yellow-200 hover:bg-yellow-300 hover:shadow transition-all"
                                         onclick={(e) => {this.save = false; this.submit(e)}}>
                                         <Icon name="arrow-right" class="w-4" />
                                         <span class="ml-2">

@@ -7,18 +7,6 @@ export default class ShipmentListElement {
         console.log('construct ShipmentListElement');
         this.shipment = vnode.attrs.shipment;
         this.callback = vnode.attrs.callback;
-
-        this.status_colors = {
-            'draft': 'gray',
-            'pending': 'yellow',
-            'ready': 'green',
-        };
-    }
-
-    status_style() {
-        const color = this.status_colors[this.shipment.status];
-        return 'py-1 rounded text-xs text-center font-bold uppercase '
-            + `bg-${color}-100 text-${color}-500`;
     }
 
     view(vnode) {
@@ -41,7 +29,7 @@ export default class ShipmentListElement {
                     {Utils.absolute_date(this.shipment.pickup_date.value)}
                 </div>
                 <div class="w-2/12">
-                    <div class={this.status_style()}>
+                    <div class={Utils.get_status_style(this.shipment.status)}>
                         {this.shipment.status}
                     </div>
                 </div>

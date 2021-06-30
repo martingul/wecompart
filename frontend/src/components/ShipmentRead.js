@@ -14,17 +14,11 @@ export default class ShipmentRead {
         this.close = vnode.attrs.close;
         this.is_owner = this.shipment.owner_id === Api.get_session().uuid;
 
-        this.status_colors = {
-            'draft': 'gray',
-            'pending': 'yellow',
-            'ready': 'green',
-        };
-
         this.access_token = null;
         this.error_shipment_not_found = false;
         this.loading = false;
         this.edit = false;
-        this.show_show_more_actions = false;
+        this.show_more_actions = false;
         this.show_comments = false;
         this.show_items = false;
         this.show_quote_form = false;
@@ -35,12 +29,13 @@ export default class ShipmentRead {
         } else {
             this.shipment.comments_short = comments_short + '...';
         }
-    }
 
-    get status_style() {
-        const color = this.status_colors[this.shipment.status];
-        return 'py-1 rounded text-xs text-center font-bold uppercase '
-            + `bg-${color}-100 text-${color}-500`;
+        this.total_items_quantity = this.shipment.items
+            .map(item => item.quantity)
+            .reduce((a, c) => a + c);
+        this.total_items_weight = this.shipment.items
+            .map(item => item.weight)
+            .reduce((a, c) => a + c);
     }
 
     // download_shipment(format) {
@@ -272,7 +267,7 @@ export default class ShipmentRead {
                                                 Status
                                             </div>
                                             <div class="my-1">
-                                                <div class={this.status_style}>
+                                                <div class={Utils.get_status_style(this.shipment.status)}>
                                                     {this.shipment.status}
                                                 </div>
                                             </div>
@@ -307,8 +302,7 @@ export default class ShipmentRead {
                                     Shipment content
                                 </span>
                                 <span class="p-1 text-gray-600">
-                                    ({this.shipment.items.length} {this.shipment.items.length === 1 ? 'item, ' : 'items, '}
-                                    {this.shipment.items.map(item => item.weight).reduce((a, c) => a + c)} kg)
+                                    {`(${this.total_items_quantity} ${this.total_items_quantity === 1 ? 'item' : 'items'}, ${this.total_items_weight} kg)`}
                                 </span>
                             </button>
                             <div class={this.show_items ? 'flex flex-col' : 'hidden'}>
