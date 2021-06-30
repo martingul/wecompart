@@ -1,3 +1,4 @@
+import Utils from '../Utils';
 import Item from "./Item";
 
 export default class Shipment {
@@ -44,6 +45,12 @@ export default class Shipment {
 
         this.created_at = created_at;
         this.updated_at = updated_at;
+    }
+
+    get_total_value_fmt() {
+        return Utils.format_money(
+            this.total_value.value, this.currency.value
+        );
     }
 
     serialize() {

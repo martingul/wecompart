@@ -28,9 +28,7 @@ export default class ShipmentListElement {
                 onclick={() => this.callback(this.shipment)}>
                 <div class="w-2/12">
                     <span>
-                        {Utils.format_money(
-                            this.shipment.total_value.value, this.shipment.currency.value
-                        )} 
+                        {this.shipment.get_total_value_fmt()}
                     </span>
                 </div>
                 <div class="w-3/12 overflow-hidden overflow-ellipsis">

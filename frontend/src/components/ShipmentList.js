@@ -2,6 +2,7 @@ import m from 'mithril';
 import Icon from './Icon';
 import ShipmentListElement from './ShipmentListElement';
 import ShipmentEdit from './ShipmentEdit';
+import ShipmentRead from './ShipmentRead';
 
 export default class ShipmentList {
     constructor(vnode) {
@@ -71,8 +72,13 @@ export default class ShipmentList {
         }
 
         if (this.selected_shipment) {
-            return <ShipmentEdit shipment={this.selected_shipment}
-                close={() => this.selected_shipment = null} />
+            if (this.selected_shipment.status === 'draft') {
+                return <ShipmentEdit shipment={this.selected_shipment}
+                    close={() => this.selected_shipment = null} />
+            } else {
+                return <ShipmentRead shipment={this.selected_shipment}
+                    close={() => this.selected_shipment = null} />
+            }
         }
 
         return (
@@ -165,7 +171,7 @@ export default class ShipmentList {
                         <span class="text-black font-bold">
                             {this.shipments.length}
                         </span>
-                        <span class="text-gray-600 ml-2">
+                        <span class="text-gray-600 ml-1.5">
                             {this.shipments.length === 1 ? 'shipment' : 'shipments'}
                         </span>
                     </div>

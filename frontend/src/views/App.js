@@ -17,7 +17,7 @@ export default class AppView {
                     <Header />
                     <div class="mt-8 flex justify-between">
                         <Navigation navigate={(e) => {this.selected = e}}/>
-                        <div class="w-full ml-10">
+                        <div class="w-full ml-16">
                             <this.selected.view />
                         </div>
                     </div>
