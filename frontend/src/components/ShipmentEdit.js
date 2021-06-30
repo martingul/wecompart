@@ -151,9 +151,9 @@ export default class ShipmentEdit {
         }
         
         return (
-            <div class="mt-2 mb-10 flex flex-col">
-                <div class="my-2 flex justify-between items-center">
-                    <div class="px-2 rounded font-bold bg-yellow-100 text-black">
+            <div class="flex flex-col">
+                <div class="mb-2 flex justify-between items-start">
+                    <div class="px-4 py-1 rounded font-bold bg-yellow-100 text-black">
                         <div class={this.is_new ? 'block' : 'hidden'}>
                             New Shipment
                         </div>

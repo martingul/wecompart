@@ -89,16 +89,16 @@ export default class ShipmentList {
 
         return (
             <div class="flex flex-col">
-                <div class="my-4 flex items-center justify-between">
-                    <div class="px-2 rounded font-bold bg-yellow-100 text-black">
+                <div class="mb-4 flex items-start justify-between">
+                    <div class="px-4 py-1 rounded font-bold bg-yellow-100 text-black">
                         Shipments
                     </div>
-                    <button class="flex items-center px-4 rounded whitespace-nowrap
-                        text-gray-800 hover:text-black bg-green-100 hover:bg-green-200 hover:shadow transition-all"
+                    <button class="flex items-center py-1 px-4 rounded whitespace-nowrap font-bold
+                        text-white bg-green-500 hover:bg-green-600 hover:shadow transition-all"
                         onclick={() => this.new_shipment = true}>
-                        <Icon name="plus" class="w-4" />
+                        <Icon name="plus" class="w-5" />
                         <span class="ml-2">
-                            New shipment
+                            New
                         </span>
                     </button>
                 </div>

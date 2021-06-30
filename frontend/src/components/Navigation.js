@@ -25,7 +25,7 @@ export default class Navigation {
 
     view(vnode) {
         return (
-            <div class="flex flex-col">
+            <div class="flex flex-col border-r border-gray-100 w-64">
                 {Navigation.views.map(v => (
                     <button class={'flex items-center w-full px-6 py-2 my-2 rounded hover:text-black transition-colors '
                         + (this.selected === v ? 'bg-yellow-100 text-black border-l-4 border-yellow-300' : 'text-gray-500 hover:bg-yellow-50')}

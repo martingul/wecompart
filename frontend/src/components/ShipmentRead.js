@@ -136,16 +136,16 @@ export default class ShipmentRead {
         }
 
         return (
-            <div class="my-2">
+            <div>
                 <div class={this.error_shipment_not_found ? 'block' : 'hidden'}>
                     <div class="my-6 w-full text-center">
                         No such shipment
                     </div>
                 </div>
                 <div class={(!this.loading && this.shipment !== null) ? 'flex flex-col' : 'hidden'}>
-                    <div class="my-2 flex justify-between items-center">
+                    <div class="mb-2 flex justify-between items-start">
                         <div class="flex flex-col">
-                            <div class="px-2 rounded font-bold bg-yellow-100 text-black">
+                            <div class="px-4 py-1 rounded font-bold bg-yellow-100 text-black">
                                 Shipment information
                             </div>
                             <div class="my-1 px-2 whitespace-nowrap text-sm text-gray-400">
