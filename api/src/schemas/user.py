@@ -28,12 +28,14 @@ class UserCreate(BaseModel):
             r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$',
             re.IGNORECASE
         )
-        assert regex.match(v) is not None, 'error_invalid_username'
+        if not regex.match(v):
+            raise ValueError('error_invalid_username')
         return v
 
     @validator('password')
     def verify_password(cls, v: str):
-        assert len(v) >= 6
+        if len(v) < 6:
+            raise ValueError('error_invalid_password')
         return v 
 
     class Config:
@@ -53,7 +55,8 @@ class UserUpdate(BaseModel):
 
     @validator('role')
     def verify_role(cls, v: str):
-        assert v in user_roles
+        if v not in user_roles:
+            raise ValueError('error_invalid_user_role')
         return v
 
 class UserCredentials(BaseModel):

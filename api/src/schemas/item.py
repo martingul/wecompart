@@ -33,7 +33,8 @@ class ItemCreate(BaseModel):
     @validator('dim_unit')
     def validate_dim_unit(cls, v):
         valid_dim_units = ['cm', 'in']
-        assert v in valid_dim_units, 'error_invalid_item_dim_unit'
+        if v not in valid_dim_units:
+            raise ValueError('error_invalid_item_dim_unit')
         return v
 
 class ItemUpdate(BaseModel):
@@ -48,10 +49,12 @@ class ItemUpdate(BaseModel):
     @validator('dim_unit')
     def validate_dim_unit(cls, v):
         valid_dim_units = ['cm', 'in']
-        assert v in valid_dim_units, 'error_invalid_item_dim_unit'
+        if v not in valid_dim_units:
+            raise ValueError('error_invalid_item_dim_unit')
         return v
 
     @validator('quantity')
     def validate_quantity(cls, v):
-        assert v > 0, 'error_invalid_item_quantity'
+        if v <= 0:
+            raise ValueError('error_invalid_item_quantity')
         return v

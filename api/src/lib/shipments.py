@@ -63,7 +63,8 @@ def read_location(id: str):
     return {
         'long': location_long,
         'short': location_short,
-        'country': country_long}
+        'country': country_long
+    }
 
 def create_shipment(db: DatabaseSession, shipment: ShipmentCreate, owner_uuid: str):
     _items = shipment.items or []
