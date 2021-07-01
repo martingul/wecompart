@@ -19,7 +19,6 @@ export default class ShipmentEdit {
         this.shipment = vnode.attrs.shipment ? vnode.attrs.shipment : new Shipment({});
         this.is_new = vnode.attrs.shipment === undefined;
         console.log('contruct ShipmentEdit', this.is_new);
-
         
         if (this.is_new) {
             this.shipment.items.push(new Item({key: Utils.generate_key()}));

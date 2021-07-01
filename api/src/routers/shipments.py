@@ -89,12 +89,14 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
             detail='error_shipment_not_found'
         )
 
-    owner_uuid = None
+    user_uuid = None
     valid_access_token = False
 
     try:
-        session = auth.parse_authorization(db, authorization)
-        owner_uuid = session.user_uuid
+        # session = auth.parse_authorization(db, authorization)
+        # owner_uuid = session.user_uuid
+
+        token, user_uuid = auth.parse_header(authorization)
     except Exception as e:
         print(vars(e))
         if isinstance(e, HTTPException) and access_token is not None:
@@ -104,9 +106,9 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
         else:
             raise e
 
-    if owner_uuid is not None:
+    if user_uuid is not None:
         valid_access_token = shipment_db.access_token == access_token
-        if not valid_access_token and shipment_db.owner_uuid != owner_uuid:
+        if not valid_access_token and shipment_db.owner_uuid != user_uuid:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN
             )

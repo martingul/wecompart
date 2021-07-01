@@ -34,7 +34,7 @@ export default class SignInForm {
                         value={this.auth.email.value}
                         oninput={(e) => this.auth.email.value = e.target.value}
                         onblur={() => {
-                            if (this.auth.validate_email()) {
+                            if (this.auth.validate_email() || this.auth.email.value === '') {
                                 this.auth.error = '';
                             } else {
                                 this.auth.error = 'Please enter a valid email address.';
@@ -71,9 +71,9 @@ export default class SignInForm {
                     </button>
                     <div class="mt-4">
                         <div class={this.auth.error !== '' ? 'block' : 'hidden'}>
-                            <div class="flex items-center px-2 py-1 rounded bg-red-100 text-red-600" id="form-error">
+                            <div class="flex items-center px-4 py-1 rounded bg-gray-100 text-gray-600" id="form-error">
                                 <Icon name="alert-triangle" class="w-4" />
-                                <span class="ml-2">
+                                <span class="ml-4">
                                     {this.auth.error}
                                 </span>
                             </div>

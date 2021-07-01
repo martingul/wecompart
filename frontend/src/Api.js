@@ -135,9 +135,13 @@ export default class Api {
     }
 
     static read_shipment(args) {
+        let url = `${Api.API_ROOT}/shipments/${args.shipment_id}`;
+        if (args.access_token) {
+            url += `?access_token=${args.access_token}`;
+        }
         return m.request({
             method: 'GET',
-            url: `${Api.API_ROOT}/shipments/${args.shipment_id}?access_token=${args.access_token}`,
+            url: url,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
         });
     }

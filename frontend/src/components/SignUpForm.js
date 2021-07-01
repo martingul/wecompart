@@ -16,6 +16,10 @@ export default class SignUpForm {
         }).catch(_ => {});
     }
 
+    oncreate(vnode) {
+        vnode.dom.querySelector('#email-input').focus();
+    }
+
     view(vnode) {
         return (
             <form onsubmit={(e) => this.submit(e)}>
@@ -30,7 +34,7 @@ export default class SignUpForm {
                         value={this.auth.email.value}
                         oninput={(e) => this.auth.email.value = e.target.value}
                         onblur={() => {
-                            if (this.auth.validate_email()) {
+                            if (this.auth.validate_email() || this.auth.email.value === '') {
                                 this.auth.error = '';
                             } else {
                                 this.auth.error = 'Please enter a valid email address.';
@@ -59,9 +63,9 @@ export default class SignUpForm {
                     </button>
                     <div class="mt-4">
                         <div class={this.auth.error !== '' ? 'block' : 'hidden'}>
-                            <div class="flex items-center px-2 py-1 rounded bg-red-100 text-red-600" id="form-error">
+                            <div class="flex items-center px-4 py-1 rounded bg-red-100 text-red-600" id="form-error">
                                 <Icon name="alert-triangle" class="w-4" />
-                                <span class="ml-2">
+                                <span class="ml-4">
                                     {this.auth.error}
                                 </span>
                             </div>

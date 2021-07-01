@@ -1,6 +1,6 @@
 import Api from '../Api';
 import Utils from '../Utils';
-import Item from "./Item";
+import Item from './Item';
 
 export default class Shipment {
     constructor({
@@ -47,8 +47,6 @@ export default class Shipment {
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
-
-    // static from_uuid() {}
 
     get_total_value_fmt() {
         return Utils.format_money(
