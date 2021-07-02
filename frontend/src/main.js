@@ -1,15 +1,18 @@
 import m from 'mithril';
-import RootView from './views/Root';
+import AppView from './views/App';
 import AuthView from './views/Auth';
-import ShipmentRead from './components/ShipmentRead';
+import ShipmentsView from './views/Shipments';
+import ShipmentEditView from './views/ShipmentEdit';
+import ShipmentView from './views/Shipment';
 
 m.route(document.body, '/', {
-    '/': {render: () => <RootView />},
+    '/': {render: () => <AppView />},
     '/auth/signup': {render: () => <AuthView action="signup" />},
     '/auth/login': {render: () => <AuthView action="signin" />},
-    // '/shipments': {render: () => <LayoutView><ShipmentList /></LayoutView>},
-    // '/shipments/new': {render: () => <LayoutView><ShipmentEdit /></LayoutView>},
-    '/shipments/:id': {render: (vnode) => <ShipmentRead id={vnode.attrs.id} />},
+    '/shipments': {render: () => <ShipmentsView />},
+    '/shipments/new': {render: () => <ShipmentEditView />},
+    '/shipments/:id': {render: (vnode) => <ShipmentView id={vnode.attrs.id} />},
+    '/shipments/:id/edit': {render: (vnode) => <ShipmentEditView id={vnode.attrs.id} />}
     // '/messages': {render: () => <LayoutView><MessagesView /></LayoutView>}
     // '/:404...': errorPageComponent
 });

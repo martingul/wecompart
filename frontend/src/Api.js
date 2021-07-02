@@ -86,7 +86,7 @@ export default class Api {
             method: 'GET',
             url: `${Api.API_ROOT}/users/me`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`}
-        })
+        });
     }
 
     static create_user(args) {

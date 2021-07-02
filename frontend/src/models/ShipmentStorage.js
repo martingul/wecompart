@@ -1,12 +1,22 @@
 export default class ShipmentStorage {
     static shipments = [];
 
-    static create_shipment(s) {
-        ShipmentStorage.shipments.push(s);
+    static create(shipment) {
+        ShipmentStorage.shipments.push(shipment);
     }
 
-    static delete_shipment(s) {
+    static delete(shipment) {
         ShipmentStorage.shipments = ShipmentStorage.shipments
-            .filter(_s => _s.uuid !== s.uuid);
+            .filter(s => s.uuid !== shipment.uuid);
+    }
+
+    static get_by_id(id) {
+        console.log('get_by_id', id);
+        const shipments = ShipmentStorage.shipments.filter(s => s.uuid === id);
+        if (shipments.length === 0) {
+            return null;
+        } else {
+            return shipments[0];
+        }
     }
 }

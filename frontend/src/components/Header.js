@@ -6,8 +6,8 @@ import Icon from './Icon';
 
 export default class Header {
     constructor(vnode) {
-        console.log('construct Header', vnode.attrs.auth);
         this.auth = vnode.attrs.auth !== undefined ? vnode.attrs.auth : true;
+        console.log('construct Header', this.auth);
     }
 
     view(vnode) {
@@ -33,6 +33,7 @@ export default class Header {
                 </div>
             );
         }
+
         return (
             <div class="w-full flex flex-row justify-between items-center py-4 px-8 border-b border-gray-100">
                 <div class="flex items-baseline">

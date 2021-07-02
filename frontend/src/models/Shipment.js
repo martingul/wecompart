@@ -22,6 +22,7 @@ export default class Shipment {
         created_at = '',
         updated_at = '',
     }) {
+        // TODO instead of having *.value, pass field as {field} for reference?
         this.uuid = uuid;
         this.owner_id = owner_uuid;
         this.status = status
@@ -52,6 +53,14 @@ export default class Shipment {
         return Utils.format_money(
             this.total_value.value, this.currency.value
         );
+    }
+
+    get_total_item_quantity() {
+        return this.items.map(item => item.quantity).reduce((a, c) => a + c);
+    }
+
+    get_total_item_weight() {
+        return this.items.map(item => item.weight).reduce((a, c) => a + c);
     }
 
     serialize() {

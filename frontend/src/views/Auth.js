@@ -1,8 +1,7 @@
 import m from 'mithril';
 import Api from '../Api';
-// import AuthForm from '../components/auth-form';
 import Auth from '../models/Auth';
-import Icon from '../components/Icon';
+import Logo from '../components/Logo';
 import Loading from '../components/Loading';
 import SignUpForm from '../components/SignUpForm';
 import SignInForm from '../components/SignInForm';
@@ -11,7 +10,8 @@ import google from '../assets/google.svg';
 
 export default class AuthView {
     constructor(vnode) {
-        this.auth = new Auth(vnode.attrs.action)
+        this.action = vnode.attrs.action ? vnode.attrs.action : 'signin';
+        this.auth = new Auth(vnode.attrs.action);
         console.log(`construct AuthView (${this.auth.action})`);
     }
 
@@ -26,10 +26,7 @@ export default class AuthView {
             <div class="flex flex-col items-center">
                 <div class="px-8 w-full sm:w-1/2 lg:w-1/3">
                     <div class="my-6 p-4">
-                        <m.route.Link href="/" options={{replace: true}}
-                            class="flex items-center whi=tespace-nowrap text-xl font-bold">
-                            wecompart &trade;
-                        </m.route.Link>
+                        <Logo />
                     </div>
                     <div class="flex flex-col items-center flex-grow mx-2">
                         <button type="button" class="w-full flex p-2 items-center bg-white border border-gray-300 hover:shadow-md rounded

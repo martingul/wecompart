@@ -1,4 +1,5 @@
 import Api from '../Api';
+import User from './User';
 
 export default class Auth {
     constructor(action) {
@@ -27,8 +28,11 @@ export default class Auth {
         }).then(res => {
             Api.set_session(Api.decode_session(res.session));
             Api.set_username(this.email.value);
+            return Api.read_self();
+        }).then(res => {
+            const user = new User(res);
+            user.save();
             return true;
-            // m.route.set('/'); 
         }).catch(e => {
             if (e.response) {
                 if (e.response.detail === 'error_invalid_credentials') {
@@ -51,7 +55,6 @@ export default class Auth {
     }
 
     submit() {
-        console.log(this.email.value, this.password.value);
         this.error = '';
 
         if (!this.validate_email()) {
