@@ -19,6 +19,20 @@ export default class Navigation {
 
     constructor(vnode) {
         console.log('construct Navigation');
+        this.path = m.route.get().split('/');
+        if (this.path.length > 0) {
+            this.path = this.path.slice(1);
+        }
+
+        // TODO make a map instead of if statements to match
+
+        if (this.path[0] === '') {
+            Navigation.selected_view = Navigation.views[0];
+        }
+
+        if (this.path[0] === 'shipments') {
+            Navigation.selected_view = Navigation.views[1];
+        }
     }
 
     view(vnode) {

@@ -1,5 +1,4 @@
 import m from 'mithril';
-import LandingView from './Landing';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
 import User from '../models/User';
@@ -16,7 +15,7 @@ export default class AppView {
         if (!this.user) {
             const access_token = localStorage.getItem('access_token');
             if (!access_token) {
-                return <LandingView />;
+                m.route.set('/auth/signup');
             }
         }
 
@@ -27,7 +26,7 @@ export default class AppView {
                 </div>
                 <div class="flex flex-col items-center w-full">
                     <Header />
-                    <div class="m-8">
+                    <div class="p-8 w-full">
                         {vnode.children}
                     </div>
                 </div>

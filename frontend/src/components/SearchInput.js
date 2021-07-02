@@ -21,7 +21,7 @@ export default class SearchInput {
 
     view(vnode) {
         return (
-            <input id="search-input" type="text" class="bg-gray-50" placeholder="Search..." />
+            <input id="search-input" type="text" class="bg-gray-50" placeholder='Search (press "/" to focus)' />
         );
     }
 }
