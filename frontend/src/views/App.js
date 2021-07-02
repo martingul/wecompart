@@ -1,9 +1,7 @@
 import m from 'mithril';
-import Api from '../Api';
 import LandingView from './Landing';
 import Header from '../components/Header';
 import Navigation from '../components/Navigation';
-import Loading from '../components/Loading';
 import User from '../models/User';
 
 export default class AppView {
@@ -16,18 +14,21 @@ export default class AppView {
 
     view(vnode) {
         if (!this.user) {
-            return <LandingView />;
+            const access_token = localStorage.getItem('access_token');
+            if (!access_token) {
+                return <LandingView />;
+            }
         }
 
         return (
-            <div class="flex flex-col items-center">
-                <div class="w-full px-4 md:w-4/5 lg:w-1/2">
+            <div class="flex w-full h-full min-h-screen">
+                <div class={this.user ? 'block' : 'hidden'}>
+                    <Navigation />
+                </div>
+                <div class="flex flex-col items-center w-full">
                     <Header />
-                    <div class="flex justify-between">
-                        <Navigation />
-                        <div class="w-full m-8">
-                            {vnode.children}
-                        </div>
+                    <div class="m-8">
+                        {vnode.children}
                     </div>
                 </div>
             </div>

@@ -37,21 +37,9 @@ export default class Api {
         };
     }
 
-    static get_username() {
-        return localStorage.getItem('username');
-    }
-
-    static set_username(username) {
-        localStorage.setItem('username', username);
-    }
-
-    static remove_username() {
-        localStorage.removeItem('username');
-    }
 
     static clear_storage() {
         Api.remove_session();
-        Api.remove_username();
     }
     
     static authenticate(args) {

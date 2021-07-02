@@ -27,7 +27,6 @@ export default class Auth {
             password: this.password.value
         }).then(res => {
             Api.set_session(Api.decode_session(res.session));
-            Api.set_username(this.email.value);
             return Api.read_self();
         }).then(res => {
             const user = new User(res);

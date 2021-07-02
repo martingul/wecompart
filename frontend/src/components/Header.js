@@ -3,23 +3,18 @@ import Api from '../Api';
 import Notifications from './Notifications';
 import Logo from './Logo';
 import Icon from './Icon';
+import User from '../models/User';
 
 export default class Header {
     constructor(vnode) {
-        this.auth = vnode.attrs.auth !== undefined ? vnode.attrs.auth : true;
-        console.log('construct Header', this.auth);
+        this.user = User.load();
+        console.log('construct Header');
     }
 
     view(vnode) {
-        if (!this.auth) {
+        if (!this.user) {
             return (
-                <div class="w-full flex flex-row justify-between items-center py-4 px-8 border-b border-gray-100">
-                    <div class="flex items-baseline">
-                        <button class="flex items-center whitespace-nowrap"
-                            onclick={() => m.route.set('/')}>
-                            <Logo />
-                        </button>
-                    </div>
+                <div class="w-full flex justify-between items-center py-4 px-8 border-b border-gray-100">
                     <button class="flex flex-col items-center self-end px-4 py-1 whitespace-nowrap rounded transitions-colors
                         text-gray-800 hover:text-black border border-gray-500 hover:border-gray-600 hover:shadow"
                         onclick={(e) => m.route.set('/auth/signup')}>
@@ -35,13 +30,7 @@ export default class Header {
         }
 
         return (
-            <div class="w-full flex flex-row justify-between items-center py-4 px-8 border-b border-gray-100">
-                <div class="flex items-baseline">
-                    <button class="flex items-center whitespace-nowrap"
-                        onclick={() => m.route.set('/')}>
-                        <Logo />
-                    </button>
-                </div>
+            <div class="w-full flex justify-between items-center py-4 px-8 border-b border-gray-100">
                 <button onclick={() => {
                     Api.signout().finally(() => {
                         Api.clear_storage();

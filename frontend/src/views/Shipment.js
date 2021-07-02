@@ -17,18 +17,19 @@ import AppView from './App';
 export default class ShipmentView {
     constructor(vnode) {
         console.log('construct ShipmentView');
-        // this.id = vnode.attrs.id;
         this.loading = false;
-        // this.shipment = vnode.attrs.shipment ? vnode.attrs.shipment : null;
-
         this.id = m.route.param('id');
+        this.access_token = m.route.param('access_token');
         this.shipment = ShipmentStorage.get_by_id(this.id);
-        this.close = vnode.attrs.close ? vnode.attrs.close : () => {};
         this.error_shipment_not_found = false;
 
         this.user = User.load();
-        if (this.user === null) {
+        if (!this.user && !this.access_token) {
             m.route.set('/auth/login');
+        }
+
+        if (this.access_token) {
+            localStorage.setItem('access_token', this.access_token);
         }
 
         this.is_owner = false;
@@ -36,40 +37,8 @@ export default class ShipmentView {
             this.is_owner = this.shipment.owner_id === this.user.uuid;
         }
 
-        this.access_token = null;
-        this.edit = false;
         this.show_items = false;
         this.show_quote_form = false;
-    }
-
-    oninit(vnode) {
-        if (!this.shipment) {    
-            this.loading = true;        
-            console.log('fetching shipment', this.id);
-            const access_token = m.route.param('access_token');
-    
-            Api.read_shipment({
-                shipment_id: this.id,
-                access_token: access_token
-            }).then(s => {
-                console.log('init success from ShipmentView')
-                this.shipment = new Shipment(s);
-                this.is_owner = this.shipment.owner_id === this.user.uuid;
-                console.log(this.is_owner);
-                console.log(this.shipment.owner_id, this.user.uuid);
-            }).catch(e => {
-                console.log(e);
-                if (e.code === 401) {
-                    m.route.set('/auth/login');
-                } else if (e.code === 403) {
-                    m.route.set('/');
-                } else {
-                    this.error_shipment_not_found = true;
-                }
-            }).finally(() => {
-                this.loading = false;
-            });
-        }
     }
 
     // download_shipment(format) {
@@ -104,6 +73,37 @@ export default class ShipmentView {
         });
     }
 
+    oninit(vnode) {
+        if (!this.shipment) {    
+            this.loading = true;        
+            console.log('fetching shipment', this.id);
+            console.log(this.access_token);
+    
+            Api.read_shipment({
+                shipment_id: this.id,
+                access_token: this.access_token
+            }).then(s => {
+                this.shipment = new Shipment(s);
+                if (this.user) {
+                    this.is_owner = this.shipment.owner_id === this.user.uuid;
+                } else {
+                    this.is_owner = false;
+                }
+            }).catch(e => {
+                console.log(e);
+                if (e.code === 401) {
+                    m.route.set('/auth/login');
+                } else if (e.code === 403) {
+                    m.route.set('/');
+                } else {
+                    this.error_shipment_not_found = true;
+                }
+            }).finally(() => {
+                this.loading = false;
+            });
+        }
+    }
+
     view(vnode) {
         if (!this.shipment && this.loading) {
             return (
@@ -120,15 +120,6 @@ export default class ShipmentView {
         if (this.shipment && this.shipment.status === 'draft') {
             m.route.set('/shipments/:id/edit', {id: this.shipment.uuid});
         }
-
-        // if (this.shipment && this.edit) {
-        //     return (
-        //         <AppView>
-        //             <ShipmentEdit shipment={this.shipment}
-        //                 close={() => this.edit = false} />
-        //         </AppView>
-        //     );
-        // }
 
         if (this.error_shipment_not_found) {
             return (
