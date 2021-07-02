@@ -1,8 +1,8 @@
 import m from 'mithril';
 import Api from '../Api';
 import Notifications from './Notifications';
-import Logo from './Logo';
 import Icon from './Icon';
+import SearchInput from './SearchInput';
 import User from '../models/User';
 
 export default class Header {
@@ -31,14 +31,9 @@ export default class Header {
 
         return (
             <div class="w-full flex justify-between items-center py-4 px-8 border-b border-gray-100">
-                <button onclick={() => {
-                    Api.signout().finally(() => {
-                        Api.clear_storage();
-                        m.route.set('/auth/login');
-                    });
-                }}>
-                    sign out
-                </button>
+                <div class="w-full mr-12">
+                    <SearchInput />
+                </div>
                 <Notifications />
             </div>
         );

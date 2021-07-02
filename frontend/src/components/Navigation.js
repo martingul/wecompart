@@ -1,4 +1,5 @@
 import m from 'mithril';
+import Api from '../Api';
 import Icon from './Icon';
 import Logo from './Logo';
 
@@ -7,6 +8,12 @@ export default class Navigation {
         {name: 'Home', icon: 'command', navigate: () => m.route.set('/')},
         {name: 'Shipments', icon: 'package', navigate: () => m.route.set('/shipments')},
         {name: 'Messages', icon: 'message-circle', navigate: () => {}},
+        {name: 'Sign out', icon: 'log-out', navigate: () => {
+            Api.signout().finally(() => {
+                Api.clear_storage();
+                m.route.set('/auth/login');
+            });
+        }},
     ];
     static selected_view = Navigation.views[0];
 
@@ -17,7 +24,7 @@ export default class Navigation {
     view(vnode) {
         return (
             <div class="flex flex-col bg-gray-50 border-r border-gray-100 h-full">
-                <div class="flex items-baseline py-4 px-8">
+                <div class="flex items-baseline py-6 px-8">
                     <button class="flex items-center whitespace-nowrap"
                         onclick={() => m.route.set('/auth/signup')}>
                         <Logo />
