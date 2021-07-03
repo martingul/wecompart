@@ -24,10 +24,10 @@ export default class ShipmentListRow {
                     <ShipmentStatus status={this.shipment.status} />
                 </td>
                 <td class="w-auto py-2 overflow-hidden overflow-ellipsis">
-                    {this.shipment.pickup_address.short}
+                    {this.shipment.pickup_address_short}
                 </td>
                 <td class="w-auto py-2 overflow-hidden overflow-ellipsis">
-                    {this.shipment.delivery_address.short}
+                    {this.shipment.delivery_address_short}
                 </td>
                 <td clas="w-1 py-2">
                     {Utils.absolute_date(this.shipment.pickup_date.value)}

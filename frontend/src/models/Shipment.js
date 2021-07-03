@@ -31,15 +31,15 @@ export default class Shipment {
 
         this.pickup_address = {
             value: pickup_address_long,
-            short: pickup_address_short,
             place_id: pickup_address_id,
         };
+        this.pickup_address_short = pickup_address_short;
         this.delivery_address = {
             value: delivery_address_long,
-            short: delivery_address_short,
             place_id: delivery_address_id,
         };
-        this.pickup_date = {value: pickup_date};
+        this.delivery_address_short = delivery_address_short;
+        this.pickup_date = {value: new Date(pickup_date)};
         this.currency = {value: currency};
         this.total_value = {value: total_value};
         this.comments = {value: comments};

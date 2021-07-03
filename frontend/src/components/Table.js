@@ -9,10 +9,58 @@ export default class Table {
 
         this.sortable = this.fields.map(field => {
             if (field.type === 'string') {
-                field.cmp = (l, r) => l.localeCompare(r)
+                field.cmp = (l, r) => {
+                    let l_value = l[field.attr];
+                    if (l_value.value !== undefined) {
+                        l_value = l_value.value;
+                    }
+
+                    let r_value = r[field.attr];
+                    if (r_value.value !== undefined) {
+                        r_value = r_value.value;
+                    }
+
+                    return l_value.localeCompare(r_value)
+                }
             }
-            if (field.type === 'number' || field.type === 'date') {
-                field.cmp = (l, r) => r - l;
+            if (field.type === 'number') {
+                field.cmp = (l, r) => {
+                    let l_value = l[field.attr];
+                    if (l_value.value !== undefined) {
+                        l_value = l_value.value;
+                    }
+
+                    let r_value = r[field.attr];
+                    if (r_value.value !== undefined) {
+                        r_value = r_value.value;
+                    }
+
+                    return r_value - l_value;
+                }
+            }
+
+            if (field.type === 'date') {
+                field.cmp = (l, r) => {
+                    let l_value = l[field.attr];
+                    if (l_value.value !== undefined) {
+                        l_value = l_value.value;
+                    }
+
+                    let r_value = r[field.attr];
+                    if (r_value.value !== undefined) {
+                        r_value = r_value.value;
+                    }
+
+                    if (!l_value instanceof Date) {
+                        l_value = Date.parse(l_value)
+                    }
+
+                    if (!r_value instanceof Date) {
+                        r_value = Date.parse(r_value)
+                    }
+
+                    return r_value - l_value;
+                }
             }
             field.active = false;
             field.desc = true;
@@ -54,24 +102,18 @@ export default class Table {
                         }
                         
                         return (
-                            <th class="w-auto py-2">
-                                <button class="w-full flex items-center"
+                            <th class={`w-auto py-2 ${s.type === 'number' ? 'text-right' : 'text-left'}`}>
+                                <button class="text-gray-600"
                                     onclick={() => this.sort_state = s}>
-                                    <span class={`w-full text-xs uppercase font-bold ${s.type === 'number' ? 'text-right' : 'text-left'}`}>
-                                        <span class="border-b border-dotted border-gray-600">
-                                            {s.label}
-                                        </span>
+                                    <span class="mr-1 text-xs uppercase border-b border-dotted border-gray-600">
+                                        {s.label}
                                     </span>
-                                    <div class={s.active && this.sort_state.desc ? 'block' : 'hidden'}>
-                                        <span class="ml-2">
-                                            ▾
-                                        </span>
-                                    </div>
-                                    <div class={s.active && !this.sort_state.desc ? 'block' : 'hidden'}>
-                                        <span class="ml-2">
-                                            ▴
-                                        </span>
-                                    </div>
+                                    <span class={s.active && this.sort_state.desc ? 'inline' : 'hidden'}>
+                                        ▾
+                                    </span>
+                                    <span class={s.active && !this.sort_state.desc ? 'inline' : 'hidden'}>
+                                        ▴
+                                    </span>
                                 </button>
                             </th>
                         );

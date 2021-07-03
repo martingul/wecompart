@@ -91,12 +91,12 @@ export default class ShipmentsView {
                     </div>
                     <Table collection={ShipmentStorage.shipments}
                         fields={[
-                            {label: 'value', type: 'number'},
-                            {label: '', type: 'string'},
-                            {label: '', type: 'string'},
-                            {label: 'pickup', type: 'string'},
-                            {label: 'delivery', type: 'string'},
-                            {label: 'date', type: 'date'},
+                            {label: 'value', attr: 'total_value', type: 'number'},
+                            {label: '', attr: 'currency', type: 'string'},
+                            {label: '', attr: 'status', type: 'string'},
+                            {label: 'pickup', attr: 'pickup_address_short', type: 'string'},
+                            {label: 'delivery', attr: 'delivery_address_short', type: 'string'},
+                            {label: 'date', attr: 'pickup_date', type: 'date'},
                         ]}>
                         {ShipmentStorage.shipments.map(s =>
                             <ShipmentTableRow key={s.uuid} shipment={s} 

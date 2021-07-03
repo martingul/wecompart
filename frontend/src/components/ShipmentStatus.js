@@ -4,14 +4,14 @@ import Icon from './Icon';
 
 export default class ShipmentStatus {
     constructor(vnode) {
+        this.status_map = {
+            'draft': {color: 'gray'},
+            'pending': {color: 'yellow', icon: 'clock'},
+            'ready': {color: 'green'},
+        };
         this.icon = vnode.attrs.icon !== undefined ? vnode.attrs.icon : false;
-        this.statuses = [
-            {name: 'draft', color: 'gray'},
-            {name: 'pending', color: 'yellow', icon: 'clock'},
-            {name: 'ready', color: 'green'},
-        ];
-        console.log(this.statuses.filter(s => s.name === vnode.attrs.status))
-        this.status = this.statuses.filter(s => s.name === vnode.attrs.status)[0];
+        this.status_name = vnode.attrs.status;
+        this.status = this.status_map[this.status_name];
     }
 
     view(vnode) {
@@ -20,7 +20,7 @@ export default class ShipmentStatus {
                 bg-${this.status.color}-100 text-${this.status.color}-500`}>
                 <Icon name={this.status.icon} class={this.icon ? 'w-4 mr-1.5' : 'hidden'} />
                 <span>
-                    {Utils.capitalize(this.status.name)}
+                    {Utils.capitalize(this.status_name)}
                 </span>
             </div>
         );
