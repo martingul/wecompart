@@ -5,6 +5,7 @@ import Icon from './Icon';
 import Logo from './Logo';
 import SearchInput from './SearchInput';
 import User from '../models/User';
+import Navigation from './Navigation';
 
 export default class Header {
     constructor(vnode) {
@@ -35,12 +36,17 @@ export default class Header {
         }
 
         return (
-            <div class="w-full flex justify-between items-center py-4 px-8 border-b border-gray-100">
-                {/* add collapse navigation button */}
-                <div class="w-full mr-12">
+            <div class="w-full flex justify-between items-center py-4 border-b border-gray-100">
+                <button class="mx-8"
+                    onclick={() => Navigation.show = !Navigation.show}>
+                    <Icon name="menu" class="w-5" />
+                </button>
+                <div class="w-full">
                     <SearchInput />
                 </div>
-                <Notifications />
+                <div class="mx-8">
+                    <Notifications />
+                </div>
             </div>
         );
     }

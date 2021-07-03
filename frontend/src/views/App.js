@@ -21,7 +21,7 @@ export default class AppView {
 
         return (
             <div class="flex w-full h-full min-h-screen">
-                <div class={this.user ? 'block' : 'hidden'}>
+                <div class={this.user ? 'flex' : 'hidden'}>
                     <Navigation />
                 </div>
                 <div class="flex flex-col items-center w-full">

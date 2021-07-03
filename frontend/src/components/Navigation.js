@@ -16,6 +16,7 @@ export default class Navigation {
         }},
     ];
     static selected_view = Navigation.views[0];
+    static show = true;
 
     constructor(vnode) {
         console.log('construct Navigation');
@@ -36,11 +37,15 @@ export default class Navigation {
     }
 
     view(vnode) {
+        if (!Navigation.show) {
+            return;
+        }
+        
         return (
             <div class="flex flex-col bg-gray-50 border-r border-gray-100 h-full">
                 <div class="flex items-baseline py-6 px-8">
                     <button class="flex items-center whitespace-nowrap"
-                        onclick={() => m.route.set('/auth/signup')}>
+                        onclick={() => m.route.set('/')}>
                         <Logo />
                     </button>
                 </div>
