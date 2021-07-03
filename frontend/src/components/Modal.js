@@ -4,6 +4,7 @@ import IconButton from './IconButton';
 
 export default class Modal {
     static create({
+        title = '',
         message = '',
         confirm_label = '',
         confirm_color = '',
@@ -32,21 +33,24 @@ export default class Modal {
 
         m.mount(modal, {view: () => {
             return (
-                <div id="modal-content" class="flex flex-col bg-white shadow-lg rounded py-4 px-6">
-                    <div class="flex justify-end">
+                <div id="modal-content" class="flex flex-col bg-white shadow-lg rounded">
+                    <div class="px-6 py-2 flex justify-between items-center border-b border-gray-200">
+                        <span class="font-bold">
+                            {title}
+                        </span>
                         <IconButton icon="x" callback={() => modal.close()} />
                     </div>
-                    <div class="flex my-10 px-2 text-base">
+                    <div class="px-6 flex my-10 text-base">
                         {message}
                     </div>
-                    <div class="flex justify-between mt-2">
+                    <div class="px-6 py-2 flex justify-between border-t border-gray-200">
                         <button class="flex justify-center items-center whitespace-nowrap px-4 py-1 rounded hover:shadow transition-all
-                            text-gray-600 hover:text-gray-800 bg-gray-200 hover:bg-gray-300"
+                            text-gray-800 hover:text-black border border-gray-300 hover:border-gray-400"
                             onclick={() => modal.close()}>
                             Cancel
                         </button>
                         <button class="flex justify-center items-center whitespace-nowrap px-4 py-1 rounded hover:shadow transition-all
-                            text-red-600 hover:text-red-800 bg-red-200 hover:bg-red-300"
+                            text-red-600 hover:text-red-800 border border-red-300 bg-red-100 hover:bg-red-200"
                             onclick={() => {
                                 confirm();
                                 modal.close()

@@ -79,7 +79,7 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
     """Read a user's shipment"""
     shipment_db = None
     try:
-        shipment_db = shipments._read_shipment(db, shipment_id)
+        shipment_db = shipments.read_shipment(db, shipment_id)
     except Exception as e:
         print(vars(e))
 
@@ -227,7 +227,7 @@ def delete_shipment(shipment_id: str,
 #     session: AuthSession = Depends(auth.auth_session),
 #     db: DatabaseSession = Depends(db_session)):
 #     try:
-#         shipment_db = shipments._read_shipment(db, shipment_id)
+#         shipment_db = shipments.read_shipment(db, shipment_id)
 
 #         template = templates.env.get_template('shipment.html')
 #         shipment = ShipmentRead.from_orm(shipment_db).dict()

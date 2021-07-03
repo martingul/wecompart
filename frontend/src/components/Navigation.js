@@ -10,7 +10,7 @@ export default class Navigation {
         {name: 'Messages', icon: 'message-circle', navigate: () => {}},
         {name: 'Sign out', icon: 'log-out', navigate: () => {
             Api.signout().finally(() => {
-                Api.clear_storage();
+                localStorage.clear();
                 m.route.set('/auth/login');
             });
         }},
@@ -45,14 +45,14 @@ export default class Navigation {
                     </button>
                 </div>
                 {Navigation.views.map(v => (
-                    <button class={'flex items-center w-full px-6 py-2 my-2 hover:text-black transition-colors '
-                        + (Navigation.selected_view === v ? 'bg-yellow-100 text-black border-l-4 border-yellow-300' : 'text-gray-500 hover:bg-yellow-50')}
+                    <button class={'flex items-center w-full px-6 py-2 my-1 transition-all '
+                        + (Navigation.selected_view === v ? 'text-indigo-600 font-bold' : 'text-gray-500 hover:text-black')}
                         onclick={() => {
                             v.navigate();
                             Navigation.selected_view = v;
                         }}>
                         <Icon name={v.icon} class="w-5" />
-                        <span class="ml-6">
+                        <span class="ml-4">
                             {v.name}
                         </span>
                     </button>

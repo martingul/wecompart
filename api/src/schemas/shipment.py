@@ -3,6 +3,7 @@ from datetime import date, datetime
 from pydantic import BaseModel, validator
 
 from schemas.item import ItemRead, ItemCreate
+from schemas.quote import QuoteRead
 # from schemas.quote import QuoteRead
 
 shipment_status = ['draft', 'pending']
@@ -50,7 +51,7 @@ class ShipmentRead(BaseModel):
 
     services: List[str]
     items: List[ItemRead]
-    # quotes: List[QuoteRead] # should not be accessible by other users than owner
+    quotes: List[QuoteRead] # should not be accessible by other users than owner
 
     created_at: datetime
     updated_at: datetime

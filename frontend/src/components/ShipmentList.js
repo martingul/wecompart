@@ -69,7 +69,7 @@ export default class ShipmentList {
             <div class="flex flex-col">
                 <div class="my-4">
                     <div class="flex items-center justify-between my-2 w-full px-2 whitespace-nowrap text-xs">
-                        <div class="w-2/12">
+                        <div class="w-4/12">
                             <button class="flex items-center border-b border-dotted border-gray-600"
                                 onclick={() => this.sort_state = this.sortable.total_value}>
                                 <b class="text-xs uppercase">value</b>
@@ -113,18 +113,6 @@ export default class ShipmentList {
                                     <span class="ml-2">▾</span>
                                 </div>
                                 <div class={this.sortable.date.active && !this.sort_state.desc ? 'block' : 'hidden'}>
-                                    <span class="ml-2">▴</span>
-                                </div>
-                            </button>
-                        </div>
-                        <div class="w-2/12">
-                            <button class="flex border-b border-dotted border-gray-600"
-                                onclick={() => this.sort_state = this.sortable.status}>
-                                <b class="uppercase">status</b>
-                                <div class={this.sortable.status.active && this.sort_state.desc ? 'block' : 'hidden'}>
-                                    <span class="ml-2">▾</span>
-                                </div>
-                                <div class={this.sortable.status.active && !this.sort_state.desc ? 'block' : 'hidden'}>
                                     <span class="ml-2">▴</span>
                                 </div>
                             </button>

@@ -4,10 +4,13 @@ import Api from '../Api';
 import Utils from '../Utils';
 import Icon from '../components/Icon';
 import Loading from '../components/Loading';
+import Title from '../components/Title';
 import IconButton from '../components/IconButton';
+import ShipmentStatus from '../components/ShipmentStatus';
 import ShipmentActions from '../components/ShipmentActions';
 import ShipmentComments from '../components/ShipmentComments';
 import QuoteEdit from '../components/QuoteEdit';
+import QuoteList from '../components/QuoteList';
 import Modal from '../components/Modal';
 import ShipmentStorage from '../models/ShipmentStorage';
 import Shipment from '../models/Shipment';
@@ -67,7 +70,7 @@ export default class ShipmentView {
         console.log('delete');
         this.shipment.delete().then(_ => {
             ShipmentStorage.delete(this.shipment);
-            this.close();
+            m.route.set('/shipments');
         }).catch(e => {
             console.log(e);
         });
@@ -84,6 +87,7 @@ export default class ShipmentView {
                 access_token: this.access_token
             }).then(s => {
                 this.shipment = new Shipment(s);
+                console.log(this.shipment);
                 if (this.user) {
                     this.is_owner = this.shipment.owner_id === this.user.uuid;
                 } else {
@@ -138,44 +142,50 @@ export default class ShipmentView {
                 <div class='flex flex-col'>
                     <div class='flex justify-between items-start'>
                         <div class="flex flex-col">
-                            <div class="px-4 py-1 rounded font-bold bg-yellow-100 text-black">
-                                Shipment information
+                            <div class="mb-1 flex items-center text-gray-500">
+                                <Icon name="grid" class="w-4" />
+                                <span class="uppercase ml-2 font-semibold">
+                                    Shipment
+                                </span>
                             </div>
-                            <div class="my-1 px-2 whitespace-nowrap text-sm text-gray-400">
+                            <div class="flex items-start">
+                                <Title>
+                                    {Utils.absolute_date(this.shipment.pickup_date.value, true)}
+                                </Title>
+                                <div class="ml-2 mt-1">
+                                    <ShipmentStatus status={this.shipment.status} />
+                                </div>
+                            </div>
+                            {/* <div class="mt-1 whitespace-nowrap text-sm text-gray-400">
                                 created {Utils.relative_date(this.shipment.created_at)}
                                 {this.created_at !== this.updated_at ?
                                     'last updated ' + Utils.relative_date(this.shipment.updated_at) : ''}
-                            </div>
+                            </div> */}
                         </div>
                         <div class="flex items-center whitespace-nowrap">
-                            <div class={!this.is_owner ? 'block' : 'hidden'}>
+                            {/* <div class={!this.is_owner ? 'block' : 'hidden'}>
                                 <button class="flex flex-col items-center px-4 py-1 whitespace-nowrap rounded transitions-colors
                                     text-gray-800 hover:text-black bg-gray-100 hover:bg-gray-200 hover:shadow"
-                                    // onclick={(e) => this.show_download = !this.show_download}
                                     onclick={(e) => {}}>
                                     <div class="flex items-center">
                                         <Icon name="message-circle" class="w-5" />
                                         <span class="ml-2">
                                             Message
                                         </span>
-                                        {/* <Icon name="chevron-down" class="w-4 h-4" /> */}
                                     </div>
                                 </button>
-                            </div>
+                            </div> */}
                             <div class={this.is_owner ? 'flex items-center' : 'hidden'}>
                                 <ShipmentActions
                                     edit={() => m.route.set('/shipments/:id/edit', {id: this.shipment.uuid})}
                                     download={() => console.log('download')}
                                     delete={() => Modal.create({
+                                        title: 'Delete shipment',
                                         message: 'Are you sure you want to delete this shipment?',
                                         confirm_label: 'Delete',
                                         confirm_color: 'red',
                                         confirm: () => this.delete_shipment()
                                     })} />
-                            </div>
-                            <div class={!this.id ? 'flex items-center' : 'hidden'}>
-                                <IconButton class="ml-6" icon="x"
-                                    callback={() => this.close()} />
                             </div>
                         </div>
                     </div>
@@ -184,149 +194,139 @@ export default class ShipmentView {
                             <div class="flex justify-between px-4">
                                 <div class="flex flex-col">
                                     <div class="my-1">
-                                        <div class="text-gray-600">
+                                            <div class="text-gray-500 mb-1">
+                                                Total value
+                                            </div>
+                                            <div class="flex items-center">
+                                                <span class="font-bold text-lg text-black">
+                                                    {this.shipment.get_total_value_fmt()}
+                                                </span>
+                                                <span class="ml-2 uppercase text-gray-400">
+                                                    {this.shipment.currency.value}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    <div class="my-1">
+                                        <div class="text-gray-500 mb-1">
                                             Pickup address
                                         </div>
-                                        <div class="my-1 text-black">
+                                        <div class="text-black">
                                             {this.shipment.pickup_address.value}
                                         </div>
                                     </div>
                                     <div class="my-1">
-                                        <div class="text-gray-600">
+                                        <div class="text-gray-500 mb-1">
                                             Delivery address
                                         </div>
-                                        <div class="my-1 text-black">
+                                        <div class="text-black">
                                             {this.shipment.delivery_address.value}
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="flex flex-col ml-4">
-                                    <div class={!this.access_token ? 'block' : 'hidden'}>
-                                        <div class="my-1">
-                                            <div class="text-gray-600">
-                                                Status
-                                            </div>
-                                            <div class="my-1">
-                                                <div class={Utils.get_status_style(this.shipment.status)}>
-                                                    {this.shipment.status}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="my-1">
-                                        <div class="text-gray-600">
-                                            Total value
-                                        </div>
-                                        <div class="my-1">
-                                            <span class="font-bold text-lg text-black">
-                                                {this.shipment.get_total_value_fmt()}
-                                            </span>
-                                            <span class="ml-2 uppercase text-gray-400">
-                                                {this.shipment.currency.value}
-                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-4 mb-6 flex flex-col rounded shadow bg-gray-50">
-                            <button class="px-4 py-2 flex items-center whitespace-nowrap"
-                                onclick={(e) => this.show_items = !this.show_items}>
-                                <div class={this.show_items ? 'inline-block' : 'hidden'}>
-                                    <Icon name="chevron-down" class="w-4 h-4" />
-                                </div>
-                                <div class={!this.show_items ? 'inline-block' : 'hidden'}>
-                                    <Icon name="chevron-right" class="w-4 h-4" />
-                                </div>
-                                <span class="px-1 rounded font-bold text-black ">
+                        <div class="mt-4 mb-6 flex flex-col">
+                            <div class="mb-2">
+                                <span class="rounded text-lg font-bold text-black">
                                     Shipment content
                                 </span>
-                                <span class="p-1 text-gray-600">
-                                    {(() => {
-                                        const total_item_quantity = this.shipment.get_total_item_quantity();
-                                        const total_items_weight = this.shipment.get_total_item_weight();
-                                        return `(${total_item_quantity} ${total_item_quantity === 1 ? 'item' : 'items'}, ${total_items_weight} kg)`
-                                    })()}
-                                </span>
-                            </button>
-                            <div class={this.show_items ? 'flex flex-col' : 'hidden'}>
-                                <div class="py-2 px-4">
-                                    {this.shipment.items.map((item, i) => {
-                                        return (
-                                            <div class="my-2 py-2 px-4 bg-white rounded border border-gray-100">
-                                                <div class="my-1 flex items-center">
-                                                    <div class="w-full font-bold">
-                                                        Item {i + 1}
+                            </div>
+                            <div class="rounded shadow border border-gray-200">
+                                <button class="px-4 py-2 flex items-center whitespace-nowrap"
+                                    onclick={(e) => this.show_items = !this.show_items}>
+                                    <span class="p-1 text-black">
+                                        {(() => {
+                                            const total_item_quantity = this.shipment.get_total_item_quantity();
+                                            const total_items_weight = this.shipment.get_total_item_weight();
+                                            return `${total_item_quantity} ${total_item_quantity === 1 ? 'item' : 'items'}, ${total_items_weight} kg`
+                                        })()}
+                                    </span>
+                                    <div class={this.show_items ? 'inline-block' : 'hidden'}>
+                                        <Icon name="chevron-down" class="w-5" />
+                                    </div>
+                                    <div class={!this.show_items ? 'inline-block' : 'hidden'}>
+                                        <Icon name="chevron-right" class="w-5" />
+                                    </div>
+                                </button>
+                                <div class={this.show_items ? 'flex flex-col' : 'hidden'}>
+                                    <div class="py-2 px-4">
+                                        {this.shipment.items.map((item, i) => {
+                                            return (
+                                                <div class="my-2 py-2 px-4 bg-white rounded border border-gray-100">
+                                                    <div class="my-1 flex items-center">
+                                                        <div class="w-full font-bold">
+                                                            Item {i + 1}
+                                                        </div>
+                                                        <div class="font-bold text-gray-600">
+                                                            <code>x{item.quantity}</code>
+                                                        </div>
                                                     </div>
-                                                    <div class="font-bold text-gray-600">
-                                                        <code>x{item.quantity}</code>
+                                                    <div class="my-2 flex flex-col">
+                                                        <div class="text-gray-600 leading-relaxed">
+                                                            Description
+                                                        </div>
+                                                        <div class="my-1 text-black italic">
+                                                            {item.description}
+                                                        </div>
+                                                    </div>
+                                                    <div class="my-2 flex justify-between">
+                                                        <div class="flex flex-col">
+                                                            <div class="text-gray-600">
+                                                                Length
+                                                            </div>
+                                                            <div class="text-black">
+                                                                <code>
+                                                                    {item.length}
+                                                                </code>
+                                                                <span class="ml-1 text-sm text-gray-500">
+                                                                    {item.dim_unit.value}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <div class="text-gray-600">
+                                                                Width
+                                                            </div>
+                                                            <div class="text-black">
+                                                                <code>
+                                                                    {item.width}
+                                                                </code>
+                                                                <span class="ml-1 text-sm text-gray-500">
+                                                                    {item.dim_unit.value}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <div class="text-gray-600">
+                                                                Height
+                                                            </div>
+                                                            <div class="text-black">
+                                                                <code>
+                                                                    {item.height}
+                                                                </code>
+                                                                <span class="ml-1 text-sm text-gray-500">
+                                                                    {item.dim_unit.value}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <div class="text-gray-600">
+                                                                Weight
+                                                            </div>
+                                                            <div class="text-black">
+                                                                <code>
+                                                                    {item.weight}
+                                                                </code>
+                                                                <span class="ml-1 text-sm text-gray-500">
+                                                                    kg
+                                                                </span>
+                                                            </div>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div class="my-2 flex flex-col">
-                                                    <div class="text-gray-600 leading-relaxed">
-                                                        Description
-                                                    </div>
-                                                    <div class="my-1 text-black italic">
-                                                        {item.description}
-                                                    </div>
-                                                </div>
-                                                <div class="my-2 flex justify-between">
-                                                    <div class="flex flex-col">
-                                                        <div class="text-gray-600">
-                                                            Length
-                                                        </div>
-                                                        <div class="text-black">
-                                                            <code>
-                                                                {item.length}
-                                                            </code>
-                                                            <span class="ml-1 text-sm text-gray-500">
-                                                                {item.dim_unit.value}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <div class="text-gray-600">
-                                                            Width
-                                                        </div>
-                                                        <div class="text-black">
-                                                            <code>
-                                                                {item.width}
-                                                            </code>
-                                                            <span class="ml-1 text-sm text-gray-500">
-                                                                {item.dim_unit.value}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <div class="text-gray-600">
-                                                            Height
-                                                        </div>
-                                                        <div class="text-black">
-                                                            <code>
-                                                                {item.height}
-                                                            </code>
-                                                            <span class="ml-1 text-sm text-gray-500">
-                                                                {item.dim_unit.value}
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <div class="text-gray-600">
-                                                            Weight
-                                                        </div>
-                                                        <div class="text-black">
-                                                            <code>
-                                                                {item.weight}
-                                                            </code>
-                                                            <span class="ml-1 text-sm text-gray-500">
-                                                                kg
-                                                            </span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -383,32 +383,53 @@ export default class ShipmentView {
                         </div>
                     </div>
                     <div class="my-2 flex flex-col">
-                        <div class="my-2 flex">
-                            <div class="px-2 rounded font-bold bg-yellow-100 text-black whitespace-nowrap">
+                        <div class="my-2 flex items-center justify-between">
+                            <Title>
                                 Quotes
+                            </Title>
+                            <div class={(this.user && this.user.role === 'shipper') ? 'block' : 'hidden'}>
+                                <button class="flex items-center font-bold font-lg px-2 py-1 rounded hover:shadow transition-all
+                                    border border-gray-500"
+                                    onclick={() => {this.show_quote_form = true}}>
+                                        <Icon name="plus" class="w-5" />
+                                        <span class="ml-1">
+                                            New quote
+                                        </span>
+                                </button>
                             </div>
                         </div>
-                        <div class={this.show_quote_form ? 'hidden' : 'block'}>
-                            <div class="flex justify-center">
-                                <div class="flex flex-col items-center">
-                                    <div class="my-4 text-gray-200">
-                                        <Icon name="clock" class="w-12 h-12" />
-                                    </div>
-                                    <div class="my-1 text-gray-600">
-                                        No quotes yet.
-                                    </div>
-                                    <div class={this.access_token ? 'block' : 'hidden'}>
-                                        <button class="mt-8 bg-yellow-100 font-bold font-lg px-4 py-1 rounded shadow-lg border border-gray-500"
-                                            onclick={() => {this.show_quote_form = true}}>
-                                            Place a quote
-                                        </button>
+                        <div class={this.shipment.quotes.length > 0 ? 'flex' : 'hidden'}>
+                            <QuoteList quotes={this.shipment.quotes} />
+                        </div>
+                        <div class={!this.show_quote_form ? 'block' : 'hidden'}>
+                            <div class={this.shipment.quotes.length === 0 ? 'flex' : 'hidden'}>
+                                <div class="flex justify-center">
+                                    <div class="flex flex-col items-center">
+                                        <div class="my-4 text-gray-200">
+                                            <Icon name="clock" class="w-12 h-12" />
+                                        </div>
+                                        <div class="my-1 text-gray-600">
+                                            No quotes yet.
+                                        </div>
+                                        <div class={(!this.user && this.access_token) ? 'block' : 'hidden'}>
+                                            <button class="mt-8 font-bold font-lg px-4 py-1 rounded hover:shadow-lg transition-all border border-gray-500"
+                                                onclick={() => m.route.set('/auth/signup')}>
+                                                Place a quote
+                                            </button>
+                                        </div>
+                                        <div class={(this.user && this.user.role === 'shipper') ? 'block' : 'hidden'}>
+                                            <button class="mt-8 font-bold font-lg px-4 py-1 rounded hover:shadow-lg transition-all border border-gray-500"
+                                                onclick={() => {this.show_quote_form = true}}>
+                                                Place a quote
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>      
                         </div>
-                        <div class={this.show_quote_form ? 'block' : 'block'}>
+                        <div class={this.show_quote_form ? 'block' : 'hidden'}>
                             <div class="my-4">
-                                <QuoteEdit shipment_id={this.id} />
+                                <QuoteEdit shipment_id={this.id} close={() => this.show_quote_form = false} />
                             </div>
                         </div>
                     </div>

@@ -88,12 +88,12 @@ def read_shipments(db: DatabaseSession, owner_uuid: str, skip: int = 0, limit: i
     return db.query(Shipment).filter(Shipment.owner_uuid == owner_uuid)\
         .offset(skip).limit(limit).all()
 
-def read_shipment(db: DatabaseSession, uuid: str, owner_uuid: str):
-    return db.query(Shipment).filter(Shipment.uuid == uuid,
-        Shipment.owner_uuid == owner_uuid).first()
-
-def _read_shipment(db: DatabaseSession, uuid: str):
-    return db.query(Shipment).filter(Shipment.uuid == uuid).first()
+def read_shipment(db: DatabaseSession, uuid: str, owner_uuid: str = None):
+    if not owner_uuid:
+        return db.query(Shipment).filter(Shipment.uuid == uuid).first()
+    else:
+        return db.query(Shipment).filter(Shipment.uuid == uuid,
+            Shipment.owner_uuid == owner_uuid).first()
 
 def update_shipment(db: DatabaseSession, shipment: Shipment, patch: ShipmentUpdate):
     for field, value in patch:
@@ -110,7 +110,7 @@ def delete_shipment(db: DatabaseSession, shipment: Shipment):
     return shipment
 
 def verify_access_token(db: DatabaseSession, uuid: str, access_token: str):
-    shipment_db = _read_shipment(db, uuid)
+    shipment_db = read_shipment(db, uuid)
     return shipment_db.access_token == access_token.strip().lower()
 
 # def generate_html(shipment_db):

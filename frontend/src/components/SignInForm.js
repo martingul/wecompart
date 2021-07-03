@@ -71,7 +71,7 @@ export default class SignInForm {
                     </button>
                     <div class="mt-4">
                         <div class={this.auth.error !== '' ? 'block' : 'hidden'}>
-                            <div class="flex items-center px-4 py-1 rounded bg-gray-100 text-gray-600" id="form-error">
+                            <div class="flex items-center px-4 py-1 rounded bg-red-100 text-red-600" id="form-error">
                                 <Icon name="alert-triangle" class="w-4" />
                                 <span class="ml-4">
                                     {this.auth.error}

@@ -28,7 +28,7 @@ export default class Utils {
         return date_str;
     }
     
-    static absolute_date(date) {
+    static absolute_date(date, full = false) {
         if (!(date instanceof Date)) {
             date = new Date(date);
         }
@@ -48,21 +48,25 @@ export default class Utils {
             'December'
         ];
         const days = [
-            'Sun',
-            'Mon',
-            'Tue',
-            'Wed',
-            'Thu',
-            'Fri',
-            'Sat'
+            'Sunday',
+            'Monday',
+            'Tuesday',
+            'Wednesday',
+            'Thursday',
+            'Friday',
+            'Saturday'
         ];
     
         const month = months[date.getMonth()].slice(0, 3);
-        // const day_of_week = days[this._filled_at.getDay()];
         const day = date.getDate().toString().padStart(2, '0');
         // const hour = date.getUTCHours().toString().padStart(2, '0');
         // const min = date.getMinutes().toString().padStart(2, '0');
     
+        if (full) {
+            const day_of_week = days[date.getDay()];
+            return `${day_of_week}, ${month} ${day}`
+        }
+
         return `${month} ${day}`;
     } 
     
@@ -93,16 +97,5 @@ export default class Utils {
 
     static capitalize(s) {
         return s[0].toUpperCase() + s.slice(1);
-    }
-
-    static get_status_style(status) {
-        const status_colors = {
-            'draft': 'gray',
-            'pending': 'yellow',
-            'ready': 'green',
-        };
-        const color = status_colors[status];
-        return 'py-1 rounded text-xs text-center font-bold uppercase '
-            + `bg-${color}-100 text-${color}-500`;
     }
 }

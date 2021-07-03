@@ -36,11 +36,6 @@ export default class Api {
             uuid: session[1],
         };
     }
-
-
-    static clear_storage() {
-        Api.remove_session();
-    }
     
     static authenticate(args) {
         return m.request({
@@ -191,7 +186,7 @@ export default class Api {
         });
     }
 
-    static create_shiptment_quote(args) {
+    static create_shipment_quote(args) {
         return m.request({
             method: 'POST',
             url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/`,

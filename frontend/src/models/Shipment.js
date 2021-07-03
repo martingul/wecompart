@@ -1,6 +1,7 @@
 import Api from '../Api';
 import Utils from '../Utils';
 import Item from './Item';
+import Quote from './Quote';
 
 export default class Shipment {
     constructor({
@@ -19,6 +20,7 @@ export default class Shipment {
         comments = '',
         services = [],
         items = [],
+        quotes = [],
         created_at = '',
         updated_at = '',
     }) {
@@ -44,6 +46,7 @@ export default class Shipment {
 
         this.services = services;
         this.items = items.map(item => new Item(item));
+        this.quotes = quotes.map(quote => new Quote(quote));
 
         this.created_at = created_at;
         this.updated_at = updated_at;

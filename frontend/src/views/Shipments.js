@@ -2,6 +2,7 @@ import m from 'mithril';
 import Api from '../Api';
 import Icon from '../components/Icon';
 import Loading from '../components/Loading';
+import Title from '../components/Title';
 import ShipmentList from '../components/ShipmentList';
 import Shipment from '../models/Shipment';
 import ShipmentStorage from '../models/ShipmentStorage';
@@ -74,16 +75,16 @@ export default class ShipmentsView {
         return (
             <AppView>
                 <div class="flex flex-col">
-                    <div class="mb-4 flex items-start justify-between">
-                        <div class="px-4 py-1 rounded font-bold bg-yellow-100 text-black">
+                    <div class="mb-2 flex items-start justify-between">
+                        <Title>
                             Shipments
-                        </div>
-                        <button class="flex items-center py-1 px-4 rounded whitespace-nowrap font-bold
-                            text-white bg-green-500 hover:bg-green-600 hover:shadow transition-all"
+                        </Title>
+                        <button class="flex items-center py-1 px-2 rounded whitespace-nowrap font-bold
+                            text-white bg-indigo-500 hover:bg-indigo-600 hover:shadow transition-all"
                             onclick={() => m.route.set('/shipments/new')}>
                             <Icon name="plus" class="w-5" />
                             <span class="ml-2">
-                                New
+                                Create shipment
                             </span>
                         </button>
                     </div>

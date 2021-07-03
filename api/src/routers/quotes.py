@@ -39,8 +39,13 @@ def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Create a new shipment quote"""
     try:
-        owner_uuid = session.user_uuid
-        shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
+        if session.user.role != 'shipper':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+        shipment_db = shipments.read_shipment(db, shipment_id)
+
+        if session.user.uuid == shipment_db.uuid:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
         if shipment_db is None:
             raise HTTPException(
@@ -48,7 +53,7 @@ def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
                 detail='error_shipment_not_found'
             )
         
-        quote_new_db = quotes.create_quote(db, quote, owner_uuid, shipment_db.uuid)
+        quote_new_db = quotes.create_quote(db, quote, session.user.uuid, shipment_db.uuid)
         quote_new = QuoteRead.from_orm(quote_new_db)
         return quote_new
     except Exception as e:

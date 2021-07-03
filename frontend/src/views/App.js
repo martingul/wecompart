@@ -26,7 +26,7 @@ export default class AppView {
                 </div>
                 <div class="flex flex-col items-center w-full">
                     <Header />
-                    <div class="p-8 w-full">
+                    <div class="p-12 w-full">
                         {vnode.children}
                     </div>
                 </div>

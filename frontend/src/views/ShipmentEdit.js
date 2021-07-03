@@ -3,6 +3,7 @@ import Utils from '../Utils';
 import Api from '../Api';
 import Icon from '../components/Icon';
 import Loading from '../components/Loading';
+import Title from '../components/Title';
 import ItemsEdit from '../components/ItemsEdit';
 import LocationInput from '../components/LocationInput';
 import DateInput from '../components/DateInput';
@@ -186,13 +187,15 @@ export default class ShipmentEditView {
             <AppView>
                 <div class="flex flex-col">
                     <div class="mb-2 flex justify-between items-start">
-                        <div class="px-4 py-1 rounded font-bold bg-yellow-100 text-black">
-                            <div class={this.is_new ? 'block' : 'hidden'}>
+                        <div class={this.is_new ? 'block' : 'hidden'}>
+                            <Title>
                                 New Shipment
-                            </div>
-                            <div class={!this.is_new ? 'block' : 'hidden'}>
+                            </Title>
+                        </div>
+                        <div class={!this.is_new ? 'block' : 'hidden'}>
+                            <Title>
                                 Edit Shipment
-                            </div>
+                            </Title>
                         </div>
                         <div class={this.shipment.status !== 'draft' ? 'block' : 'hidden'}>
                             <IconButton icon="x" callback={() => this.close()} />
@@ -283,6 +286,7 @@ export default class ShipmentEditView {
                                     <button class="flex justify-center items-center whitespace-nowrap px-4 py-1 rounded
                                         text-red-800 hover:text-red-900 bg-red-200 hover:bg-red-300 hover:shadow transition-all"
                                         onclick={() => Modal.create({
+                                            title: 'Delete shipment draft',
                                             message: 'Are you sure you want to delete this draft?',
                                             confirm_label: 'Delete',
                                             confirm_color: 'red',
