@@ -57,7 +57,7 @@ export default class Navigation {
                             Navigation.selected_view = v;
                         }}>
                         <Icon name={v.icon} class="w-5" />
-                        <span class="ml-4">
+                        <span class="ml-3">
                             {v.name}
                         </span>
                     </button>

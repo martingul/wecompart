@@ -3,6 +3,7 @@ import Utils from '../Utils';
 import Api from '../Api';
 import Icon from '../components/Icon';
 import Loading from '../components/Loading';
+import Button from '../components/Button';
 import Title from '../components/Title';
 import ItemsEdit from '../components/ItemsEdit';
 import LocationInput from '../components/LocationInput';
@@ -298,24 +299,12 @@ export default class ShipmentEditView {
                                         </span>
                                     </button>
                                 </div>
-                                <div class="flex justify-end w-full select-none">
-                                    <button class="flex justify-center items-center whitespace-nowrap mx-2 px-4 py-1 rounded
-                                        text-gray-800 hover:text-black bg-gray-100 hover:bg-gray-200 hover:shadow transition-all"
-                                        onclick={(e) => {this.save = true; this.submit(e)}}>
-                                        <Icon name="save" class="w-4" />
-                                        <span class="ml-2">
-                                            Save <span class={this.is_new ? '' : 'hidden'}>as draft</span>
-                                        </span>
-                                    </button>
-                                    <div class={this.is_new || this.shipment.status === 'draft' ? 'block' : 'hidden'}>
-                                        <button class="flex justify-center items-center whitespace-nowrap mx-2 px-4 py-1 rounded
-                                            text-gray-800 hover:text-black bg-yellow-200 hover:bg-yellow-300 hover:shadow transition-all"
-                                            onclick={(e) => {this.save = false; this.submit(e)}}>
-                                            <Icon name="arrow-right" class="w-4" />
-                                            <span class="ml-2">
-                                                Create
-                                            </span>
-                                        </button>
+                                <div class="flex items-center justify-end w-full select-none">
+                                    <Button text={`Save ${this.is_new ? 'as draft' : ''}`} icon="save" active={false}
+                                        callback={(e) => {this.save = true; this.submit(e)}} />
+                                    <div class={this.is_new || this.shipment.status === 'draft' ? 'block ml-2' : 'hidden'}>
+                                        <Button text="Create" icon="arrow-right"
+                                            callback={(e) => {this.save = false; this.submit(e)}} />
                                     </div>
                                 </div>
                             </div>

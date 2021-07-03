@@ -1,6 +1,7 @@
 import m from 'mithril';
 import Utils from '../Utils';
 import Icon from './Icon';
+import Button from './Button';
 import ItemEdit from './ItemEdit';
 import Item from '../models/Item';
 
@@ -46,15 +47,10 @@ export default class ItemsEdit {
                             item={item} delete={this.delete()} />
                     ))}
                 </div>
-                <div class="flex justify-start">
-                    <button class="flex justify-center items-center whitespace-nowrap mx-2 px-4 py-1 rounded
-                        text-gray-800 hover:text-black bg-green-100 hover:bg-green-200 hover:shadow transition-all"
-                        onclick={() => this.create()}>
-                        <Icon name="plus" class="w-4" />
-                        <span class="ml-2">
-                            Add item
-                        </span>
-                    </button>
+                <div class="flex justify-start mx-2">
+                    <Button text="Add item" icon="plus"
+                        callback={() => this.create()}
+                    />
                 </div>
             </div>
         );

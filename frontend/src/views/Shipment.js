@@ -5,7 +5,7 @@ import Utils from '../Utils';
 import Icon from '../components/Icon';
 import Loading from '../components/Loading';
 import Title from '../components/Title';
-import IconButton from '../components/IconButton';
+import Button from '../components/Button';
 import Table from '../components/Table';
 import ShipmentStatus from '../components/ShipmentStatus';
 import ShipmentActions from '../components/ShipmentActions';
@@ -314,14 +314,8 @@ export default class ShipmentView {
                                 Quotes
                             </Title>
                             <div class={(this.user && this.user.role === 'shipper') ? 'block' : 'hidden'}>
-                                <button class="flex items-center font-bold font-lg px-2 py-1 rounded hover:shadow transition-all
-                                    border border-gray-500"
-                                    onclick={() => {this.show_quote_form = true}}>
-                                        <Icon name="plus" class="w-5" />
-                                        <span class="ml-1">
-                                            New quote
-                                        </span>
-                                </button>
+                                <Button text="Create quote" icon="plus"
+                                    callback={() => {this.show_quote_form = true}} />
                             </div>
                         </div>
                         <div class={this.shipment.quotes.length > 0 ? 'flex' : 'hidden'}>

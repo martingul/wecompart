@@ -4,6 +4,7 @@ import Icon from '../components/Icon';
 import Loading from '../components/Loading';
 import Title from '../components/Title';
 import Table from '../components/Table';
+import Button from '../components/Button';
 import ShipmentTableRow from '../components/ShipmentTableRow';
 import Shipment from '../models/Shipment';
 import ShipmentStorage from '../models/ShipmentStorage';
@@ -54,19 +55,13 @@ export default class ShipmentsView {
                             <div class="my-4 text-gray-200">
                                 <Icon name="wind" class="w-12 h-12" />
                             </div>
-                            <div class="my-1 text-gray-600">
+                            <div class="mt-1 mb-6 text-gray-600">
                                 <span>
                                     No shipments yet.
                                 </span>
                             </div>
-                            <button class="flex items-center mt-6 px-4 py-1 rounded
-                                text-gray-800 hover:text-black bg-green-100 hover:bg-green-200 hover:shadow transition-all"
-                                onclick={() => m.route.set('/shipments/new')}>
-                                <Icon name="plus" class="w-4" />
-                                <span class="ml-2">
-                                    New shipment
-                                </span>
-                            </button>
+                            <Button icon="plus" text="New shipment"
+                                callback={() => m.route.set('/shipments/new')} />
                         </div>
                     </div>
                 </AppView>
@@ -80,14 +75,8 @@ export default class ShipmentsView {
                         <Title>
                             Shipments
                         </Title>
-                        <button class="flex items-center py-1 px-2 rounded whitespace-nowrap font-bold
-                            text-white bg-indigo-500 hover:bg-indigo-600 hover:shadow transition-all"
-                            onclick={() => m.route.set('/shipments/new')}>
-                            <Icon name="plus" class="w-5" />
-                            <span class="ml-2">
-                                Create shipment
-                            </span>
-                        </button>
+                        <Button icon="plus" text="Create shipment"
+                            callback={() => m.route.set('/shipments/new')} />
                     </div>
                     <Table collection={ShipmentStorage.shipments}
                         fields={[
