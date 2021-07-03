@@ -45,8 +45,8 @@ export default class Navigation {
                     </button>
                 </div>
                 {Navigation.views.map(v => (
-                    <button class={'flex items-center w-full px-6 py-2 my-1 transition-all '
-                        + (Navigation.selected_view === v ? 'text-indigo-600 font-bold' : 'text-gray-500 hover:text-black')}
+                    <button class={'flex items-center w-full px-6 py-2 my-0.5 transition-all '
+                        + (Navigation.selected_view === v ? 'text-indigo-600 font-bold' : 'text-gray-600 hover:text-black')}
                         onclick={() => {
                             v.navigate();
                             Navigation.selected_view = v;

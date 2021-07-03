@@ -36,6 +36,7 @@ export default class Header {
 
         return (
             <div class="w-full flex justify-between items-center py-4 px-8 border-b border-gray-100">
+                {/* add collapse navigation button */}
                 <div class="w-full mr-12">
                     <SearchInput />
                 </div>

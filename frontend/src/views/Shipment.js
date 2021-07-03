@@ -6,9 +6,11 @@ import Icon from '../components/Icon';
 import Loading from '../components/Loading';
 import Title from '../components/Title';
 import IconButton from '../components/IconButton';
+import Table from '../components/Table';
 import ShipmentStatus from '../components/ShipmentStatus';
 import ShipmentActions from '../components/ShipmentActions';
 import ShipmentComments from '../components/ShipmentComments';
+import ItemTableRow from '../components/ItemTableRow';
 import QuoteEdit from '../components/QuoteEdit';
 import QuoteList from '../components/QuoteList';
 import Modal from '../components/Modal';
@@ -140,10 +142,10 @@ export default class ShipmentView {
         return (
             <AppView>
                 <div class='flex flex-col'>
-                    <div class='flex justify-between items-start'>
+                    <div class='flex justify-between items-center pb-2 border-b border-gray-200'>
                         <div class="flex flex-col">
                             <div class="mb-1 flex items-center text-gray-500">
-                                <Icon name="grid" class="w-4" />
+                                <Icon name="hexagon" class="w-4" />
                                 <span class="uppercase ml-2 font-semibold">
                                     Shipment
                                 </span>
@@ -226,109 +228,33 @@ export default class ShipmentView {
                             </div>
                         </div>
                         <div class="mt-4 mb-6 flex flex-col">
-                            <div class="mb-2">
+                            <div class="mb-4 flex items-center">
                                 <span class="rounded text-lg font-bold text-black">
                                     Shipment content
                                 </span>
-                            </div>
-                            <div class="rounded shadow border border-gray-200">
-                                <button class="px-4 py-2 flex items-center whitespace-nowrap"
-                                    onclick={(e) => this.show_items = !this.show_items}>
-                                    <span class="p-1 text-black">
+                                <span>
+                                    <span class="ml-2 text-gray-500">
                                         {(() => {
                                             const total_item_quantity = this.shipment.get_total_item_quantity();
                                             const total_items_weight = this.shipment.get_total_item_weight();
                                             return `${total_item_quantity} ${total_item_quantity === 1 ? 'item' : 'items'}, ${total_items_weight} kg`
                                         })()}
                                     </span>
-                                    <div class={this.show_items ? 'inline-block' : 'hidden'}>
-                                        <Icon name="chevron-down" class="w-5" />
-                                    </div>
-                                    <div class={!this.show_items ? 'inline-block' : 'hidden'}>
-                                        <Icon name="chevron-right" class="w-5" />
-                                    </div>
-                                </button>
-                                <div class={this.show_items ? 'flex flex-col' : 'hidden'}>
-                                    <div class="py-2 px-4">
-                                        {this.shipment.items.map((item, i) => {
-                                            return (
-                                                <div class="my-2 py-2 px-4 bg-white rounded border border-gray-100">
-                                                    <div class="my-1 flex items-center">
-                                                        <div class="w-full font-bold">
-                                                            Item {i + 1}
-                                                        </div>
-                                                        <div class="font-bold text-gray-600">
-                                                            <code>x{item.quantity}</code>
-                                                        </div>
-                                                    </div>
-                                                    <div class="my-2 flex flex-col">
-                                                        <div class="text-gray-600 leading-relaxed">
-                                                            Description
-                                                        </div>
-                                                        <div class="my-1 text-black italic">
-                                                            {item.description}
-                                                        </div>
-                                                    </div>
-                                                    <div class="my-2 flex justify-between">
-                                                        <div class="flex flex-col">
-                                                            <div class="text-gray-600">
-                                                                Length
-                                                            </div>
-                                                            <div class="text-black">
-                                                                <code>
-                                                                    {item.length}
-                                                                </code>
-                                                                <span class="ml-1 text-sm text-gray-500">
-                                                                    {item.dim_unit.value}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex flex-col">
-                                                            <div class="text-gray-600">
-                                                                Width
-                                                            </div>
-                                                            <div class="text-black">
-                                                                <code>
-                                                                    {item.width}
-                                                                </code>
-                                                                <span class="ml-1 text-sm text-gray-500">
-                                                                    {item.dim_unit.value}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex flex-col">
-                                                            <div class="text-gray-600">
-                                                                Height
-                                                            </div>
-                                                            <div class="text-black">
-                                                                <code>
-                                                                    {item.height}
-                                                                </code>
-                                                                <span class="ml-1 text-sm text-gray-500">
-                                                                    {item.dim_unit.value}
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="flex flex-col">
-                                                            <div class="text-gray-600">
-                                                                Weight
-                                                            </div>
-                                                            <div class="text-black">
-                                                                <code>
-                                                                    {item.weight}
-                                                                </code>
-                                                                <span class="ml-1 text-sm text-gray-500">
-                                                                    kg
-                                                                </span>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                </div>
+                                </span>
                             </div>
+                            <Table collection={this.shipment.items}
+                                fields={[
+                                    {label: 'description', type: 'string'},
+                                    {label: 'quantity', type: 'number'},
+                                    {label: 'length', type: 'number'},
+                                    {label: 'width', type: 'number'},
+                                    {label: 'height', type: 'number'},
+                                    {label: 'weight', type: 'number'},
+                                ]}>
+                                {this.shipment.items.map(item =>
+                                    <ItemTableRow key={item.uuid} item={item} />
+                                )}
+                            </Table>
                         </div>
                         <div class="my-2 flex flex-col sm:flex-row justify-between items-start">
                             <div class="flex flex-col">

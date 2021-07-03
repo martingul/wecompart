@@ -42,13 +42,13 @@ export default class ShipmentActions {
             <div id="shipment-actions-button" class="relative flex flex-col">
                 <IconButton icon="more-horizontal" callback={() => this.toggle()} />
                 <div id="shipment-actions-dropdown" class={this.show_dropdown ? 'block' : 'hidden'}>
-                    <div class="absolute overflow-y-auto -ml-32 w-44 z-10 shadow border border-gray-200 bg-white">
+                    <div class="absolute overflow-y-auto -ml-32 w-44 z-10 shadow border border-gray-100 bg-white">
                         {this.actions.map(action => (
-                            <div class="flex items-center w-full cursor-pointer py-1 px-2 border-b last:border-b-0 whitespace-nowrap overflow-hidden
-                                text-gray-600 hover:text-gray-800 hover:bg-gray-100"
+                            <div class="flex items-center w-full cursor-pointer py-1 px-4 whitespace-nowrap overflow-hidden
+                                text-gray-800 hover:text-indigo-800 hover:bg-indigo-50"
                                 onclick={() => this.handle_action(action)}>
-                                <Icon name={action.icon} class="w-5" />
-                                <span class="ml-4">
+                                <Icon name={action.icon} class="w-4" />
+                                <span class="ml-3">
                                     {action.label}
                                 </span>
                             </div>

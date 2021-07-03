@@ -3,7 +3,8 @@ import Api from '../Api';
 import Icon from '../components/Icon';
 import Loading from '../components/Loading';
 import Title from '../components/Title';
-import ShipmentList from '../components/ShipmentList';
+import Table from '../components/Table';
+import ShipmentTableRow from '../components/ShipmentTableRow';
 import Shipment from '../models/Shipment';
 import ShipmentStorage from '../models/ShipmentStorage';
 import AppView from './App';
@@ -75,7 +76,7 @@ export default class ShipmentsView {
         return (
             <AppView>
                 <div class="flex flex-col">
-                    <div class="mb-2 flex items-start justify-between">
+                    <div class="mb-6 flex items-start justify-between">
                         <Title>
                             Shipments
                         </Title>
@@ -88,9 +89,29 @@ export default class ShipmentsView {
                             </span>
                         </button>
                     </div>
-                    <ShipmentList />
+                    <Table collection={ShipmentStorage.shipments}
+                        fields={[
+                            {label: 'value', type: 'number'},
+                            {label: '', type: 'string'},
+                            {label: '', type: 'string'},
+                            {label: 'pickup', type: 'string'},
+                            {label: 'delivery', type: 'string'},
+                            {label: 'date', type: 'date'},
+                        ]}>
+                        {ShipmentStorage.shipments.map(s =>
+                            <ShipmentTableRow key={s.uuid} shipment={s} 
+                                callback={(s) => {
+                                    if (s.status === 'draft') {
+                                        m.route.set('/shipments/:id/edit', {id: s.uuid});
+                                    } else {
+                                        m.route.set('/shipments/:id', {id: s.uuid});
+                                    }
+                                }}
+                            />
+                        )}
+                    </Table>
                     <div class="my-2">
-                        <span class="text-black font-bold">
+                        <span class="text-black">
                             {ShipmentStorage.shipments.length}
                         </span>
                         <span class="text-gray-600 ml-1.5">
