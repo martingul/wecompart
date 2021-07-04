@@ -7,6 +7,14 @@ export default class Api {
         `ws://localhost:5000/?key=${Api.encode_session(Api.get_session())}`
     );
 
+    static websocket_handlers = [];
+
+    static register_websocket_handler(handler) {
+        if (Api.websocket_handlers.filter(h => h.name === handler.name).length === 0) {
+            Api.websocket_handlers.push(handler);
+        }
+    }
+
     static get_session() {
         const token = localStorage.getItem('token');
         const uuid = localStorage.getItem('uuid');

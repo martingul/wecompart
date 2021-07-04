@@ -1,6 +1,7 @@
 import m from 'mithril';
 import Api from '../Api';
 import Notifications from './Notifications';
+import IconButton from './IconButton';
 import Icon from './Icon';
 import Logo from './Logo';
 import SearchInput from './SearchInput';
@@ -37,10 +38,8 @@ export default class Header {
 
         return (
             <div class="w-full flex justify-between items-center py-4 border-b border-gray-100">
-                <button class="mx-8"
-                    onclick={() => Navigation.show = !Navigation.show}>
-                    <Icon name="menu" class="w-5" />
-                </button>
+                <IconButton class="mx-8" icon="menu"
+                    callback={() => Navigation.show = !Navigation.show} />
                 <div class="w-full">
                     <SearchInput />
                 </div>

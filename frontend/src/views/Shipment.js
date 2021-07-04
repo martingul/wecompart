@@ -48,15 +48,18 @@ export default class ShipmentView {
         this.show_items = false;
         this.show_quote_form = false;
 
-        Api.websocket.onmessage = (e) => {
-            const notification = JSON.parse(e.data);
-            console.log(notification);
-            if (notification.type === 'new_quote') {
-                const quote = JSON.parse(notification.content);
-                this.shipment.quotes.push(new Quote(quote));
-                m.redraw();
+        Api.register_websocket_handler({
+            name: 'new_quote_handler',
+            fn: (e) => {
+                const notification = JSON.parse(e.data);
+                console.log(notification);
+                if (notification.type === 'new_quote') {
+                    const quote = JSON.parse(notification.content);
+                    this.shipment.quotes.push(new Quote(quote));
+                    m.redraw();
+                }
             }
-        }
+        });
     }
 
     // download_shipment(format) {

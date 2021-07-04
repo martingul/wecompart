@@ -20,7 +20,7 @@ export default class AppView {
         }
 
         return (
-            <div class="flex w-full h-full min-h-screen">
+            <div class="flex w-full h-full min-h-screen antialiased">
                 <div class={this.user ? 'flex' : 'hidden'}>
                     <Navigation />
                 </div>

@@ -1,9 +1,14 @@
 import m from 'mithril';
+import Api from './Api';
 import HomeView from './views/Home';
 import AuthView from './views/Auth';
 import ShipmentsView from './views/Shipments';
 import ShipmentEditView from './views/ShipmentEdit';
 import ShipmentView from './views/Shipment';
+
+Api.websocket.onmessage = (e) => {
+    Api.websocket_handlers.forEach(h => h.fn(e));
+}
 
 m.route(document.body, '/', {
     '/': {render: () => <HomeView />},
