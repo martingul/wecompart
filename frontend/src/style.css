@@ -4,16 +4,29 @@
 @tailwind utilities;
 
 @layer components {
-    button:focus, input:focus, select:focus, textarea:focus {
+    button:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
         @apply outline-none !important;
     }
 
-    input, select, textarea {
-        @apply appearance-none w-full py-2 px-4 rounded transition-colors box-border border
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    select,
+    textarea {
+        @apply appearance-none w-full py-1 px-2 rounded transition-colors box-border border
             border-gray-300 !important;
     }
 
-    input:focus, select:focus, textarea:focus {
+    input[type="text"]:focus, 
+    input[type="email"]:focus,
+    input[type="password"]:focus,
+    input[type="number"]:focus,
+    select:focus,
+    textarea:focus {
         @apply border-gray-400 !important;
     }
 }

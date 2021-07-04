@@ -1,4 +1,5 @@
 import m from 'mithril';
+import Api from '../Api';
 import Icon from './Icon';
 
 export default class Notifications {

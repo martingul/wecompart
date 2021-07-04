@@ -17,7 +17,7 @@ export default class ShipmentComments {
 
     view(vnode) {
         return (
-            <div class="py-2 px-4 leading-relaxed text-gray-800">
+            <div class="leading-relaxed text-gray-800">
                 {this.show_more ? this.comments : this.comments_short}
                 <div class={this.is_long ? 'inline-block' : 'hidden'}>
                     <button class="leading-tight ml-2 text-gray-500 border-b border-gray-500 border-dotted"

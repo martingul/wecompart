@@ -52,6 +52,20 @@ export default class Shipment {
         this.updated_at = updated_at;
     }
 
+    serialize() {
+        return {
+            status: this.status,
+            pickup_address_id: this.pickup_address.place_id,
+            delivery_address_id: this.delivery_address.place_id,
+            pickup_date: this.pickup_date.value,
+            currency: this.currency.value,
+            total_value: parseFloat(this.total_value.value),
+            comments: this.comments.value,
+            services: this.services,
+            items: this.items.map(item => item.serialize()),
+        };
+    }
+
     get_total_value_fmt() {
         return Utils.format_money(
             this.total_value.value, this.currency.value
@@ -66,18 +80,14 @@ export default class Shipment {
         return this.items.map(item => item.weight).reduce((a, c) => a + c);
     }
 
-    serialize() {
-        return {
-            status: this.status,
-            pickup_address_id: this.pickup_address.place_id,
-            delivery_address_id: this.delivery_address.place_id,
-            pickup_date: this.pickup_date.value,
-            currency: this.currency.value,
-            total_value: parseFloat(this.total_value.value),
-            comments: this.comments.value,
-            services: this.services,
-            items: this.items.map(item => item.serialize()),
-        };
+    get_best_quote() {
+        if (this.quotes.length === 0) {
+            return null;
+        } else if (this.quotes.length === 1) {
+            return this.quotes[0];
+        }
+            
+        return this.quotes.sort((l, r) => l.price - r.price)[0];
     }
 
     create() {

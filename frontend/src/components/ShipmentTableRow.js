@@ -17,7 +17,7 @@ export default class ShipmentListRow {
                 <td class="w-1 py-2 text-black font-bold text-right">
                     {this.shipment.get_total_value_fmt()}
                 </td>
-                <td class="w-1 py-2 px-2 uppercase text-gray-500">
+                <td class="w-1 py-2 px-2 uppercase text-gray-400">
                     {this.shipment.currency.value}
                 </td>
                 <td class="w-1 py-2 pr-4">

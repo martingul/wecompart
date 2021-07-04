@@ -8,6 +8,16 @@ export default class Table {
         this.callback = vnode.attrs.callback ? vnode.attrs.callback : () => {};
 
         this.sortable = this.fields.map(field => {
+            if (field.type === undefined) {
+                field.active = false;
+                field.desc = true;
+                return field;
+            }
+
+            if (field.attr === undefined) {
+                field.attr = field.label;
+            }
+
             if (field.type === 'string') {
                 field.cmp = (l, r) => {
                     let l_value = l[field.attr];
@@ -35,7 +45,7 @@ export default class Table {
                         r_value = r_value.value;
                     }
 
-                    return r_value - l_value;
+                    return l_value - r_value;
                 }
             }
 
@@ -59,11 +69,10 @@ export default class Table {
                         r_value = Date.parse(r_value)
                     }
 
-                    return r_value - l_value;
+                    return l_value - r_value;
                 }
             }
-            field.active = false;
-            field.desc = true;
+
             return field;
         });
 
@@ -94,7 +103,7 @@ export default class Table {
 
     view(vnode) {
         return (               
-            <table>
+            <table class="w-full">
                 <tr class="whitespace-nowrap text-xs">
                     {this.sortable.map(s => {
                         if (s.label === '') {
