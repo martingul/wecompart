@@ -21,4 +21,4 @@ class User(Base, Entity):
     items = relationship('Item', back_populates='owner')
     quotes = relationship('Quote', back_populates='owner')
     notifications = relationship('Notification', back_populates='user',
-        order_by='desc(Notification.created_at)')
+        order_by='desc(Notification.created_at)', lazy='dynamic')

@@ -236,4 +236,13 @@ export default class Api {
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
         }); 
     }
+
+    static update_notification(args) {
+        return m.request({
+            method: 'PATCH',
+            url: `${Api.API_ROOT}/notifications/${args.notification_id}`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+            body: args.patch,
+        });
+    }
 }

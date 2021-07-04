@@ -50,10 +50,10 @@ export default class ShipmentView {
             name: 'new_quote_handler',
             fn: (e) => {
                 const notification = JSON.parse(e.data);
-                console.log(notification);
                 if (notification.type === 'new_quote') {
                     const quote = JSON.parse(notification.content);
                     this.shipment.quotes.push(new Quote(quote));
+                    this.shipment.quotes.sort((l, r) => l.price - r.price)
                     m.redraw();
                 }
             }
@@ -317,7 +317,7 @@ export default class ShipmentView {
                                     </span>
                                 </span>
                             </div>
-                            <div class={(this.user && this.user.role === 'shipper') ? 'block' : 'hidden'}>
+                            <div class={(this.user && this.user.role === 'shipper' && !this.is_owner) ? 'block' : 'hidden'}>
                                 <Button text="Create quote" icon="plus"
                                     callback={() => {
                                         if (this.user && this.user.role === 'shipper') {
