@@ -19,6 +19,7 @@ class Shipment(Base, Entity):
     delivery_address_long = Column(String, nullable=True)
     delivery_address_short = Column(String, nullable=True)
 
+    map_url = Column(String, nullable=False)
     country = Column(String, nullable=False)
 
     currency = Column(String, nullable=True)

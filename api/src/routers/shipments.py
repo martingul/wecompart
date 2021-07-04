@@ -56,6 +56,11 @@ def create_shipment(shipment: ShipmentCreate,
         shipment.delivery_address_long = delivery_location['long']
         shipment.delivery_address_short = delivery_location['short']
 
+        shipment.map_url = maps.generate_map_url([
+            shipment.pickup_address_long,
+            shipment.delivery_address_long
+        ])
+
         shipment.country = pickup_location['country'] # or delivery_location?
         candidate_shippers = shippers.read_candidate_shippers(db, shipment.country)
         # TODO send to shipper.emails and notify each user with same email domain
@@ -112,11 +117,6 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
         if shipment_db.owner_uuid != user_uuid and shipment.quotes:
             user_quotes = [q for q in shipment.quotes if q.owner_uuid == user_uuid]
             shipment.quotes = [shipment.quotes[0]] + user_quotes
-
-        shipment.map_url = maps.generate_map_url([
-            shipment.pickup_address_long,
-            shipment.delivery_address_long
-        ])
 
         return shipment
     except Exception as e:
