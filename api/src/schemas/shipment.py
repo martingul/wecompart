@@ -4,9 +4,8 @@ from pydantic import BaseModel, validator
 
 from schemas.item import ItemRead, ItemCreate
 from schemas.quote import QuoteRead
-# from schemas.quote import QuoteRead
 
-shipment_status = ['draft', 'pending']
+shipment_statuses = ['draft', 'pending']
 
 class ShipmentDownload(BaseModel):
     uuid: str
@@ -83,7 +82,7 @@ class ShipmentCreate(BaseModel):
 
     @validator('status')
     def validate_status(cls, v):
-        if v not in shipment_status:
+        if v not in shipment_statuses:
             raise ValueError('error_invalid_shipment_status')
         return v
 
@@ -99,6 +98,6 @@ class ShipmentUpdate(BaseModel):
 
     @validator('status')
     def validate_status(cls, v):
-        if v not in shipment_status:
+        if v not in shipment_statuses:
             raise ValueError('error_invalid_shipment_status')
         return v

@@ -20,4 +20,5 @@ class User(Base, Entity):
     shipments = relationship('Shipment', back_populates='owner')
     items = relationship('Item', back_populates='owner')
     quotes = relationship('Quote', back_populates='owner')
-    notifications = relationship('Notification', back_populates='user')
+    notifications = relationship('Notification', back_populates='user',
+        order_by='desc(Notification.created_at)')
