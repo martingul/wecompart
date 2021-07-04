@@ -4,7 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from storage import db_session, DatabaseSession
 from schemas.session import Session
 from schemas.quote import QuoteRead, QuoteCreate, QuoteUpdate
-from lib import auth, shipments, quotes
+from schemas.notification import NotificationRead, NotificationCreate
+from lib import auth, shipments, quotes, notifications
+from lib.websockets import websocket_manager
 
 # TODO make sure these endpoints are restricted to shippers having access
 # to the requested shipment
@@ -34,7 +36,7 @@ def read_shipment_quotes(shipment_id: str,
 
 @router.post('/{shipment_id}/quotes/', response_model=QuoteRead,
     status_code=status.HTTP_201_CREATED)
-def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
+async def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
     session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Create a new shipment quote"""
@@ -55,6 +57,17 @@ def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
         
         quote_new_db = quotes.create_quote(db, quote, session.user.uuid, shipment_db.uuid)
         quote_new = QuoteRead.from_orm(quote_new_db)
+
+        notification_new = NotificationCreate(
+            user_uuid=shipment_db.owner_uuid,
+            type='new_quote',
+            content=quote_new.json()
+        )
+
+        notification_db = notifications.create_notification(db, notification_new)
+        notification = NotificationRead.from_orm(notification_db)
+        await notifications.send_notification(shipment_db.owner_uuid, notification)
+
         return quote_new
     except Exception as e:
         print(vars(e))

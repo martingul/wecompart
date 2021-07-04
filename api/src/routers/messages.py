@@ -7,7 +7,7 @@ from schemas.session import Session
 from schemas.message import MessageRead, MessageCreate
 from schemas.notification import NotificationRead, NotificationCreate
 from lib import auth, users, messages, notifications
-from lib.websockets import manager
+from lib.websockets import websocket_manager
 
 router = APIRouter()
 
@@ -57,24 +57,24 @@ async def create_message(message: MessageCreate,
         # src_is_shipper xor dst_is_shipper, maybe rewrite as bool(a) != bool(b)
         if (src_is_shipper and not dst_is_shipper) or (not src_is_shipper and dst_is_shipper):
             message_db = messages.create_message(db, src_user_uuid, message)
-            message = MessageRead.from_orm(message_db)
+            message_new = MessageRead.from_orm(message_db)
             # TODO notify dst_user if they are online, else create notification
 
             notification_new = NotificationCreate(
-                user_uuid=message.dst_user_uuid,
+                user_uuid=message_new.dst_user_uuid,
                 type='new_message',
-                content=message.json()
+                content=message_new.json()
             )
 
             notification_db = notifications.create_notification(db, notification_new)
             notification = NotificationRead.from_orm(notification_db)
 
-            dst_conn = manager.get_connection(message.dst_user_uuid)
+            dst_conn = websocket_manager.get_connection(message_new.dst_user_uuid)
             if dst_conn:
                 dst_conn = dst_conn[0]
-                await manager.send_message(dst_conn, notification.json())
+                await websocket_manager.send_message(dst_conn, notification.json())
             
-            return message
+            return message_new
         else:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     except Exception as e:

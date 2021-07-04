@@ -10,9 +10,9 @@ router = APIRouter()
 async def websocket_endpoint(websocket: WebSocket,
     session: Session = Depends(auth.auth_session)):
     conn = websockets.Connection(websocket, session.user_uuid)
-    await websockets.manager.connect(conn)
+    await websockets.websocket_manager.connect(conn)
     try:
         while True:
             data = await conn.websocket.receive_text()
     except WebSocketDisconnect:
-        websockets.manager.disconnect(conn)
+        websockets.websocket_manager.disconnect(conn)
