@@ -109,10 +109,6 @@ def delete_shipment(db: DatabaseSession, shipment: Shipment):
     db.commit()
     return shipment
 
-def verify_access_token(db: DatabaseSession, uuid: str, access_token: str):
-    shipment_db = read_shipment(db, uuid)
-    return shipment_db.access_token == access_token.strip().lower()
-
 # def generate_html(shipment_db):
 #     html = None
 #     try:

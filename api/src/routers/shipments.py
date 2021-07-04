@@ -4,7 +4,7 @@ from fastapi import APIRouter, Header, Response, Depends, HTTPException, status
 from storage import db_session, DatabaseSession
 from schemas.session import Session
 from schemas.shipment import ShipmentRead, ShipmentCreate, ShipmentUpdate
-from lib import auth, shipments, shippers
+from lib import auth, shipments, shippers, users
 
 router = APIRouter()
 
@@ -77,12 +77,10 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
     authorization: Optional[str] = Header(None),
     db: DatabaseSession = Depends(db_session)) -> ShipmentRead:
     """Read a user's shipment"""
-    shipment_db = None
     try:
         shipment_db = shipments.read_shipment(db, shipment_id)
     except Exception as e:
         print(vars(e))
-
     if shipment_db is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -90,31 +88,30 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
         )
 
     user_uuid = None
-    valid_access_token = False
-
     try:
-        # session = auth.parse_authorization(db, authorization)
-        # owner_uuid = session.user_uuid
-
-        token, user_uuid = auth.parse_header(authorization)
+        _, user_uuid = auth.parse_header(authorization)
     except Exception as e:
         print(vars(e))
         if isinstance(e, HTTPException) and access_token is not None:
-            valid_access_token = shipments.verify_access_token(db, shipment_id, access_token)
+            valid_access_token = shipment_db.access_token == access_token.strip().lower()
             if not valid_access_token:
                 raise e
         else:
             raise e
 
-    if user_uuid is not None:
-        valid_access_token = shipment_db.access_token == access_token
-        if not valid_access_token and shipment_db.owner_uuid != user_uuid:
-            raise HTTPException(
-                status_code=status.HTTP_403_FORBIDDEN
-            )
-
+    if user_uuid is not None and shipment_db.owner_uuid != user_uuid:
+        try:
+            user_db = users.read_user(db, index=user_uuid, by='uuid')
+        except Exception as e:
+            print(e)
+            raise e
+        if user_db.role != 'shipper':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     try: 
         shipment = ShipmentRead.from_orm(shipment_db)
+        if shipment_db.owner_uuid != user_uuid and shipment.quotes:
+            user_quotes = [q for q in shipment.quotes if q.owner_uuid == user_uuid]
+            shipment.quotes = [shipment.quotes[0]] + user_quotes
         return shipment
     except Exception as e:
         print(vars(e))

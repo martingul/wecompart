@@ -17,9 +17,6 @@ def create_quote(db: DatabaseSession, quote: QuoteCreate,
     db.refresh(quote_db)
     return quote_db
 
-# def read_quotes(db: Session, skip: int = 0, limit: int = 100):
-#     return db.query(Quote).offset(skip).limit(limit).all()
-
 def read_quote(db: DatabaseSession, quote_uuid: str, shipment_uuid: str):
     return db.query(Quote).filter(Quote.uuid == quote_uuid,
         Quote.shipment_uuid == shipment_uuid).first()

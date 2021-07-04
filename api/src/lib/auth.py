@@ -20,8 +20,6 @@ credentials_exception = HTTPException(
     headers={'WWW-Authenticate': 'Bearer'},
 )
 
-# def parse_cookie(cookie: str): # maybe change type to Cookie
-
 def parse_session(session: str):
     try:
         session_b64 = session.strip()
@@ -33,24 +31,23 @@ def parse_session(session: str):
 
         if user_uuid is None or token is None:
             raise Exception
-    except Exception as e:
+    except Exception:
         raise credentials_exception
     return token, user_uuid
 
-def parse_header(header: str): # maybe change type to Header
+def parse_header(header: str):
     if header is None or len(header) < 10:
         raise credentials_exception
-
     if header[:7].lower() != 'bearer ':
         raise credentials_exception
-
     try:
         session_b64 = header[7:].strip()
         session_raw = base64.b64decode(str.encode(session_b64)).decode('utf-8')
         session_decoded = session_raw.split(':')
-
         token = session_decoded[0]
         user_uuid = session_decoded[1]
+
+        print(token, user_uuid)
 
         if user_uuid is None or token is None:
             raise Exception
@@ -59,8 +56,7 @@ def parse_header(header: str): # maybe change type to Header
     return token, user_uuid
 
 # TODO add Cookie and token (Query) validation
-def auth_session(
-    session: Optional[str] = Cookie(None),
+def auth_session(session: Optional[str] = Cookie(None),
     authorization: Optional[str] = Header(None),
     key: Optional[str] = Query(None),
     db: DatabaseSession = Depends(db_session)) -> Session:
@@ -70,14 +66,10 @@ def auth_session(
         token, user_uuid = parse_header(authorization)
     elif key:
         token, user_uuid = parse_session(key)
-
     try:
         s = sessions.validate_session(db, token, user_uuid)
     except Exception:
         raise credentials_exception
-
-    # print(vars(s.user))
-
     return Session(
         uuid=s.uuid,
         user=UserRead.from_orm(s.user),
