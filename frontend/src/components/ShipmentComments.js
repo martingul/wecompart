@@ -4,7 +4,7 @@ import Utils from '../Utils';
 export default class ShipmentComments {
     constructor(vnode) {
         this.comments = vnode.attrs.comments;
-        this.comments_short = Utils.truncate(this.comments, 25);
+        this.comments_short = Utils.truncate(this.comments, 10);
         this.is_long = this.comments !== this.comments_short;
         this.show_more = false;
 

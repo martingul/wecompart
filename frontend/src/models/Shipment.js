@@ -4,6 +4,12 @@ import Item from './Item';
 import Quote from './Quote';
 
 export default class Shipment {
+    static status_colors = {
+        'draft': 'gray',
+        'pending': 'yellow',
+        'ready': 'green',
+    };
+
     constructor({
         uuid = null,
         owner_uuid = null,
@@ -78,16 +84,6 @@ export default class Shipment {
 
     get_total_item_weight() {
         return this.items.map(item => item.weight).reduce((a, c) => a + c);
-    }
-
-    get_best_quote() {
-        if (this.quotes.length === 0) {
-            return null;
-        } else if (this.quotes.length === 1) {
-            return this.quotes[0];
-        }
-            
-        return this.quotes.sort((l, r) => l.price - r.price)[0];
     }
 
     create() {

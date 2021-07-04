@@ -7,7 +7,7 @@ import Loading from '../components/Loading';
 import Title from '../components/Title';
 import Button from '../components/Button';
 import Table from '../components/Table';
-import ShipmentStatus from '../components/ShipmentStatus';
+import Badge from '../components/Badge';
 import ShipmentActions from '../components/ShipmentActions';
 import ShipmentComments from '../components/ShipmentComments';
 import ItemTableRow from '../components/ItemTableRow';
@@ -28,7 +28,6 @@ export default class ShipmentView {
         this.access_token = m.route.param('access_token');
         this.shipment = ShipmentStorage.get_by_id(this.id);
         this.error_shipment_not_found = false;
-        this.best_quote = null;
 
         this.user = User.load();
         if (!this.user && !this.access_token) {
@@ -42,7 +41,6 @@ export default class ShipmentView {
         this.is_owner = false;
         if (this.shipment) {
             this.is_owner = this.shipment.owner_id === this.user.uuid;
-            this.best_quote = this.shipment.get_best_quote();
         }
 
         this.show_items = false;
@@ -106,7 +104,6 @@ export default class ShipmentView {
             }).then(s => {
                 this.shipment = new Shipment(s);
                 console.log(this.shipment);
-                this.best_quote = this.shipment.get_best_quote();
                 if (this.user) {
                     this.is_owner = this.shipment.owner_id === this.user.uuid;
                 } else {
@@ -172,7 +169,8 @@ export default class ShipmentView {
                                     {Utils.absolute_date(this.shipment.pickup_date.value, true)}
                                 </Title>
                                 <div class="ml-2 mt-1">
-                                    <ShipmentStatus status={this.shipment.status} />
+                                    <Badge text={this.shipment.status}
+                                        color={Shipment.status_colors[this.shipment.status]} />
                                 </div>
                             </div>
                             {/* <div class="mt-1 whitespace-nowrap text-sm text-gray-400">
@@ -321,7 +319,13 @@ export default class ShipmentView {
                             </div>
                             <div class={(this.user && this.user.role === 'shipper') ? 'block' : 'hidden'}>
                                 <Button text="Create quote" icon="plus"
-                                    callback={() => {this.show_quote_form = true}} />
+                                    callback={() => {
+                                        if (this.user && this.user.role === 'shipper') {
+                                            this.show_quote_form = true;
+                                        } else {
+                                            m.route.set('/auth/signup');
+                                        }
+                                    }} />
                             </div>
                         </div>
                         <div class={(this.is_owner && this.shipment.quotes.length > 0) ? 'flex px-2' : 'hidden'}>
@@ -337,33 +341,17 @@ export default class ShipmentView {
                                 )}
                             </Table>
                         </div>
-                        <div class={(this.user && this.user.role === 'shipper' && !this.is_owner && this.best_quote) ? 'block' : 'hidden'}>
-                            <div>
-                                Best quote: ${this.best_quote.price}, {Utils.relative_date(this.best_quote.created_at)}
-                            </div>
+                        <div class={(this.user && this.user.role === 'shipper' && !this.is_owner && this.shipment.quotes.length > 0) ? 'block' : 'hidden'}>
+                            Best quote
                         </div>
                         <div class={!this.show_quote_form ? 'block' : 'hidden'}>
-                            <div class={this.shipment.quotes.length === 0 ? 'flex' : 'hidden'}>
-                                <div class="flex justify-center">
-                                    <div class="flex flex-col items-center">
-                                        <div class="my-4 text-gray-200">
-                                            <Icon name="clock" class="w-12 h-12" />
-                                        </div>
-                                        <div class="my-1 text-gray-600">
-                                            No quotes yet.
-                                        </div>
-                                        <div class={(!this.user && this.access_token) ? 'block' : 'hidden'}>
-                                            <button class="mt-8 font-bold font-lg px-4 py-1 rounded hover:shadow-lg transition-all border border-gray-500"
-                                                onclick={() => m.route.set('/auth/signup')}>
-                                                Place a quote
-                                            </button>
-                                        </div>
-                                        {/* <div class={(this.user && this.user.role === 'shipper') ? 'block' : 'hidden'}>
-                                            <button class="mt-8 font-bold font-lg px-4 py-1 rounded hover:shadow-lg transition-all border border-gray-500"
-                                                onclick={() => {this.show_quote_form = true}}>
-                                                Place a quote
-                                            </button>
-                                        </div> */}
+                            <div class={this.shipment.quotes.length === 0 ? 'flex justify-center' : 'hidden'}>
+                                <div class="flex flex-col items-center">
+                                    <div class="my-4 text-gray-200">
+                                        <Icon name="clock" class="w-12 h-12" />
+                                    </div>
+                                    <div class="my-1 text-gray-600">
+                                        No quotes yet.
                                     </div>
                                 </div>
                             </div>      
