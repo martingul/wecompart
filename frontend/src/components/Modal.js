@@ -1,5 +1,5 @@
 import m from 'mithril';
-import Icon from './Icon';
+import Button from './Button';
 import IconButton from './IconButton';
 
 export default class Modal {
@@ -44,19 +44,13 @@ export default class Modal {
                         {message}
                     </div>
                     <div class="px-6 py-2 flex justify-between border-t border-gray-200">
-                        <button class="flex justify-center items-center whitespace-nowrap px-4 py-1 rounded hover:shadow transition-all
-                            text-gray-800 hover:text-black border border-gray-300 hover:border-gray-400"
-                            onclick={() => modal.close()}>
-                            Cancel
-                        </button>
-                        <button class="flex justify-center items-center whitespace-nowrap px-4 py-1 rounded hover:shadow transition-all
-                            text-red-600 hover:text-red-800 border border-red-300 bg-red-100 hover:bg-red-200"
-                            onclick={() => {
+                        <Button text="Cancel" active={false}
+                            callback={() => modal.close()} />
+                        <Button text={confirm_label}
+                            callback={() => {
                                 confirm();
                                 modal.close()
-                            }}>
-                            {confirm_label}
-                        </button>
+                            }} />
                     </div>
                 </div>
             );
