@@ -4,7 +4,7 @@ from fastapi import APIRouter, Header, Response, Depends, HTTPException, status
 from storage import db_session, DatabaseSession
 from schemas.session import Session
 from schemas.shipment import ShipmentRead, ShipmentCreate, ShipmentUpdate
-from lib import auth, shipments, shippers, users
+from lib import auth, shipments, shippers, users, maps
 
 router = APIRouter()
 
@@ -112,9 +112,15 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
         if shipment_db.owner_uuid != user_uuid and shipment.quotes:
             user_quotes = [q for q in shipment.quotes if q.owner_uuid == user_uuid]
             shipment.quotes = [shipment.quotes[0]] + user_quotes
+
+        shipment.map_url = maps.generate_map_url([
+            shipment.pickup_address_long,
+            shipment.delivery_address_long
+        ])
+
         return shipment
     except Exception as e:
-        print(vars(e))
+        print(e)
         raise e
 
 @router.patch('/{shipment_id}', response_model=ShipmentRead)

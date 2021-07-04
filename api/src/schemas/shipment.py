@@ -41,6 +41,7 @@ class ShipmentRead(BaseModel):
     delivery_address_long: str
     delivery_address_short: str
 
+    map_url: Optional[str]
     # country: str
 
     status: str

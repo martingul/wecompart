@@ -8,12 +8,12 @@ from lib import items
 import config
 
 def read_locations(q: str):
-    api_url = f'{config.google_places_api_url}autocomplete/json'
+    api_url = f'{config.google_maps_api_url}place/autocomplete/json'
 
     params = {
         'input': q,
         'types': 'address',
-        'key': config.credentials.get('google_places_key')
+        'key': config.credentials.get('google_maps_key')
     }
 
     # TODO handle errors
@@ -32,8 +32,8 @@ def read_locations(q: str):
     return locations
 
 def read_location(id: str):
-    api_url = f'{config.google_places_api_url}details/json'
-    key = config.credentials.get('google_places_key')
+    api_url = f'{config.google_maps_api_url}place/details/json'
+    key = config.credentials.get('google_maps_key')
 
     # TODO handle errors
     res = requests.get(api_url, params={'place_id': id, 'key': key})
