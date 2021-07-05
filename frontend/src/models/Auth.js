@@ -11,6 +11,12 @@ export default class Auth {
         this.busy = false;
     }
 
+    switch_action() {
+        this.password.value = '';
+        this.error = '';
+        this.action = this.action === 'signup' ? 'signin' : 'signup'; 
+    }
+
     validate_email() {
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return this.email.value && re.test(String(this.email.value).toLowerCase());
@@ -20,7 +26,11 @@ export default class Auth {
         return this.password.value && (String(this.password.value.length) >= 6);
     }
 
-    authenticate() {
+    is_valid() {
+        return this.email.value !== '' && this.password.value !== '';
+    }
+
+    _authenticate() {
         this.busy = true;
         return Api.authenticate({
             username: this.email.value,
@@ -43,17 +53,7 @@ export default class Auth {
         });
     }
 
-    switch_action() {
-        this.password.value = '';
-        this.error = '';
-        this.action = this.action === 'signup' ? 'signin' : 'signup'; 
-    }
-
-    can_submit() {
-        return this.email.value !== '' && this.password.value !== '';
-    }
-
-    submit() {
+    authenticate() {
         this.error = '';
 
         if (!this.validate_email()) {
@@ -66,14 +66,14 @@ export default class Auth {
         }
 
         if (this.action === 'signin') {
-            return this.authenticate();
+            return this._authenticate();
         } else {
             this.busy = true;
             return Api.create_user({
                 username: this.email.value,
                 password: this.password.value
             }).then(res => {
-                return this.authenticate();
+                return this._authenticate();
             }).catch(e => {
                 if (e.response.detail === 'error_username_taken') {
                     this.error = 'An account with this email already exists.';
