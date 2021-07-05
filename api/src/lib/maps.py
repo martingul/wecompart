@@ -3,6 +3,10 @@ import urllib
 import config
 
 def generate_map_url(path: List[str]) -> str:
+    # FIXME this method leaks the api key, better design is to:
+    # store the image on cloud (e.g. S3 bucket), return the url to it,
+    # and check permissions on image access
+    # TODO return itinerary (ground + aerial) instead of geodesic path
     api_url = f'{config.google_maps_api_url}staticmap'
     key = config.credentials.get('google_maps_key')
     map_id = '3af1c97252ddb98f'
@@ -24,5 +28,4 @@ def generate_map_url(path: List[str]) -> str:
         for p in path:
             url += f'|{urllib.parse.quote(p)}'
 
-    print(url)
     return url

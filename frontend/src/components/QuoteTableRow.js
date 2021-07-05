@@ -2,9 +2,11 @@ import m from 'mithril';
 import Api from '../Api';
 import Utils from '../Utils';
 import Button from './Button';
+import Badge from './Badge';
 
 export default class QuoteTableRow {
     constructor(vnode) {
+        this.index = vnode.attrs.index;
         this.quote = vnode.attrs.quote;
         this.currency = 'usd';
     }
@@ -37,17 +39,39 @@ export default class QuoteTableRow {
 
     view(vnode) {
         return (
-            <tr class="border-b border-gray-200 text-gray-600">
+            <tr class={`text-gray-600 border-b border-gray-200
+                ${this.quote.is_user ? 'bg-yellow-50 rounded' : ''}`}>
                 <td class="w-1 py-2 text-black font-bold text-right">
-                    {Utils.format_money(this.quote.price, this.currency)}
+                    {Utils.format_money(this.quote.price.value, this.currency)}
                 </td>
                 <td class="w-1 py-2 px-2 uppercase text-gray-400">
                     {this.currency}
                 </td>
-                <td class="w-1 py-2 pr-4 whitespace-nowrap">
-                    {Utils.relative_date(this.quote.created_at)}
+                <td class="w-1 py-2 pr-4">
+                    <span class="inline-flex items-center">
+                        <span class={this.quote.is_cheapest ? 'inline-flex mx-0.5' : 'hidden'}>
+                            <Badge color="green">
+                                Cheapest
+                            </Badge>
+                        </span>
+                        <span class={this.quote.is_earliest ? 'inline-flex mx-0.5' : 'hidden'}>
+                            <Badge color="purple">
+                                Earliest
+                            </Badge>
+                        </span>
+                    </span>
                 </td>
-                <td class="w-40">
+                <td class="w-full py-2 pr-4 whitespace-nowrap">
+                    <span class="inline-flex items-baseline">
+                        <span>
+                            {Utils.absolute_date(this.quote.delivery_date.value, true)}
+                        </span>
+                        <span class="pl-2 text-sm text-gray-400">
+                            {this.quote.delivery_date.value.replaceAll('-', '/')}
+                        </span>
+                    </span>
+                </td>
+                <td class="w-full">
                     <span class={this.show_actions ? 'flex' : 'hidden'}>
                         <div class="mr-2">
                             <Button text="Accept"

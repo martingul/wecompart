@@ -13,6 +13,7 @@ export default class Shipment {
     constructor({
         uuid = null,
         owner_uuid = null,
+        map_url = '',
         status = '',
         pickup_address_id = '',
         pickup_address_short = '',
@@ -33,8 +34,8 @@ export default class Shipment {
         // TODO instead of having *.value, pass field as {field} for reference?
         this.uuid = uuid;
         this.owner_id = owner_uuid;
+        this.map_url = map_url;
         this.status = status
-
         this.pickup_address = {
             value: pickup_address_long,
             place_id: pickup_address_id,
@@ -49,11 +50,9 @@ export default class Shipment {
         this.currency = {value: currency};
         this.total_value = {value: total_value};
         this.comments = {value: comments};
-
         this.services = services;
         this.items = items.map(item => new Item(item));
         this.quotes = quotes.map(quote => new Quote(quote));
-
         this.created_at = created_at;
         this.updated_at = updated_at;
     }
@@ -146,5 +145,26 @@ export default class Shipment {
             });
         });
         this.items = this.items.filter(item => !item.delete);
+    }
+
+    flag_quotes(user_uuid) {
+        const earliest_quote_old = this.quotes.filter(q => q.is_earliest);
+        if (earliest_quote_old.length > 0) {
+            earliest_quote_old.is_earliest = false;
+        }
+        const earliest_quote = this.quotes.sort((l, r) => new Date(l.delivery_date.value) - new Date(r.delivery_date.value))[0];
+        earliest_quote.is_earliest = true;
+
+        const cheapest_quote_old = this.quotes.filter(q => q.is_cheapest);
+        if (cheapest_quote_old.length > 0) {
+            cheapest_quote_old.is_cheapest = false;
+        }
+        const cheapest_quote = this.quotes.sort((l, r) => l.price.value - r.price.value)[0];
+        cheapest_quote.is_cheapest = true;
+
+        const user_quote = this.quotes.filter(q => q.owner_uuid === user_uuid);
+        if (user_quote.length > 0) {
+            user_quote[0].is_user = true;
+        }
     }
 }

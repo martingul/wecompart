@@ -39,7 +39,7 @@ export default class ItemEdit {
                             </button>
                         </div>
                         <div class={!this.item.delete ? 'block' : 'hidden'}>
-                            <IconButton class="ml-8" icon="trash-2" width="4" color="red"
+                            <IconButton class="ml-8" icon="x" width="4" color="red"
                                 callback={() => this.delete(this.item.index)} />
                         </div>
                     </div>

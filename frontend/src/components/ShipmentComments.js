@@ -1,6 +1,7 @@
 import m from 'mithril';
 import Utils from '../Utils';
 
+// TODO rewrite generic 'LongText' component
 export default class ShipmentComments {
     constructor(vnode) {
         this.comments = vnode.attrs.comments;

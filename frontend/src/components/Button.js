@@ -14,7 +14,7 @@ export default class Button {
             return (
                 <button class={`flex items-center justify-center py-1 px-2 rounded whitespace-nowrap font-bold hover:shadow transition-all
                 + ${this.active ? 'text-white bg-indigo-500 hover:bg-indigo-600'
-                                : 'border border-gray-300 hover:border-gray-400 text-gray-800 bg-white hover:text-black'}`}
+                                : 'border border-gray-300 hover:border-gray-300 text-gray-800 bg-white hover:text-black'}`}
                     onclick={this.callback}>
                     {this.text}
                 </button>

@@ -115,12 +115,25 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
     try: 
         shipment = ShipmentRead.from_orm(shipment_db)
         if shipment_db.owner_uuid != user_uuid and shipment.quotes:
-            user_quotes = [q for q in shipment.quotes if q.owner_uuid == user_uuid]
-            shipment.quotes = [shipment.quotes[0]] + user_quotes
+            print(shipment.quotes, end='\n\n')
+            quotes = {}
+            user_quote = [q for q in shipment.quotes if q.owner_uuid == user_uuid]
+            if user_quote:
+                quotes[user_quote[0].uuid] = user_quote[0]
+
+            cheapest_quote = shipment.quotes[0]
+            earliest_quote = sorted(shipment.quotes, key=lambda q: q.delivery_date)[0]
+            print(cheapest_quote, end='\n\n')
+            print(earliest_quote, end='\n\n')
+            quotes[cheapest_quote.uuid] = cheapest_quote
+            quotes[earliest_quote.uuid] = earliest_quote
+
+            print(quotes, end='\n\n')
+            shipment.quotes = list(quotes.values())
 
         return shipment
     except Exception as e:
-        print(e)
+        print(e, vars(e))
         raise e
 
 @router.patch('/{shipment_id}', response_model=ShipmentRead)

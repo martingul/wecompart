@@ -92,7 +92,9 @@ export default class Notifications {
                                         });
                                     });
                                 }}>
-                                Mark all as read
+                                <span>
+                                    Mark all as read
+                                </span>
                             </button>
                         </div>
                         <div class={this.loading ? 'py-4 flex items-center justify-center' : 'hidden'}>
@@ -135,7 +137,9 @@ export default class Notifications {
                                                 <span class="mb-1">
                                                     A shipper placed a bid on your shipment.
                                                 </span>
-                                                <Badge color="gray" text={`Bid: ${Utils.format_money(quote.price, 'usd')}`} />
+                                                <Badge color="gray">
+                                                    Bid: {Utils.format_money(quote.price, 'usd')}
+                                                </Badge>
                                             </div>
                                             <div class="ml-4 flex flex-col items-start">
                                                 <span class="text-xs text-gray-400">

@@ -2,6 +2,7 @@ import m from 'mithril';
 import Utils from '../Utils';
 import Icon from './Icon';
 
+// TODO rewrite generic 'PickerInput' component
 export default class ShipmentServicesInput {
     constructor(vnode) {
         this.services = vnode.attrs.bind;

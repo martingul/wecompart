@@ -5,6 +5,7 @@ import Utils from '../Utils';
 import Icon from '../components/Icon';
 import Loading from '../components/Loading';
 import Title from '../components/Title';
+import Timer from '../components/Timer';
 import Button from '../components/Button';
 import Table from '../components/Table';
 import Badge from '../components/Badge';
@@ -18,7 +19,6 @@ import ShipmentStorage from '../models/ShipmentStorage';
 import Shipment from '../models/Shipment';
 import User from '../models/User';
 import AppView from './App';
-import Quote from '../models/Quote';
 
 export default class ShipmentView {
     constructor(vnode) {
@@ -41,23 +41,24 @@ export default class ShipmentView {
         this.is_owner = false;
         if (this.shipment) {
             this.is_owner = this.shipment.owner_id === this.user.uuid;
+            this.shipment.flag_quotes(this.user.uuid);
         }
 
-        this.show_items = false;
         this.show_quote_form = false;
 
-        Api.register_websocket_handler({
-            name: 'new_quote_handler',
-            fn: (e) => {
-                const notification = JSON.parse(e.data);
-                if (notification.type === 'new_quote') {
-                    const quote = JSON.parse(notification.content);
-                    this.shipment.quotes.push(new Quote(quote));
-                    this.shipment.quotes.sort((l, r) => l.price - r.price)
-                    m.redraw();
-                }
-            }
-        });
+        // Api.register_websocket_handler({
+        //     name: 'new_quote_handler',
+        //     fn: (e) => {
+        //         const notification = JSON.parse(e.data);
+        //         if (notification.type === 'new_quote') {
+        //             const quote = JSON.parse(notification.content);
+        //             console.log(quote);
+        //             this.shipment.quotes.push(new Quote(quote));
+        //             this.shipment.flag_quotes();
+        //             m.redraw();
+        //         }
+        //     }
+        // });
     }
 
     // download_shipment(format) {
@@ -103,12 +104,14 @@ export default class ShipmentView {
                 access_token: this.access_token
             }).then(s => {
                 this.shipment = new Shipment(s);
-                console.log(this.shipment);
+
                 if (this.user) {
                     this.is_owner = this.shipment.owner_id === this.user.uuid;
                 } else {
                     this.is_owner = false;
                 }
+
+                this.shipment.flag_quotes(this.user.uuid);
             }).catch(e => {
                 console.log(e);
                 if (e.code === 401) {
@@ -169,8 +172,9 @@ export default class ShipmentView {
                                     {Utils.absolute_date(this.shipment.pickup_date.value, true)}
                                 </Title>
                                 <div class="ml-2 mt-1">
-                                    <Badge text={this.shipment.status}
-                                        color={Shipment.status_colors[this.shipment.status]} />
+                                    <Badge color={Shipment.status_colors[this.shipment.status]}>
+                                        {Utils.capitalize(this.shipment.status)}
+                                    </Badge>
                                 </div>
                             </div>
                             {/* <div class="mt-1 whitespace-nowrap text-sm text-gray-400">
@@ -194,8 +198,8 @@ export default class ShipmentView {
                     </div>
                     <div class="mt-2 flex flex-col">
                         <div class="flex justify-between px-4">
-                            <div class="flex flex-col">
-                                <div class="my-1">
+                            <div class="mt-2 w-1/2 flex flex-col">
+                                <div class="mb-2">
                                     <div class="text-gray-500 mb-1">
                                         Pickup address
                                     </div>
@@ -203,7 +207,7 @@ export default class ShipmentView {
                                         {this.shipment.pickup_address.value}
                                     </div>
                                 </div>
-                                <div class="my-1">
+                                <div class="mb-2">
                                     <div class="text-gray-500 mb-1">
                                         Delivery address
                                     </div>
@@ -211,7 +215,7 @@ export default class ShipmentView {
                                         {this.shipment.delivery_address.value}
                                     </div>
                                 </div>
-                                <div class="my-1">
+                                <div class="mb-2">
                                     <div class="text-gray-500 mb-1">
                                         Total value
                                     </div>
@@ -224,46 +228,29 @@ export default class ShipmentView {
                                         </span>
                                     </div>
                                 </div>
-                                <div class="my-1">
+                                <div class="mb-2">
                                     <div class="text-gray-500 mb-1">
                                         Services requested ({this.shipment.services.length})
                                     </div>
-                                    <div class="my-2 flex items-center px-4 text-center">
-                                        <div class="text-green-500">
-                                            <Icon name="check-square" class="w-4" />
+                                    <div class="flex flex-wrap">
+                                        <div class="inline-flex mt-1">
+                                            <Badge color="indigo" icon="truck">
+                                                Shipping
+                                            </Badge>
                                         </div>
-                                        <span class="ml-4 uppercase font-bold text-sm text-green-500">
-                                            Shipping
-                                        </span>
-                                    </div>
-                                    <div class="my-2 flex items-center px-4 text-center">
-                                        <div class={!this.shipment.services.includes('packaging') ? 'block text-gray-400' : 'hidden'}>
-                                            <Icon name="x-square" class="w-4" />
-                                        </div>
-                                        <div class={this.shipment.services.includes('packaging') ? 'block text-green-500' : 'hidden'}>
-                                            <Icon name="check-square" class="w-4" />
-                                        </div>
-                                        <span class="ml-4 uppercase font-bold text-sm">
-                                            <span class={this.shipment.services.includes('packaging') ? 'text-green-500' : 'text-gray-400 line-through'}>
+                                        <div class={this.shipment.services.includes('packaging') ? 'inline-flex ml-1 mt-1' : 'block'}>
+                                            <Badge color="indigo" icon="box">
                                                 Packaging
-                                            </span>
-                                        </span>
-                                    </div>
-                                    <div class="my-2 flex items-center px-4 text-center">
-                                        <div class={!this.shipment.services.includes('insurance') ? 'block text-gray-400' : 'hidden'}>
-                                            <Icon name="x-square" class="w-4" />
+                                            </Badge>
                                         </div>
-                                        <div class={this.shipment.services.includes('insurance') ? 'block text-green-500' : 'hidden'}>
-                                            <Icon name="check-square" class="w-4" />
-                                        </div>
-                                        <span class="ml-4 uppercase font-bold text-sm">
-                                            <span class={this.shipment.services.includes('insurance') ? 'text-green-500' : 'text-gray-400 line-through'}>
+                                        <div class={this.shipment.services.includes('insurance') ? 'inline-flex ml-1 mt-1' : 'block'}>
+                                            <Badge color="indigo" icon="shield">
                                                 Insurance
-                                            </span>
-                                        </span>
+                                            </Badge>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="my-1">
+                                <div>
                                     <div class="text-gray-500 mb-1">
                                         Additional comments
                                     </div>
@@ -271,6 +258,9 @@ export default class ShipmentView {
                                         <ShipmentComments comments={this.shipment.comments.value} />
                                     </div>
                                 </div>
+                            </div>
+                            <div class="mt-2 ml-8 w-1/2 flex flex-col">
+                                <img class="shadow-lg rounded" src={this.shipment.map_url} />
                             </div>
                         </div>
                         <div class="mt-4 flex flex-col">
@@ -307,7 +297,7 @@ export default class ShipmentView {
                     </div>
                     <div class="mt-8 flex flex-col">
                         <div class="mb-4 flex items-center justify-between">
-                            <div class="mb-4 flex items-center">
+                            <div class="flex items-center">
                                 <span class="rounded text-lg font-bold text-black">
                                     Quotes
                                 </span>
@@ -317,7 +307,12 @@ export default class ShipmentView {
                                     </span>
                                 </span>
                             </div>
-                            <div class={(this.user && this.user.role === 'shipper' && !this.is_owner) ? 'block' : 'hidden'}>
+                            <div class={(this.user && this.user.role === 'shipper' && !this.is_owner) ? 'flex items-center' : 'hidden'}>
+                                <span class="mr-4">
+                                    <Badge color="yellow" icon="clock">
+                                        <Timer end={this.shipment.pickup_date.value} />
+                                    </Badge>
+                                </span>
                                 <Button text="Create quote" icon="plus"
                                     callback={() => {
                                         if (this.user && this.user.role === 'shipper') {
@@ -328,21 +323,33 @@ export default class ShipmentView {
                                     }} />
                             </div>
                         </div>
-                        <div class={(this.is_owner && this.shipment.quotes.length > 0) ? 'flex px-2' : 'hidden'}>
+                        <div class={(this.is_owner && this.shipment.quotes.length > 0)? 'flex px-2' : 'hidden'}>
                             <Table collection={this.shipment.quotes}
                                 fields={[
-                                    {label: 'price', type: 'number'},
+                                    {label: 'bid', type: 'number'},
                                     {label: '', attr: 'currency', type: 'string'},
-                                    {label: 'date', attr: 'created_at', type: 'string'},
+                                    {label: ''},
+                                    {label: 'delivery date', attr: 'delivery_date', type: 'date'},
                                     {label: ''},
                                 ]}>
-                                {this.shipment.quotes.map(quote => 
-                                    <QuoteTableRow key={quote.uuid} quote={quote} />
-                                )}
+                                {this.shipment.quotes.length > 0 ? this.shipment.quotes.map((quote, i) => 
+                                    <QuoteTableRow key={quote.uuid} index={i} quote={quote} />
+                                ) : ''}
                             </Table>
                         </div>
-                        <div class={(this.user && this.user.role === 'shipper' && !this.is_owner && this.shipment.quotes.length > 0) ? 'block' : 'hidden'}>
-                            Best quote
+                        <div class={(this.user && this.user.role === 'shipper' && !this.is_owner && this.shipment.quotes.length > 0)
+                            ? 'flex flex-col px-2' : 'hidden'}>
+                            <Table fields={[
+                                    {label: 'bid', type: 'number'},
+                                    {label: '', attr: 'currency', type: 'string'},
+                                    {label: ''},
+                                    {label: 'delivery date', attr: 'delivery_date', type: 'date'},
+                                    {label: ''},
+                                    ]}>
+                                {this.shipment.quotes.map((quote, i) => 
+                                    <QuoteTableRow key={quote.uuid} index={i} quote={quote} />
+                                )}
+                            </Table>
                         </div>
                         <div class={!this.show_quote_form ? 'block' : 'hidden'}>
                             <div class={this.shipment.quotes.length === 0 ? 'flex justify-center' : 'hidden'}>
@@ -357,7 +364,7 @@ export default class ShipmentView {
                             </div>      
                         </div>
                         <div class={this.show_quote_form ? 'block' : 'hidden'}>
-                            <div class="my-4">
+                            <div class="my-4 flex justify-center">
                                 <QuoteEdit shipment_id={this.id}
                                     close={() => this.show_quote_form = false} />
                             </div>

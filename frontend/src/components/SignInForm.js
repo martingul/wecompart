@@ -11,7 +11,7 @@ export default class SignInForm {
 
     submit(e) {
         e.preventDefault();
-        this.auth.submit().then(res => {
+        this.auth.authenticate().then(res => {
             if (res) m.route.set('/');
         }).catch(_ => {});
     }
@@ -60,7 +60,7 @@ export default class SignInForm {
                     <button type="button" class="my-2 flex items-center justify-center w-full px-4 xs:px-10 py-2 rounded shadow-md hover:shadow-lg
                         transition duration-150 bg-indigo-500 hover:bg-indigo-400 text-white"
                         onclick={(e) => this.submit(e)}
-                        disabled={this.auth.can_submit() ? '' : 'disabled'}>
+                        disabled={this.auth.is_valid() ? '' : 'disabled'}>
                         <div class={this.auth.busy ? 'block' : 'hidden'}>
                             <Loading color="light" class="w-8" />
                         </div>

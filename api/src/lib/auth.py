@@ -47,8 +47,6 @@ def parse_header(header: str):
         token = session_decoded[0]
         user_uuid = session_decoded[1]
 
-        print(token, user_uuid)
-
         if user_uuid is None or token is None:
             raise Exception
     except Exception:

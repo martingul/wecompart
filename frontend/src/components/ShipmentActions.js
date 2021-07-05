@@ -2,6 +2,7 @@ import m from 'mithril';
 import Icon from './Icon';
 import IconButton from './IconButton';
 
+// TODO rewrite generic 'Actions' component (pass actions as argument)
 export default class ShipmentActions {
     constructor(vnode) {
         this.event_controller = new AbortController();

@@ -56,7 +56,7 @@ export default class Utils {
             'Friday',
             'Saturday'
         ];
-    
+        
         const month = months[date.getMonth()].slice(0, 3);
         const day = date.getDate().toString().padStart(2, '0');
         // const hour = date.getUTCHours().toString().padStart(2, '0');
@@ -68,7 +68,30 @@ export default class Utils {
         }
 
         return `${month} ${day}`;
-    } 
+    }
+
+    static remaining_time(end) {
+        if (!end instanceof Date) {
+            end = new Date(end);
+        }
+
+        const second = 1000;
+        const minute = 60*second;
+        const hour = 60*minute;
+        const day = 24*hour;
+
+        let now = new Date();
+        let total = end - now;
+        if (total < 0) {
+            total = 0;
+        }
+        const days = Math.floor(total / day);
+        const hours = Math.floor((total % day) / hour);
+        const minutes = Math.floor((total % hour) / minute);
+        const seconds = Math.floor((total % minute) / second);
+
+        return {total, days, hours, minutes, seconds};
+    }
     
     static currency_symbol(currency) {
         const symbols = {

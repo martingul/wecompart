@@ -46,7 +46,7 @@ async def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
 
         shipment_db = shipments.read_shipment(db, shipment_id)
 
-        if session.user.uuid == shipment_db.uuid:
+        if session.user.uuid == shipment_db.owner_uuid:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
         if shipment_db is None:

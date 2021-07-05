@@ -13,7 +13,7 @@ export default class IconButton {
     view(vnode) {
         return (
             <button class={`flex items-center px-2 py-1 rounded-full transition-colors
-                text-${this.color}-600 hover:text-${this.color}-800 bg-${this.color}-50 hover:bg-${this.color}-200 
+                text-${this.color}-600 hover:text-${this.color}-800 hover:bg-${this.color}-100 
                 ${this.class}`}
                 onclick={(e) => this.callback()}>
                 <Icon name={this.icon} class={`w-${this.width}`} />

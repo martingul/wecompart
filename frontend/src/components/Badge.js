@@ -5,7 +5,6 @@ import Icon from './Icon';
 export default class Badge {
     constructor(vnode) {
         this.icon = vnode.attrs.icon;
-        this.text = vnode.attrs.text;
         this.color = vnode.attrs.color;
     }
 
@@ -16,7 +15,7 @@ export default class Badge {
                     bg-${this.color}-100 text-${this.color}-500`}>
                     <Icon name={this.icon} class={this.icon ? 'w-4 mr-1.5' : 'hidden'} />
                     <span>
-                        {Utils.capitalize(this.text)}
+                        {vnode.children}
                     </span>
                 </div>
             );
@@ -24,7 +23,7 @@ export default class Badge {
         return (
             <span class={`px-2 rounded text-sm text-center font-bold 
                 bg-${this.color}-100 text-${this.color}-500`}>
-                {Utils.capitalize(this.text)}
+                {vnode.children}
             </span>
         );
     }

@@ -111,19 +111,25 @@ export default class Table {
                         }
                         
                         return (
-                            <th class={`w-auto py-2 ${s.type === 'number' ? 'text-right' : 'text-left'}`}>
-                                <button class="text-gray-600"
-                                    onclick={() => this.sort_state = s}>
-                                    <span class="mr-1 text-xs uppercase border-b border-dotted border-gray-600">
+                            <th class={`w-auto py-1., ${s.type === 'number' ? 'text-right' : 'text-left'}`}>
+                                {this.collection.length > 0 ?
+                                    <button class="text-gray-600"
+                                        onclick={() => this.sort_state = s}>
+                                        <span class="mr-1 text-xs uppercase border-b border-dotted border-gray-600">
+                                            {s.label}
+                                        </span>
+                                        <span class={s.active && this.sort_state.desc ? 'inline' : 'hidden'}>
+                                            ▾
+                                        </span>
+                                        <span class={s.active && !this.sort_state.desc ? 'inline' : 'hidden'}>
+                                            ▴
+                                        </span>
+                                    </button>
+                                    :
+                                    <span class="font-normal text-gray-600 text-xs uppercase">
                                         {s.label}
                                     </span>
-                                    <span class={s.active && this.sort_state.desc ? 'inline' : 'hidden'}>
-                                        ▾
-                                    </span>
-                                    <span class={s.active && !this.sort_state.desc ? 'inline' : 'hidden'}>
-                                        ▴
-                                    </span>
-                                </button>
+                                }
                             </th>
                         );
                     })}

@@ -4,7 +4,7 @@ export default class DateInput {
     constructor(vnode) {
         this.model = vnode.attrs.bind;
         this.input_id = vnode.attrs.id;
-        this.future = vnode.attrs.future ? vnode.attrs.future : false;
+        this.future = vnode.attrs.future ? vnode.attrs.future : true;
         this.today = new Date(Date.now()).toISOString().split('T')[0];
     }
 

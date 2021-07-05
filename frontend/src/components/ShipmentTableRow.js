@@ -22,8 +22,9 @@ export default class ShipmentListRow {
                     {this.shipment.currency.value}
                 </td>
                 <td class="w-1 py-2 pr-4">
-                    <Badge text={this.shipment.status}
-                        color={Shipment.status_colors[this.shipment.status]} />
+                    <Badge color={Shipment.status_colors[this.shipment.status]}>
+                        {Utils.capitalize(this.shipment.status)}
+                    </Badge>
                 </td>
                 <td class="w-auto py-2 overflow-hidden overflow-ellipsis">
                     {this.shipment.pickup_address_short}

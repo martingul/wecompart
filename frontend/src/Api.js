@@ -174,7 +174,7 @@ export default class Api {
     }
     
     static read_shipment_item(args) {
-
+        return;
     }
 
     static update_shipment_item(args) {
