@@ -6,7 +6,7 @@ from schemas.session import Session
 from schemas.quote import QuoteRead, QuoteCreate, QuoteUpdate
 from schemas.notification import NotificationRead, NotificationCreate
 from lib import auth, shipments, quotes, notifications
-from lib.websockets import websocket_manager
+from error import ApiError
 
 # TODO make sure these endpoints are restricted to shippers having access
 # to the requested shipment
@@ -69,10 +69,14 @@ async def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
         await notifications.send_notification(shipment_db.owner_uuid, notification)
 
         return quote_new
+    except ApiError as e:
+        status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        if e.detail == 'error_max_quote_reached':
+            status_code = status.HTTP_400_BAD_REQUEST
+        raise HTTPException(status_code=status_code, detail=e.detail)
     except Exception as e:
-        print(vars(e))
-        if isinstance(e, HTTPException):
-            raise e
+        print(e)
+        raise e
 
 @router.get('/{shipment_id}/quotes/{quote_id}', response_model=QuoteRead)
 def read_shipment_quote(shipment_id: str, quote_id: str,
