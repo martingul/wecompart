@@ -24,25 +24,25 @@ export default class ShipmentServicesInput {
 
     style(service) {
         if (service === 'shipping') {
-            return 'bg-yellow-100 text-yellow-700 cursor-not-allowed';
+            return 'bg-indigo-100 text-indigo-500 cursor-not-allowed';
         }
 
         if (this.services.includes(service)) {
-            return 'bg-yellow-100 hover:bg-yellow-200 text-yellow-700 hover:text-yellow-800'
+            return 'bg-indigo-100 hover:bg-indigo-200 text-indigo-500 hover:text-indigo-600'
         } else {
-            return 'bg-gray-100 hover:bg-gray-200 text-gray-600 hover:text-gray-800'
+            return 'bg-gray-100 hover:bg-indigo-200 text-gray-500 hover:text-indigo-600'
         }
     }
     
     view(vnode) {
         return (
-            <div class="flex justify-evenly">
+            <div class="flex justify-start">
                 {this.services_all.map(s => (
-                    <button class={'flex items-center px-4 py-1 rounded transition-colors ' + this.style(s.name)}
+                    <button class={'mr-4 last:mr-0 flex items-center px-2 rounded text-sm text-center font-bold transition-colors ' + this.style(s.name)}
                         onclick={() => this.toggle(s.name)}
                         disabled={s.name === 'shipping'}>
-                        <Icon name={s.icon} class="w-4" />
-                        <span class="ml-4">
+                        <Icon name={s.icon} class="w-4 mr-1.5" />
+                        <span>
                             {Utils.capitalize(s.name)}
                         </span>
                     </button>

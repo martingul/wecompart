@@ -234,7 +234,7 @@ export default class ShipmentEditView {
                             <DateInput bind={this.shipment.pickup_date} future={true}
                                 id="pickup-date-input" />
                         </div>
-                        <div class="flex items-center my-4 py-1 px-4 rounded shadow bg-gray-50 text-gray-600">
+                        <div class="flex items-center my-4 py-2 px-4 rounded bg-gray-50 text-gray-600 border border-gray-200">
                             <Icon name="info" class="w-5" />
                             <span class="ml-4">
                                 Exact pickup date and time will be set once you accept a shipper's quote.

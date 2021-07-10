@@ -48,7 +48,7 @@ export default class ItemsEdit {
                     ))}
                 </div>
                 <div class="flex justify-start mx-2">
-                    <Button text="Add item" icon="plus"
+                    <Button text="Add item" icon="plus" active={false}
                         callback={() => this.create()}
                     />
                 </div>
