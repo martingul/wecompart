@@ -153,14 +153,18 @@ export default class Shipment {
             earliest_quote_old.is_earliest = false;
         }
         const earliest_quote = this.quotes.sort((l, r) => new Date(l.delivery_date.value) - new Date(r.delivery_date.value))[0];
-        earliest_quote.is_earliest = true;
+        if (earliest_quote) {
+            earliest_quote.is_earliest = true;
+        }
 
         const cheapest_quote_old = this.quotes.filter(q => q.is_cheapest);
         if (cheapest_quote_old.length > 0) {
             cheapest_quote_old.is_cheapest = false;
         }
         const cheapest_quote = this.quotes.sort((l, r) => l.price.value - r.price.value)[0];
-        cheapest_quote.is_cheapest = true;
+        if (cheapest_quote) {
+            cheapest_quote.is_cheapest = true;
+        }
 
         const user_quote = this.quotes.filter(q => q.owner_uuid === user_uuid);
         if (user_quote.length > 0) {

@@ -44,7 +44,7 @@ export default class ShipmentEditView {
         this.save = false;
     }
 
-    // TODO move all flags to shipment model and move all methods
+    // TODO move all flags and methods to shipment model
 
     create_shipment() {
         if (this.is_new) {
@@ -56,8 +56,9 @@ export default class ShipmentEditView {
             console.log(this.shipment.serialize());
             this.shipment.create().then(s => {
                 console.log(s);
-                ShipmentStorage.create(new Shipment(s));
-                this.close();
+                const shipment = new Shipment(s);
+                ShipmentStorage.create(shipment);
+                m.route.set('/shipments/:id/success', {id: shipment.uuid});
             }).catch(e => {
                 console.log(e);
             });
@@ -66,7 +67,8 @@ export default class ShipmentEditView {
             this.shipment.status = 'pending';
             this.shipment.update().then(s => {
                 console.log(s);
-                this.close(this.shipment);
+                const shipment = new Shipment(s);
+                m.route.set('/shipments/:id/success', {id: shipment.uuid});
             }).catch(e => {
                 console.log(e);
             });
@@ -79,8 +81,8 @@ export default class ShipmentEditView {
             this.shipment.status = 'draft';
             this.shipment.create().then(s => {
                 console.log(s);
-                ShipmentStorage.create(new Shipment(s))
-                this.close();
+                ShipmentStorage.create(new Shipment(s));
+                m.route.set('/shipments');
             }).catch(e => {
                 console.log(e);
             });
@@ -88,7 +90,7 @@ export default class ShipmentEditView {
             console.log('edit current shipment');
             this.shipment.update().then(s => {
                 console.log(s);
-                this.close();
+                m.route.set('/shipments');
             }).catch(e => {
                 console.log(e);
             });
@@ -118,14 +120,6 @@ export default class ShipmentEditView {
             this.save_shipment();
         } else {
             this.create_shipment();
-        }
-    }
-
-    close() {
-        if (this.is_new) {
-            m.route.set('/shipments');
-        } else {
-            m.route.set('/shipments/:id', {id: this.id});
         }
     }
 
@@ -198,9 +192,13 @@ export default class ShipmentEditView {
                                 Edit Shipment
                             </Title>
                         </div>
-                        <div class={this.shipment.status !== 'draft' ? 'block' : 'hidden'}>
-                            <IconButton icon="x" callback={() => this.close()} />
-                        </div>
+                        <IconButton icon="x" callback={() => {
+                            if (this.is_new || (this.shipment && this.shipment.status === 'draft')) {
+                                m.route.set('/shipments');
+                            } else {
+                                m.route.set('/shipments/:id', {id: this.id});
+                            }
+                        }} />
                     </div>
                     {/* <div class={this.is_new ? 'flex' : 'hidden'}>
                         <div class="w-full my-2 px-4 py-2 flex items-center rounded shadow bg-gray-100">

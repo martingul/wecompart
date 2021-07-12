@@ -238,12 +238,12 @@ export default class ShipmentView {
                                                 Shipping
                                             </Badge>
                                         </div>
-                                        <div class={this.shipment.services.includes('packaging') ? 'inline-flex ml-1 mt-1' : 'block'}>
+                                        <div class={this.shipment.services.includes('packaging') ? 'inline-flex ml-1 mt-1' : 'hidden'}>
                                             <Badge color="indigo" icon="box">
                                                 Packaging
                                             </Badge>
                                         </div>
-                                        <div class={this.shipment.services.includes('insurance') ? 'inline-flex ml-1 mt-1' : 'block'}>
+                                        <div class={this.shipment.services.includes('insurance') ? 'inline-flex ml-1 mt-1' : 'hidden'}>
                                             <Badge color="indigo" icon="shield">
                                                 Insurance
                                             </Badge>
