@@ -44,13 +44,15 @@ export default class Modal {
                         {message}
                     </div>
                     <div class="px-6 py-2 flex justify-between border-t border-gray-200">
-                        <Button text="Cancel" active={false}
-                            callback={() => modal.close()} />
-                        <Button text={confirm_label}
-                            callback={() => {
-                                confirm();
-                                modal.close()
-                            }} />
+                        <Button active={false} callback={() => modal.close()}>
+                            Cancel
+                        </Button>
+                        <Button callback={() => {
+                            confirm();
+                            modal.close();
+                        }}>
+                            {confirm_label}
+                        </Button>
                     </div>
                 </div>
             );

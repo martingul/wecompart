@@ -301,8 +301,9 @@ export default class ShipmentEditView {
                                     <Button text={`Save ${this.is_new ? 'as draft' : ''}`} icon="save" active={false}
                                         callback={(e) => {this.save = true; this.submit(e)}} />
                                     <div class={this.is_new || this.shipment.status === 'draft' ? 'block ml-2' : 'hidden'}>
-                                        <Button text="Create" icon="arrow-right"
-                                            callback={(e) => {this.save = false; this.submit(e)}} />
+                                        <Button icon="arrow-right" callback={(e) => {this.save = false; this.submit(e)}}>
+                                            Create
+                                        </Button>
                                     </div>
                                 </div>
                             </div>

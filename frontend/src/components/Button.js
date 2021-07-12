@@ -3,7 +3,6 @@ import Icon from './Icon';
 
 export default class Button {
     constructor(vnode) {
-        this.text = vnode.attrs.text;
         this.callback = vnode.attrs.callback ? vnode.attrs.callback : () => {};
         this.icon = vnode.attrs.icon ? vnode.attrs.icon : null;
         this.active = vnode.attrs.active !== undefined ? vnode.attrs.active : true;
@@ -16,7 +15,7 @@ export default class Button {
                 + ${this.active ? 'text-white bg-indigo-500 hover:bg-indigo-600'
                                 : 'border border-gray-300 hover:border-gray-300 text-gray-800 bg-white hover:text-black'}`}
                     onclick={this.callback}>
-                    {this.text}
+                    {vnode.children}
                 </button>
             );
         }
@@ -28,7 +27,7 @@ export default class Button {
                 onclick={this.callback}>
                 <Icon name={this.icon} class="w-5" />
                 <span class="ml-2">
-                    {this.text}
+                    {vnode.children}
                 </span>
             </button>
         );

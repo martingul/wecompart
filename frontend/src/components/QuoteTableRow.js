@@ -74,12 +74,14 @@ export default class QuoteTableRow {
                 <td class="w-full">
                     <span class={this.show_actions ? 'flex' : 'hidden'}>
                         <div class="mr-2">
-                            <Button text="Accept"
-                                callback={() => this.update_status('accepted')} />
+                            <Button callback={() => this.update_status('accepted')}>
+                                Accept
+                            </Button>
                         </div>
                         <div>
-                            <Button text="Decline" active={false}
-                                callback={() => this.update_status('declined')} />
+                            <Button active={false} callback={() => this.update_status('declined')}>
+                                Decline
+                            </Button>
                         </div>
                     </span>
                 </td>

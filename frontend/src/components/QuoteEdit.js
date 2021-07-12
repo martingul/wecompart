@@ -103,11 +103,13 @@ export default class QuoteEdit {
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end">
-                    <Button text="Cancel" active={false}
-                        callback={() => this.close()} />
+                    <Button active={false} callback={() => this.close()}>
+                        Cancel
+                    </Button>
                     <div class="ml-2">
-                        <Button text="Place quote"
-                            callback={() => this.submit()} />
+                        <Button callback={() => this.submit()}>
+                            Place quote
+                        </Button>
                     </div>
                 </div>
             </form>

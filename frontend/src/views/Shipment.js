@@ -84,7 +84,6 @@ export default class ShipmentView {
     // }
 
     delete_shipment() {
-        console.log('delete');
         this.shipment.delete().then(_ => {
             ShipmentStorage.remove(this.shipment);
             m.route.set('/shipments');
@@ -313,14 +312,15 @@ export default class ShipmentView {
                                         <Timer end={this.shipment.pickup_date.value} />
                                     </Badge>
                                 </span>
-                                <Button text="Create quote" icon="plus"
-                                    callback={() => {
-                                        if (this.user && this.user.role === 'shipper') {
-                                            this.show_quote_form = true;
-                                        } else {
-                                            m.route.set('/auth/signup');
-                                        }
-                                    }} />
+                                <Button icon="plus" callback={() => {
+                                    if (this.user && this.user.role === 'shipper') {
+                                        this.show_quote_form = true;
+                                    } else {
+                                        m.route.set('/auth/signup');
+                                    }
+                                }}>
+                                    Create quote
+                                </Button>
                             </div>
                         </div>
                         <div class={(this.is_owner && this.shipment.quotes.length > 0)? 'flex px-2' : 'hidden'}>

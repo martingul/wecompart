@@ -19,14 +19,14 @@ export default class ShipmentSuccessView {
                             Shippers have been notified of your listing and will get back to you soon.
                         </span>
                         <div class="flex flex-col">
-                            <Button text="View" callback={() => {
-                                m.route.set('/shipments/:id', {id: this.shipment_id});
-                            }} />
+                            <Button callback={() => m.route.set('/shipments/:id', {id: this.shipment_id})}>
+                                View
+                            </Button>
                         </div>
                         <div class="mt-2 flex flex-col">
-                            <Button text="Back to shipments" active={false} callback={() => {
-                                m.route.set('/shipments');
-                            }} />
+                            <Button active={false} callback={() => m.route.set('/shipments')}>
+                                Back to shipments
+                            </Button>
                         </div>
                     </div>
                 </div>

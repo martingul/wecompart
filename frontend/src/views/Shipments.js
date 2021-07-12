@@ -60,8 +60,9 @@ export default class ShipmentsView {
                                     No shipments yet.
                                 </span>
                             </div>
-                            <Button icon="plus" text="New shipment"
-                                callback={() => m.route.set('/shipments/new')} />
+                            <Button icon="plus" callback={() => m.route.set('/shipments/new')}>
+                                New shipment
+                            </Button>
                         </div>
                     </div>
                 </AppView>
@@ -75,8 +76,9 @@ export default class ShipmentsView {
                         <Title>
                             Shipments
                         </Title>
-                        <Button icon="plus" text="Create shipment"
-                            callback={() => m.route.set('/shipments/new')} />
+                        <Button icon="plus" callback={() => m.route.set('/shipments/new')}>
+                            Create shipment
+                        </Button>
                     </div>
                     <Table collection={ShipmentStorage.shipments}
                         fields={[
