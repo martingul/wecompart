@@ -7,8 +7,7 @@ export default class IconButton {
         this.color = vnode.attrs.color ? vnode.attrs.color : 'gray';
         this.width = vnode.attrs.width ? vnode.attrs.width : '5';
         this.icon = vnode.attrs.icon;
-        this.callback = vnode.attrs.callback;
-    }
+        this.callback = vnode.attrs.callback ? vnode.attrs.callback : () => {};    }
 
     view(vnode) {
         return (

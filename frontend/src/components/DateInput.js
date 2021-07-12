@@ -5,7 +5,6 @@ export default class DateInput {
         this.model = vnode.attrs.bind;
         this.input_id = vnode.attrs.id;
         this.min = vnode.attrs.min ? vnode.attrs.min : '';
-        console.log(this.min);
     }
 
     view(vnode) {

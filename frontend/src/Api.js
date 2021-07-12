@@ -84,6 +84,7 @@ export default class Api {
         return m.request({
             method: 'POST',
             url: `${Api.API_ROOT}/users/`,
+            // TODO pass args directly, do not specify each field
             body: {
                 fullname: args.fullname,
                 username: args.username,

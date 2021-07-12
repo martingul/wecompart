@@ -11,11 +11,16 @@ export default class QuoteEdit {
         console.log('construct QuoteEdit');
         this.shipment = vnode.attrs.shipment;
         this.close = vnode.attrs.close ? vnode.attrs.close : () => {};
-        this.add_fee = false;
+        this.add_fee = true;
+        this.loading = false;
 
         this.quote = new Quote({
             shipment_uuid: this.shipment.uuid,
         });
+    }
+
+    is_loading() {
+        return this.loading;
     }
 
     calculate_fee() {
@@ -23,29 +28,54 @@ export default class QuoteEdit {
         return 0.10 * Number(this.quote.price.value);
     }
 
-    submit() {
+    submit(e) {
+        e.preventDefault();
         console.log(this.quote);
-        this.quote.create().then(res => {
-            console.log(res);
-            this.close();
+        this.loading = true;
+        this.quote.create().then(q => {
+            const quote = new Quote(q);
+            this.shipment.quotes.push(quote);
+            this.close(true);
         }).catch(e => {
             console.log(e);
         }).finally(() => {
-            
+            this.loading = false;
         });
+    }
+
+    oncreate(vnode) {
+        vnode.dom.querySelector('#quote-bid-input').focus();
     }
 
     view(vnode) {
         return (
-            <form class="w-full md:w-1/2 flex flex-col" onsubmit={(e) => {e.preventDefault()}}>
+            <form class="w-full md:w-1/2 flex flex-col"
+                onsubmit={(e) => this.submit(e)}>
                 <div class="w-full flex flex-col py-2 px-4 rounded border border-gray-200">
                     <div class="flex mb-4 items-center justify-between">
-                        <span class="font-bold text-black">
+                        <span class="font-bold text-lg text-black">
                             Place a quote
                         </span>
                     </div>
                     <div class="flex flex-col">
                         <div class="flex flex-col w-full">
+                            <div class="flex flex-col">
+                                <label class="mb-1" for="quote-bid-input">
+                                    Bid
+                                </label>
+                                <input id="quote-bid-input" type="number" min="0" step="any"
+                                    oninput={(e) => this.quote.price.value = e.target.value} />
+                            </div>
+                            {/* <div class="my-1 flex">
+                                <input class="filter grayscale" type="checkbox" id="add-fee" value="add-fee"
+                                    checked={this.add_fee}
+                                    oninput={(e) => this.add_fee = !this.add_fee} />
+                                <label class="ml-2 text-gray-600 text-sm" for="add-fee">
+                                    Add service fee to show total bid seen by client
+                                </label>
+                            </div> */}
+                        </div>
+                        <div class="mt-2 flex flex-col w-full">
                             <div class="flex flex-col">
                                 <label class="mb-1" for="delivery-date-input">
                                     Delivery date
@@ -54,61 +84,42 @@ export default class QuoteEdit {
                                     min={(new Date(this.shipment.pickup_date.value - (24*60*60*1000))).toISOString().split('T')[0]} />
                             </div>
                         </div>
-                        <div class="mt-2 flex flex-col w-full">
-                            <div class="flex flex-col">
-                                <label class="mb-1" for="quote-price-input">
-                                    Bid
-                                </label>
-                                <input id="quote-price-input" type="number" min="0" step="any"
-                                    oninput={(e) => this.quote.price.value = e.target.value} />
-                            </div>
-                            <div class="mt-1 flex">
-                                <input type="checkbox" id="add-fee" value="add-fee"
-                                    oninput={(e) => this.add_fee = !this.add_fee} />
-                                <label class="ml-2 text-gray-600 text-sm" for="add-fee">
-                                    Add service fee to show total bid seen by client
-                                </label>
-                            </div>
-                        </div>
                     </div>
-                    <div class="flex flex-col items-end mt-2 pt-2 border-t border-gray-200">
+                    <div class="flex flex-col items-end mt-4 pt-2 border-t border-gray-200">
                         <span class="text-gray-800">
                             <span>
                                 Your bid:
                             </span>
-                            <span class="ml-2 font-bold">
+                            <code class="ml-2 font-bold">
                                 {Utils.format_money(this.quote.price.value, 'usd')}
-                            </span>
+                            </code>
                         </span>
                         <span class="mt-1 text-sm text-gray-600">
                             <span>
                                 Service fee:
                             </span>
-                            <span class="ml-2 font-bold">
-                                +{this.add_fee
-                                    ? Utils.format_money(this.calculate_fee(), 'usd')
-                                    : Utils.format_money(0, 'usd')}
-                            </span>
+                            <code class="ml-2 font-bold">
+                                +{Utils.format_money(this.calculate_fee(), 'usd')}
+                            </code>
                         </span>
-                        <span class="mt-2 text-lg">
+                        <span class="mt-2 text-black">
                             <span>
                                 Total bid:
                             </span>
-                            <span class="ml-2 font-bold">
-                                {this.add_fee
-                                    ? Utils.format_money(Number(this.quote.price.value) + this.calculate_fee(), 'usd')
-                                    : Utils.format_money(this.quote.price.value, 'usd')}
-                            </span>
+                            <code class="ml-2 font-bold">
+                                {Utils.format_money(Number(this.quote.price.value) + this.calculate_fee(), 'usd')}
+                            </code>
                         </span>
                     </div>
                 </div>
                 <div class="mt-4 flex items-center justify-end">
-                    <Button active={false} callback={() => this.close()}>
+                    <Button active={false} callback={() => this.close(false)}>
                         Cancel
                     </Button>
                     <div class="ml-2">
-                        <Button callback={() => this.submit()}>
-                            Place quote
+                        <Button loading={() => this.is_loading()}
+                            callback={(e) => this.submit(e)}>
+                            Create
                         </Button>
                     </div>
                 </div>

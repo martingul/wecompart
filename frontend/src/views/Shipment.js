@@ -1,5 +1,7 @@
 import m from 'mithril';
 import FileSaver from 'file-saver';
+import hourglass_img from '../assets/hourglass.svg';
+import success_img from '../assets/success.svg';
 import Api from '../Api';
 import Utils from '../Utils';
 import Icon from '../components/Icon';
@@ -19,6 +21,7 @@ import ShipmentStorage from '../models/ShipmentStorage';
 import Shipment from '../models/Shipment';
 import User from '../models/User';
 import AppView from './App';
+import IconButton from '../components/IconButton';
 
 export default class ShipmentView {
     constructor(vnode) {
@@ -44,7 +47,8 @@ export default class ShipmentView {
             this.shipment.flag_quotes(this.user.uuid);
         }
 
-        this.show_quote_form = false;
+        this.quote_create_show = false;
+        this.quote_create_success = false;
 
         // Api.register_websocket_handler({
         //     name: 'new_quote_handler',
@@ -158,7 +162,7 @@ export default class ShipmentView {
         return (
             <AppView>
                 <div class='flex flex-col'>
-                    <div class='flex justify-between items-center pb-2 border-b border-gray-200'>
+                    <div class='flex justify-between items-end pb-2 border-b border-gray-200'>
                         <div class="flex flex-col">
                             <div class="mb-1 flex items-center text-gray-500">
                                 <Icon name="hexagon" class="w-4" />
@@ -182,18 +186,20 @@ export default class ShipmentView {
                                     'last updated ' + Utils.relative_date(this.shipment.updated_at) : ''}
                             </div> */}
                         </div>
-                        <div class={this.is_owner ? 'flex items-center' : 'hidden'}>
-                            <ShipmentActions
-                                edit={() => m.route.set('/shipments/:id/edit', {id: this.shipment.uuid})}
-                                download={() => console.log('download')}
-                                delete={() => Modal.create({
-                                    title: 'Delete shipment',
-                                    message: 'Are you sure you want to delete this shipment?',
-                                    confirm_label: 'Delete',
-                                    confirm_color: 'red',
-                                    confirm: () => this.delete_shipment()
-                                })} />
-                        </div>
+                        {this.is_owner ? (
+                            <div class="flex items-center">
+                                <ShipmentActions
+                                    edit={() => m.route.set('/shipments/:id/edit', {id: this.shipment.uuid})}
+                                    download={() => console.log('download')}
+                                    delete={() => Modal.create({
+                                        title: 'Delete shipment',
+                                        message: 'Are you sure you want to delete this shipment?',
+                                        confirm_label: 'Delete',
+                                        confirm_color: 'red',
+                                        confirm: () => this.delete_shipment()
+                                    })} />
+                            </div>
+                        ) : ''}
                     </div>
                     <div class="mt-2 flex flex-col">
                         <div class="flex justify-between px-4">
@@ -300,75 +306,98 @@ export default class ShipmentView {
                                 <span class="rounded text-lg font-bold text-black">
                                     Quotes
                                 </span>
-                                <span class={this.is_owner ? 'inline' : 'hidden'}>
+                                {this.is_owner ? (
                                     <span class="ml-2 text-gray-500">
                                         ({this.shipment.quotes.length})
                                     </span>
-                                </span>
-                            </div>
-                            <div class={(this.user && this.user.role === 'shipper' && !this.is_owner) ? 'flex items-center' : 'hidden'}>
-                                <span class="mr-4">
+                                ) : ''}
+                                <span class={(this.user && this.user.role === 'shipper' && !this.is_owner) ? 'flex items-center ml-4' : 'hidden'}>
                                     <Badge color="yellow" icon="clock">
                                         <Timer end={this.shipment.pickup_date.value} />
                                     </Badge>
                                 </span>
-                                <Button icon="plus" callback={() => {
-                                    if (this.user && this.user.role === 'shipper') {
-                                        this.show_quote_form = true;
-                                    } else {
-                                        m.route.set('/auth/signup');
-                                    }
-                                }}>
-                                    Create quote
-                                </Button>
                             </div>
-                        </div>
-                        <div class={(this.is_owner && this.shipment.quotes.length > 0)? 'flex px-2' : 'hidden'}>
-                            <Table collection={this.shipment.quotes}
-                                fields={[
-                                    {label: 'bid', type: 'number'},
-                                    {label: '', attr: 'currency', type: 'string'},
-                                    {label: ''},
-                                    {label: 'delivery date', attr: 'delivery_date', type: 'date'},
-                                    {label: ''},
-                                ]}>
-                                {this.shipment.quotes.length > 0 ? this.shipment.quotes.map((quote, i) => 
-                                    <QuoteTableRow key={quote.uuid} index={i} quote={quote} />
-                                ) : ''}
-                            </Table>
-                        </div>
-                        <div class={(this.user && this.user.role === 'shipper' && !this.is_owner && this.shipment.quotes.length > 0)
-                            ? 'flex flex-col px-2' : 'hidden'}>
-                            <Table fields={[
-                                    {label: 'bid', type: 'number'},
-                                    {label: '', attr: 'currency', type: 'string'},
-                                    {label: ''},
-                                    {label: 'delivery date', attr: 'delivery_date', type: 'date'},
-                                    {label: ''},
-                                    ]}>
-                                {this.shipment.quotes.map((quote, i) => 
-                                    <QuoteTableRow key={quote.uuid} index={i} quote={quote} />
-                                )}
-                            </Table>
-                        </div>
-                        <div class={!this.show_quote_form ? 'block' : 'hidden'}>
-                            <div class={this.shipment.quotes.length === 0 ? 'flex justify-center' : 'hidden'}>
-                                <div class="flex flex-col items-center">
-                                    <div class="my-4 text-gray-200">
-                                        <Icon name="clock" class="w-12 h-12" />
-                                    </div>
-                                    <div class="my-1 text-gray-600">
-                                        No quotes yet.
-                                    </div>
+                            {(this.user && this.user.role === 'shipper' && !this.is_owner) ? (
+                                // hide (or disable with explaining tooltip) when user already has a quote posted
+                                <div class="flex justify-end">
+                                    <Button icon="plus" callback={() => {
+                                        if (this.user && this.user.role === 'shipper') {
+                                            this.quote_create_show = true;
+                                        } else {
+                                            m.route.set('/auth/signup');
+                                        }
+                                    }}>
+                                        Create quote
+                                    </Button>
                                 </div>
-                            </div>      
+                            ) : ''}
                         </div>
-                        <div class={this.show_quote_form ? 'block' : 'hidden'}>
+                        {(this.is_owner && this.shipment.quotes.length > 0) ? (
+                            <div class="flex px-2">
+                                <Table collection={this.shipment.quotes}
+                                    fields={[
+                                        {label: 'bid', type: 'number'},
+                                        {label: '', attr: 'currency', type: 'string'},
+                                        {label: ''},
+                                        {label: 'delivery date', attr: 'delivery_date', type: 'date'},
+                                        {label: ''},
+                                    ]}>
+                                    {this.shipment.quotes.length > 0 ? this.shipment.quotes.map((quote, i) => 
+                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} />
+                                    ) : ''}
+                                </Table>
+                            </div>
+                        ) : ''}
+                        {(this.user && this.user.role === 'shipper' && !this.is_owner && this.shipment.quotes.length > 0 && !this.quote_create_success) ? (
+                            <div class="flex flex-col px-2">
+                                <Table fields={[
+                                        {label: 'bid', type: 'number'},
+                                        {label: '', attr: 'currency', type: 'string'},
+                                        {label: ''},
+                                        {label: 'delivery date', attr: 'delivery_date', type: 'date'},
+                                        {label: ''},
+                                        ]}>
+                                    {this.shipment.quotes.map((quote, i) => 
+                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} />
+                                    )}
+                                </Table>
+                            </div>
+                        ) : ''}
+                        {(!this.quote_create_show && this.shipment.quotes.length === 0) ? (
+                            <div class="flex justify-center">
+                                <div class="w-1/3 my-2 flex flex-col items-center text-center">
+                                    <img src={hourglass_img} />
+                                    <span class="mt-4 mb-6 text-gray-500">
+                                        {(this.user && this.user.role === 'shipper')
+                                            ? 'Be the first shipper to place a quote on this shipment!'
+                                            : 'Shippers will soon place their quotes if they wish to handle your shipment.'
+                                        }
+                                    </span>
+                                </div>
+                            </div>
+                        ) : ''}
+                        {this.quote_create_show ? (
                             <div class="my-4 flex justify-center">
                                 <QuoteEdit shipment={this.shipment}
-                                    close={() => this.show_quote_form = false} />
+                                    close={(success) => {
+                                        this.quote_create_success = success;
+                                        this.quote_create_show = false;
+                                    }} />
                             </div>
-                        </div>
+                        ) : ''}
+                        {this.quote_create_success ? (
+                            <div class="flex flex-col items-center">
+                                <div class="w-1/2 my-2 flex flex-col items-center text-center rounded border border-gray-200">
+                                    <div class="w-full flex justify-end p-2">
+                                        <IconButton icon="x" callback={() => this.quote_create_success = false} />
+                                    </div>
+                                    <img class="w-60" src={success_img} />
+                                    <span class="pt-4 pb-8 px-2 text-gray-500">
+                                        Your quote has been placed and you will be notified once the client accepts or declines it.
+                                    </span>
+                                </div>
+                            </div>
+                        ) : ''}
                     </div>
                 </div>
             </AppView>

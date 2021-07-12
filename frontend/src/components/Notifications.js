@@ -63,8 +63,7 @@ export default class Notifications {
         return (
             <div id="notifications-button" class="relative flex flex-col">
                 <span class="relative inline-flex">
-                    <IconButton icon="bell"
-                        callback={() => this.toggle()} />
+                    <IconButton icon="bell" callback={() => this.toggle()} />
                     <span class={NotificationStorage.has_unread() ? 'flex absolute h-2 w-2 top-0 right-0 mt-1 mr-1' : 'hidden'}>
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-50"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
@@ -80,6 +79,7 @@ export default class Notifications {
                                 ${NotificationStorage.has_unread() ? 'text-indigo-600 hover:text-indigo-700' : 'text-gray-500 cursor-not-allowed'}`}
                                 onclick={() => {
                                     NotificationStorage.get_unread().forEach(n => {
+                                        n.read = true;
                                         // TODO batch into single request
                                         Api.update_notification({
                                             notification_id: n.uuid,
@@ -90,8 +90,7 @@ export default class Notifications {
                                             console.log(res);
                                         }).catch(e => {
                                             console.log(e);
-                                        }).finally(() => {
-                                            n.read = true;
+                                            n.read = false;
                                         });
                                     });
                                 }}>

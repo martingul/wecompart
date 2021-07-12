@@ -23,12 +23,24 @@ class QuoteCreate(BaseModel):
     price: float
     delivery_date: str
 
+    @validator('status')
+    def validate_status(cls, v: str):
+        if v != 'pending':
+            raise ValueError('error_invalid_status')
+        return v
+
+    @validator('delivery_date')
+    def validate_delivery_date(cls, v: str):
+        if not v:
+            raise ValueError('error_invalid_delivery_date')
+        return v
+
 class QuoteUpdate(BaseModel):
     # price: Optional[float] = None
     status: Optional[str] = None
 
     @validator('status')
-    def validate_status(cls, v):
+    def validate_status(cls, v: str):
         if v not in quote_statuses:
-            raise ValueError('error_invalid_quote_status')
+            raise ValueError('error_invalid_status')
         return v

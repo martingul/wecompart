@@ -18,7 +18,7 @@ export default class Button {
                 onclick={this.callback}>
                 <div class="flex items-center">
                     {(this.icon && ((this.loading && !this.loading()) || !this.loading)) ? <Icon name={this.icon} class="w-5 mr-2" /> : ''}
-                    {(this.loading && this.loading()) ? <Loading color="light" class="w-7" /> : ''}
+                    {(this.loading && this.loading()) ? <Loading color="light" class={`w-8 ${!this.icon ? 'ml-1' : ''}`} /> : ''}
                     <span class="flex items-center">
                         {vnode.children}
                     </span>

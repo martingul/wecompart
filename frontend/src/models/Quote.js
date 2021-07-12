@@ -33,9 +33,12 @@ export default class Quote {
     }
 
     create() {
+        console.log(this.serialize())
         return Api.create_shipment_quote({
             shipment_id: this.shipment_uuid,
             quote: this.serialize()
         });
     }
+
+
 }
