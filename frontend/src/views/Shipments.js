@@ -83,9 +83,10 @@ export default class ShipmentsView {
                     <Table collection={ShipmentStorage.shipments}
                         fields={[
                             {label: 'value', attr: 'total_value', type: 'number'},
-                            {label: '', attr: 'currency', type: 'string'},
-                            {label: '', attr: 'status', type: 'string'},
+                            {label: ''},
+                            {label: ''},
                             {label: 'pickup', attr: 'pickup_address_short', type: 'string'},
+                            {label: ''},
                             {label: 'delivery', attr: 'delivery_address_short', type: 'string'},
                             {label: 'date', attr: 'pickup_date', type: 'date'},
                         ]}>
