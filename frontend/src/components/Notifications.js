@@ -42,18 +42,21 @@ export default class Notifications {
             }
         }, { signal: this.event_controller.signal });
 
-        this.loading = true;
-        Api.read_notifications().then(res => {
-            if (res === null) {
-                NotificationStorage.notifications = [];
-            } else {
-                NotificationStorage.notifications = res;
-            }
-        }).catch(e => {
-            console.log(e);
-        }).finally(() => {
-            this.loading = false;
-        });
+        if (!NotificationStorage.fetched) {
+            this.loading = true;
+            Api.read_notifications().then(res => {
+                if (res === null) {
+                    NotificationStorage.notifications = [];
+                } else {
+                    NotificationStorage.notifications = res;
+                }
+            }).catch(e => {
+                console.log(e);
+            }).finally(() => {
+                this.loading = false;
+                NotificationStorage.fetched = true;
+            });
+        }
     }
 
     view(vnode) {
@@ -113,9 +116,10 @@ export default class Notifications {
                                 const quote = JSON.parse(n.content);
                                 return (
                                     <div class={`w-full py-2 px-4 text-gray-600 border-b last:border-b-0 hover:bg-gray-50 whitespace-nowrap cursor-pointer
-                                        ${!n.read ? 'animate-pulse bg-yellow-50' : ''}`}
+                                        ${!n.read ? 'bg-yellow-50' : ''}`}
                                         onclick={() => {
                                             if (!n.read) {
+                                                n.read = true;
                                                 Api.update_notification({
                                                     notification_id: n.uuid,
                                                     patch: {
@@ -125,9 +129,7 @@ export default class Notifications {
                                                     console.log(res);
                                                 }).catch(e => {
                                                     console.log(e);
-                                                }).finally(() => {
-                                                    console.log(n);
-                                                    n.read = true;
+                                                    n.read = false;
                                                 });
                                             }
                                             m.route.set('/shipments/:id', {id: quote.shipment_uuid});

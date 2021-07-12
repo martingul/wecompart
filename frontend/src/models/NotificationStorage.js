@@ -1,5 +1,6 @@
 export default class NotificationStorage {
     static notifications = [];
+    static fetched = false;
 
     static create(notification) {
         NotificationStorage.notifications.unshift(notification);
