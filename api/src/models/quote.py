@@ -9,7 +9,7 @@ class Quote(Base, Entity):
     owner_uuid = Column(String, ForeignKey('users.uuid'), nullable=False)
     shipment_uuid = Column(String, ForeignKey('shipments.uuid'), nullable=False)
     status = Column(String, nullable=False)
-    price = Column(Float, nullable=False)
+    bid = Column(Float, nullable=False)
     delivery_date = Column(Date, nullable=False)
 
     owner = relationship('User', back_populates='quotes')

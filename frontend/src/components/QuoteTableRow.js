@@ -33,7 +33,7 @@ export default class QuoteTableRow {
             <tr class={`text-gray-600 border-b border-gray-200
                 ${this.quote.is_user ? 'bg-yellow-50 rounded' : ''}`}>
                 <td class="w-1 py-2 text-black font-bold text-right">
-                    {Utils.format_money(this.quote.price.value, this.currency)}
+                    {Utils.format_money(this.quote.bid.value, this.currency)}
                 </td>
                 <td class="w-1 py-2 px-2 uppercase text-gray-400">
                     {this.currency}

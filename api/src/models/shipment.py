@@ -30,4 +30,4 @@ class Shipment(Base, Entity):
     owner = relationship('User', back_populates='shipments')
     items = relationship('Item', back_populates='shipment')
     quotes = relationship('Quote', back_populates='shipment',
-        order_by='asc(Quote.price)')
+        order_by='asc(Quote.bid)')

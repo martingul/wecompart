@@ -139,7 +139,7 @@ export default class Notifications {
                                                     A shipper placed a bid on your shipment.
                                                 </span>
                                                 <Badge color="gray">
-                                                    Bid: {Utils.format_money(quote.price, 'usd')}
+                                                    Bid: {Utils.format_money(quote.bid, 'usd')}
                                                 </Badge>
                                             </div>
                                             <div class="ml-4 flex flex-col items-start">

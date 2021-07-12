@@ -161,7 +161,7 @@ export default class Shipment {
         if (cheapest_quote_old.length > 0) {
             cheapest_quote_old.is_cheapest = false;
         }
-        const cheapest_quote = this.quotes.sort((l, r) => l.price.value - r.price.value)[0];
+        const cheapest_quote = this.quotes.sort((l, r) => l.bid.value - r.bid.value)[0];
         if (cheapest_quote) {
             cheapest_quote.is_cheapest = true;
         }

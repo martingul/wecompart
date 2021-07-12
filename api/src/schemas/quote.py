@@ -9,7 +9,7 @@ class QuoteRead(BaseModel):
     owner_uuid: str
     shipment_uuid: str
     status: str
-    price: float
+    bid: float
     delivery_date: date
 
     created_at: datetime
@@ -20,8 +20,14 @@ class QuoteRead(BaseModel):
 
 class QuoteCreate(BaseModel):
     status: str = 'pending'
-    price: float
+    bid: float
     delivery_date: str
+
+    @validator('bid')
+    def validate_bid(cls, v: float):
+        if v < 0:
+            raise ValueError('error_invalid_bid')
+        return v
 
     @validator('status')
     def validate_status(cls, v: str):
@@ -36,7 +42,7 @@ class QuoteCreate(BaseModel):
         return v
 
 class QuoteUpdate(BaseModel):
-    # price: Optional[float] = None
+    # bid: Optional[float] = None
     status: Optional[str] = None
 
     @validator('status')

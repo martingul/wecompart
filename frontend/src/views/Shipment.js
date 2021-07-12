@@ -257,20 +257,20 @@ export default class ShipmentView {
                                         Services requested ({this.shipment.services.length})
                                     </div>
                                     <div class="flex flex-wrap">
-                                        <div class="inline-flex mt-1">
+                                        <div class="inline-flex mt-1 mr-1">
                                             <Badge color="indigo" icon="truck">
                                                 Shipping
                                             </Badge>
                                         </div>
                                         {this.shipment.services.includes('packaging') ? (
-                                             <div class="inline-flex ml-1 mt-1">
+                                             <div class="inline-flex mr-1 mt-1">
                                                 <Badge color="indigo" icon="box">
                                                     Packaging
                                                 </Badge>
                                             </div>
                                         ) : ''}
                                         {this.shipment.services.includes('insurance') ? (
-                                            <div class="inline-flex ml-1 mt-1">
+                                            <div class="inline-flex mt-1">
                                                 <Badge color="indigo" icon="shield">
                                                     Insurance
                                                 </Badge>
@@ -381,7 +381,7 @@ export default class ShipmentView {
                                         {label: ''},
                                         {label: 'delivery date', attr: 'delivery_date', type: 'date'},
                                         {label: ''},
-                                        ]}>
+                                    ]}>
                                     {this.shipment.quotes.map((quote, i) => 
                                         <QuoteTableRow key={quote.uuid} index={i} quote={quote} />
                                     )}

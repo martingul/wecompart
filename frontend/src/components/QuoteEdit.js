@@ -21,7 +21,7 @@ export default class QuoteEdit {
 
     calculate_fee() {
         // TODO get fee from backend
-        return 0.10 * Number(this.quote.price.value);
+        return 0.10 * Number(this.quote.bid.value);
     }
 
     submit(e) {
@@ -60,7 +60,7 @@ export default class QuoteEdit {
                                     Bid
                                 </label>
                                 <input id="quote-bid-input" type="number" min="0" step="any"
-                                    oninput={(e) => this.quote.price.value = e.target.value} />
+                                    oninput={(e) => this.quote.bid.value = e.target.value} />
                             </div>
                             {/* <div class="my-1 flex">
                                 <input class="filter grayscale" type="checkbox" id="add-fee" value="add-fee"
@@ -87,7 +87,7 @@ export default class QuoteEdit {
                                 Your bid:
                             </span>
                             <code class="ml-2 font-bold">
-                                {Utils.format_money(this.quote.price.value, 'usd')}
+                                {Utils.format_money(this.quote.bid.value, 'usd')}
                             </code>
                         </span>
                         <span class="mt-1 text-sm text-gray-600">
@@ -103,7 +103,7 @@ export default class QuoteEdit {
                                 Total bid:
                             </span>
                             <code class="ml-2 font-bold">
-                                {Utils.format_money(Number(this.quote.price.value) + this.calculate_fee(), 'usd')}
+                                {Utils.format_money(Number(this.quote.bid.value) + this.calculate_fee(), 'usd')}
                             </code>
                         </span>
                     </div>

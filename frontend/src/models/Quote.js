@@ -6,7 +6,7 @@ export default class Quote {
         owner_uuid = '',
         shipment_uuid = '',
         status = '',
-        price = 0,
+        bid = 0,
         delivery_date = '',
         created_at = '',
         updated_at = '',
@@ -15,7 +15,7 @@ export default class Quote {
         this.owner_uuid = owner_uuid;
         this.shipment_uuid = shipment_uuid;
         this.status = status;
-        this.price = {value: price};
+        this.bid = {value: bid};
         this.delivery_date = {value: delivery_date};
         this.created_at = created_at;
         this.updated_at = updated_at;
@@ -27,7 +27,7 @@ export default class Quote {
 
     serialize() {
         return {
-            price: this.price.value,
+            bid: this.bid.value,
             delivery_date: this.delivery_date.value,
         };
     }
