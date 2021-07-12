@@ -5,10 +5,11 @@ import IconButton from './IconButton';
 export default class Modal {
     static create({
         title = '',
-        message = '',
+        content = '',
         confirm_label = '',
         confirm_color = '',
-        confirm,
+        confirm = () => {},
+        loading = () => {},
     }) {
         // TODO handle click outside
         const modal = document.createElement('div');
@@ -33,23 +34,26 @@ export default class Modal {
 
         m.mount(modal, {view: () => {
             return (
-                <div id="modal-content" class="flex flex-col bg-white shadow-lg rounded">
+                <div id="modal-content" class="flex flex-col w-1/2 md:w-1/3 bg-white shadow-lg rounded">
                     <div class="px-6 py-2 flex justify-between items-center border-b border-gray-200">
                         <span class="font-bold">
                             {title}
                         </span>
                         <IconButton icon="x" callback={() => modal.close()} />
                     </div>
-                    <div class="px-6 flex my-10 text-base">
-                        {message}
+                    <div class="px-8 py-2">
+                        {content}
                     </div>
                     <div class="px-6 py-2 flex justify-between border-t border-gray-200">
                         <Button active={false} callback={() => modal.close()}>
                             Cancel
                         </Button>
-                        <Button callback={() => {
-                            confirm();
-                            modal.close();
+                        <Button loading={() => loading()} callback={() => {
+                            Promise.resolve(confirm()).then(_ => {
+                                modal.close();
+                            }).catch(e => {
+                                console.log(e);
+                            });;
                         }}>
                             {confirm_label}
                         </Button>

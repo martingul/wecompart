@@ -19,10 +19,6 @@ export default class QuoteEdit {
         });
     }
 
-    is_loading() {
-        return this.loading;
-    }
-
     calculate_fee() {
         // TODO get fee from backend
         return 0.10 * Number(this.quote.price.value);
@@ -117,7 +113,7 @@ export default class QuoteEdit {
                         Cancel
                     </Button>
                     <div class="ml-2">
-                        <Button loading={() => this.is_loading()}
+                        <Button loading={() => this.loading}
                             callback={(e) => this.submit(e)}>
                             Create
                         </Button>

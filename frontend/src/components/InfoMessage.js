@@ -8,7 +8,7 @@ export default class InfoMessage {
 
     view(vnode) {
         return (
-            <div class={`flex items-center p-2 shadow rounded border
+            <div class={`flex items-center p-2 rounded border
                 border-gray-200 text-gray-500 ${this.class}`}>
                 <Icon name="info" class="w-5 ml-2" />
                 <span class="ml-4">

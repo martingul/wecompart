@@ -1,39 +1,30 @@
 import m from 'mithril';
+import warning_img from '../assets/warning.svg';
 import Api from '../Api';
 import Utils from '../Utils';
 import Button from './Button';
 import Badge from './Badge';
+import Actions from './Actions';
+import Modal from './Modal';
 
 export default class QuoteTableRow {
     constructor(vnode) {
         this.index = vnode.attrs.index;
         this.quote = vnode.attrs.quote;
         this.currency = 'usd';
+        this.loading = false;
     }
 
     update_status(status) {
-        Api.update_shipment_quote({
+        this.loading = true;
+        return Api.update_shipment_quote({
             shipment_id: this.quote.shipment_uuid,
             quote_id: this.quote.uuid,
             patch: {
                 status: status
             }
-        }).then(res => {
-            console.log(res);
-        }).catch(e => {
-            console.log(e);
-        });
-    }
-
-    oncreate(vnode) {
-        vnode.dom.addEventListener('mouseover', () => {
-            this.show_actions = true;
-            m.redraw();
-        });
-
-        vnode.dom.addEventListener('mouseout', () => {
-            this.show_actions = false;
-            m.redraw();
+        }).finally(() => {
+            this.loading = false;
         });
     }
 
@@ -63,27 +54,42 @@ export default class QuoteTableRow {
                 </td>
                 <td class="w-full py-2 pr-4 whitespace-nowrap">
                     <span class="inline-flex items-baseline">
-                        <span>
-                            {Utils.absolute_date(this.quote.delivery_date.value, true)}
-                        </span>
-                        <span class="pl-2 text-sm text-gray-400">
-                            {this.quote.delivery_date.value.replaceAll('-', '/')}
-                        </span>
+                        {Utils.absolute_date(this.quote.delivery_date.value, true)}
                     </span>
                 </td>
                 <td class="w-full">
-                    <span class={this.show_actions ? 'flex' : 'hidden'}>
-                        <div class="mr-2">
-                            <Button callback={() => this.update_status('accepted')}>
-                                Accept
-                            </Button>
-                        </div>
-                        <div>
-                            <Button active={false} callback={() => this.update_status('declined')}>
-                                Decline
-                            </Button>
-                        </div>
-                    </span>
+                    <Actions actions={[
+                        {name: 'accept', label: 'Accept', icon: 'check', callback: () => {
+                            console.log('accept');
+                            // this.update_status('accepted');
+                        }},
+                        {name: 'decline', label: 'Decline', icon: 'slash', callback: () => {
+                            console.log('decline');
+                            Modal.create({
+                                title: 'Decline quote',
+                                content: (
+                                    <div class="flex flex-col items-center">
+                                        <img class="w-60" src={warning_img} />
+                                        <div class="my-6 flex flex-col">
+                                            <span class="text-gray-800">
+                                                Are you sure you want to decline this quote?
+                                            </span>
+                                            <span class="mt-2 text-gray-500">
+                                                You will not be able to accept a quote once you have declined it.
+                                            </span>
+                                        </div>
+                                    </div>
+                                ),
+                                confirm_label: 'Decline',
+                                confirm_color: 'red',
+                                confirm: () => this.update_status('declined'),
+                                loading: () => this.loading,
+                            });
+                        }},
+                        {name: 'message', label: 'Message shipper', icon: 'message-circle', callback: () => {
+                            console.log('message');
+                        }},
+                    ]} />
                 </td>
             </tr>
         );

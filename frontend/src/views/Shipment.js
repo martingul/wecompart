@@ -2,6 +2,7 @@ import m from 'mithril';
 import FileSaver from 'file-saver';
 import hourglass_img from '../assets/hourglass.svg';
 import success_img from '../assets/success.svg';
+import warning_img from '../assets/warning.svg';
 import Api from '../Api';
 import Utils from '../Utils';
 import Icon from '../components/Icon';
@@ -26,7 +27,6 @@ import IconButton from '../components/IconButton';
 export default class ShipmentView {
     constructor(vnode) {
         console.log('construct ShipmentView');
-        this.loading = false;
         this.id = m.route.param('id');
         this.access_token = m.route.param('access_token');
         this.shipment = ShipmentStorage.get_by_id(this.id);
@@ -46,6 +46,9 @@ export default class ShipmentView {
             this.is_owner = this.shipment.owner_id === this.user.uuid;
             this.shipment.flag_quotes(this.user.uuid);
         }
+
+        this.loading = false;
+        this.delete_loading = false;
 
         this.quote_create_show = false;
         this.quote_create_success = false;
@@ -88,11 +91,12 @@ export default class ShipmentView {
     // }
 
     delete_shipment() {
-        this.shipment.delete().then(_ => {
+        this.delete_loading = true;
+        return this.shipment.delete().then(_ => {
             ShipmentStorage.remove(this.shipment);
             m.route.set('/shipments');
-        }).catch(e => {
-            console.log(e);
+        }).finally(() => {
+            this.delete_loading = false;
         });
     }
 
@@ -187,22 +191,32 @@ export default class ShipmentView {
                         {this.is_owner ? (
                             <div class="flex items-center">
                                 <Actions actions={[
-                                        {name: 'edit', label: 'Edit', icon: 'edit-3', callback: () => {
-                                            m.route.set('/shipments/:id/edit', {id: this.shipment.uuid});
-                                        }},
-                                        {name: 'download', label: 'Download PDF', icon: 'download', callback: () => {
-                                            console.log('download');
-                                        }},
-                                        {name: 'delete', label: 'Delete', icon: 'trash-2', callback: () => {
-                                            Modal.create({
-                                                title: 'Delete shipment',
-                                                message: 'Are you sure you want to delete this shipment?',
-                                                confirm_label: 'Delete',
-                                                confirm_color: 'red',
-                                                confirm: () => this.delete_shipment()
-                                            });
-                                        }},
-                                    ]} />
+                                    {name: 'edit', label: 'Edit', icon: 'edit-3', callback: () => {
+                                        m.route.set('/shipments/:id/edit', {id: this.shipment.uuid});
+                                    }},
+                                    {name: 'download', label: 'Download PDF', icon: 'download', callback: () => {
+                                        console.log('download');
+                                    }},
+                                    {name: 'delete', label: 'Delete', icon: 'trash-2', callback: () => {
+                                        Modal.create({
+                                            title: 'Delete shipment',
+                                            content: (
+                                                <div class="flex flex-col items-center">
+                                                    <img class="w-60" src={warning_img} />
+                                                    <div class="my-6 flex flex-col">
+                                                        <span class="text-gray-800">
+                                                            Are you sure you want to delete this shipment?
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ),
+                                            confirm_label: 'Delete',
+                                            confirm_color: 'red',
+                                            confirm: () => this.delete_shipment(),
+                                            loading: () => this.delete_loading,
+                                        });
+                                    }},
+                                ]} />
                             </div>
                         ) : ''}
                     </div>
