@@ -298,10 +298,17 @@ export default class ShipmentEditView {
                                     </button>
                                 </div>
                                 <div class="flex items-center justify-end w-full select-none">
-                                    <Button text={`Save ${this.is_new ? 'as draft' : ''}`} icon="save" active={false}
-                                        callback={(e) => {this.save = true; this.submit(e)}} />
+                                    <Button icon="save" active={false} callback={(e) => {
+                                        this.save = true;
+                                        this.submit(e)
+                                    }}>
+                                        {`Save ${this.is_new ? 'as draft' : ''}`}
+                                    </Button>
                                     <div class={this.is_new || this.shipment.status === 'draft' ? 'block ml-2' : 'hidden'}>
-                                        <Button icon="arrow-right" callback={(e) => {this.save = false; this.submit(e)}}>
+                                        <Button icon="arrow-right" callback={(e) => {
+                                            this.save = false;
+                                            this.submit(e)
+                                        }}>
                                             Create
                                         </Button>
                                     </div>

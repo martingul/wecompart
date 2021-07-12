@@ -15,7 +15,9 @@ export default class Button {
                 + ${this.active ? 'text-white bg-indigo-500 hover:bg-indigo-600'
                                 : 'border border-gray-300 hover:border-gray-300 text-gray-800 bg-white hover:text-black'}`}
                     onclick={this.callback}>
-                    {vnode.children}
+                    <span>
+                        {vnode.children}
+                    </span>
                 </button>
             );
         }
