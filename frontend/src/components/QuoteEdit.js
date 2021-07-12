@@ -9,12 +9,12 @@ import Quote from '../models/Quote';
 export default class QuoteEdit {
     constructor(vnode) {
         console.log('construct QuoteEdit');
-        this.shipment_id = vnode.attrs.shipment_id;
+        this.shipment = vnode.attrs.shipment;
         this.close = vnode.attrs.close ? vnode.attrs.close : () => {};
         this.add_fee = false;
 
         this.quote = new Quote({
-            shipment_uuid: this.shipment_id,
+            shipment_uuid: this.shipment.uuid,
         });
     }
 
@@ -50,8 +50,8 @@ export default class QuoteEdit {
                                 <label class="mb-1" for="delivery-date-input">
                                     Delivery date
                                 </label>
-                                <DateInput id="delivery-date-input" 
-                                    bind={this.quote.delivery_date} />
+                                <DateInput id="delivery-date-input" bind={this.quote.delivery_date}
+                                    min={(new Date(this.shipment.pickup_date.value - (24*60*60*1000))).toISOString().split('T')[0]} />
                             </div>
                         </div>
                         <div class="mt-2 flex flex-col w-full">

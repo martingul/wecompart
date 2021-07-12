@@ -365,7 +365,7 @@ export default class ShipmentView {
                         </div>
                         <div class={this.show_quote_form ? 'block' : 'hidden'}>
                             <div class="my-4 flex justify-center">
-                                <QuoteEdit shipment_id={this.id}
+                                <QuoteEdit shipment={this.shipment}
                                     close={() => this.show_quote_form = false} />
                             </div>
                         </div>

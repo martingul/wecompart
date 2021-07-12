@@ -224,8 +224,8 @@ export default class ShipmentEditView {
                             <label class="mb-1 whitespace-nowrap overflow-hidden overflow-ellipsis" for="pickup-date-input">
                                 Desired pickup date
                             </label>
-                            <DateInput bind={this.shipment.pickup_date} future={true}
-                                id="pickup-date-input" />
+                            <DateInput id="pickup-date-input" bind={this.shipment.pickup_date}
+                                min={new Date(Date.now()).toISOString().split('T')[0]} />
                         </div>
                         <InfoMessage class="my-4">
                             Exact pickup date and time will be set once you accept a shipper's quote.
