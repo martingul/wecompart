@@ -85,6 +85,7 @@ export default class Api {
             method: 'POST',
             url: `${Api.API_ROOT}/users/`,
             body: {
+                fullname: args.fullname,
                 username: args.username,
                 password: args.password,
             },

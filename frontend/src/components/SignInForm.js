@@ -1,17 +1,16 @@
 import m from 'mithril';
-import Auth from '../models/Auth';
 import Icon from './Icon';
-import Loading from './Loading';
 import PasswordInput from './PasswordInput';
+import Button from './Button';
 
 export default class SignInForm {
     constructor(vnode) {
         this.auth = vnode.attrs.auth;
     }
 
-    submit(e) {
+    signin(e) {
         e.preventDefault();
-        this.auth.authenticate().then(res => {
+        this.auth.signin().then(res => {
             if (res) m.route.set('/');
         }).catch(_ => {});
     }
@@ -22,7 +21,7 @@ export default class SignInForm {
 
     view(vnode) {
         return (
-            <form onsubmit={(e) => this.submit(e)}>
+            <form onsubmit={(e) => this.signin(e)}>
                 <div class="mb-4 font-bold text-xl">
                     Log in
                 </div>
@@ -47,7 +46,7 @@ export default class SignInForm {
                             Password
                         </label>
                         {/* <div class="flex flex-grow justify-end">
-                            <button class="cursor-pointer text-indigo-500 hover:text-indigo-600"
+                            <button type="button" class=" text-indigo-500 hover:text-indigo-600"
                                 type="button" id="forgot-password-btn" tabindex="-1">
                                 Forgot password?
                             </button>
@@ -56,19 +55,11 @@ export default class SignInForm {
                     <PasswordInput bind={this.auth.password} />
                 </div>
                 <input class="hidden" type="submit"/>
-                <div class="mt-4">
-                    <button type="button" class="my-2 flex items-center justify-center w-full px-4 xs:px-10 py-2 rounded shadow-md hover:shadow-lg
-                        transition duration-150 bg-indigo-500 hover:bg-indigo-400 text-white"
-                        onclick={(e) => this.submit(e)}
-                        disabled={this.auth.is_valid() ? '' : 'disabled'}>
-                        <div class={this.auth.busy ? 'block' : 'hidden'}>
-                            <Loading color="light" class="w-8" />
-                        </div>
-                        <span class="font-bold">
-                            Log in
-                        </span>
-                        <Icon name="arrow-right" class="w-4 ml-2" />
-                    </button>
+                <div class="mt-4 flex flex-col">
+                    <Button icon="arrow-right" loading={() => this.auth.is_loading()}
+                        callback={(e) => this.signin(e)}>
+                        Log in
+                    </Button>
                     <div class="mt-4">
                         <div class={this.auth.error !== '' ? 'block' : 'hidden'}>
                             <div class="flex items-center px-4 py-1 rounded bg-red-100 text-red-600" id="form-error">
@@ -85,7 +76,7 @@ export default class SignInForm {
                         </span>
                         <m.route.Link href="/auth/signup" options={{replace: true}}
                             onclick={() => this.auth.switch_action()}>
-                            <button type="button" class="ml-2 cursor-pointer text-indigo-500 hover:text-indigo-600">
+                            <button type="button" class="ml-2 text-indigo-500 hover:text-indigo-600">
                                 Sign up
                             </button>
                         </m.route.Link>

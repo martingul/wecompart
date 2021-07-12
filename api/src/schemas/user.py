@@ -8,7 +8,7 @@ user_roles = ['standard', 'shipper', 'admin']
 class UserRead(BaseModel):
     uuid: str
     username: str
-    name: Optional[str]
+    fullname: str
     role: str
 
     created_at: datetime
@@ -18,9 +18,15 @@ class UserRead(BaseModel):
         orm_mode = True
 
 class UserCreate(BaseModel):
+    fullname: str
     username: str
-    name: Optional[str]
     password: str
+
+    @validator('fullname')
+    def validate_fullname(cls, v: str):
+        if len(v) < 2:
+            raise ValueError('error_invalid_fullname')
+        return v
 
     @validator('username')
     def validate_username(cls, v: str):
@@ -49,7 +55,7 @@ class UserCreate(BaseModel):
 
 class UserUpdate(BaseModel):
     username: Optional[str] = None
-    name: Optional[str] = None
+    fullname: Optional[str] = None
     role: Optional[str] = None
     password: Optional[str] = None
 

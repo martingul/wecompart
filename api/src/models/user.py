@@ -12,7 +12,7 @@ class User(Base, Entity):
     password = Column(PasswordType(schemes=['bcrypt']), nullable=False)
 
     shipper_uuid = Column(String, ForeignKey('shippers.uuid'), nullable=True)
-    name = Column(String, nullable=True)
+    fullname = Column(String, nullable=False)
     role = Column(String, nullable=False, default='standard')
 
     session = relationship('Session', back_populates='user', uselist=False)
