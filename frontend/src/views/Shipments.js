@@ -1,7 +1,6 @@
 import m from 'mithril';
 import mailbox_img from '../assets/mailbox.svg';
 import Api from '../Api';
-import Icon from '../components/Icon';
 import InfoMessage from '../components/InfoMessage';
 import Loading from '../components/Loading';
 import Title from '../components/Title';
@@ -57,7 +56,7 @@ export default class ShipmentsView {
                         <div class="w-1/2 my-2 flex flex-col items-center">
                             <img src={mailbox_img} />
                             <div class="flex flex-col items-end">
-                                <InfoMessage>
+                                <InfoMessage class="mt-6 mb-4">
                                     Create a shipment listing to start receiving quotes from shippers.
                                 </InfoMessage>
                                 <Button icon="plus" callback={() => m.route.set('/shipments/new')}>

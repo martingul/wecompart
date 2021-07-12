@@ -227,10 +227,10 @@ export default class ShipmentEditView {
                             <DateInput bind={this.shipment.pickup_date} future={true}
                                 id="pickup-date-input" />
                         </div>
-                        <InfoMessage>
+                        <InfoMessage class="my-4">
                             Exact pickup date and time will be set once you accept a shipper's quote.
                         </InfoMessage>
-                        <div class="mt-4 flex flex-col">
+                        <div class="flex flex-col">
                             <div class="text-gray-600 w-full">
                                 What items are you shipping?
                                 <span class="ml-1 italic">

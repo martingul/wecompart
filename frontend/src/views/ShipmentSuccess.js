@@ -1,6 +1,7 @@
 import m from 'mithril';
 import success_img from '../assets/success.svg';
 import Button from '../components/Button';
+import InfoMessage from '../components/InfoMessage';
 import AppView from './App';
 
 export default class ShipmentSuccessView {
@@ -15,9 +16,9 @@ export default class ShipmentSuccessView {
                 <div class="flex flex-col items-center">
                     <div class="flex flex-col w-1/2">
                         <img src={success_img} />
-                        <span class="mb-8 text-gray-600 text-center">
+                        <InfoMessage class="my-6">
                             Shippers have been notified of your listing and will get back to you soon.
-                        </span>
+                        </InfoMessage>
                         <div class="flex flex-col">
                             <Button callback={() => m.route.set('/shipments/:id', {id: this.shipment_id})}>
                                 View

@@ -111,7 +111,7 @@ export default class Table {
                         }
                         
                         return (
-                            <th class={`w-auto py-1., ${s.type === 'number' ? 'text-right' : 'text-left'}`}>
+                            <th class={`w-auto py-2 ${s.type === 'number' ? 'text-right' : 'text-left'}`}>
                                 {this.collection.length > 0 ?
                                     <button class="text-gray-600"
                                         onclick={() => this.sort_state = s}>
