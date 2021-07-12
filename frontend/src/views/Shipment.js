@@ -11,7 +11,7 @@ import Timer from '../components/Timer';
 import Button from '../components/Button';
 import Table from '../components/Table';
 import Badge from '../components/Badge';
-import ShipmentActions from '../components/ShipmentActions';
+import Actions from '../components/Actions';
 import ShipmentComments from '../components/ShipmentComments';
 import ItemTableRow from '../components/ItemTableRow';
 import QuoteTableRow from '../components/QuoteTableRow';
@@ -150,10 +150,8 @@ export default class ShipmentView {
         if (this.error_shipment_not_found) {
             return (
                 <AppView>
-                    <div class={this.error_shipment_not_found ? 'block' : 'hidden'}>
-                        <div class="my-6 w-full text-center">
-                            No such shipment
-                        </div>
+                    <div class="my-6 w-full text-center">
+                        No such shipment
                     </div>
                 </AppView>
             );
@@ -188,16 +186,23 @@ export default class ShipmentView {
                         </div>
                         {this.is_owner ? (
                             <div class="flex items-center">
-                                <ShipmentActions
-                                    edit={() => m.route.set('/shipments/:id/edit', {id: this.shipment.uuid})}
-                                    download={() => console.log('download')}
-                                    delete={() => Modal.create({
-                                        title: 'Delete shipment',
-                                        message: 'Are you sure you want to delete this shipment?',
-                                        confirm_label: 'Delete',
-                                        confirm_color: 'red',
-                                        confirm: () => this.delete_shipment()
-                                    })} />
+                                <Actions actions={[
+                                        {name: 'edit', label: 'Edit', icon: 'edit-3', callback: () => {
+                                            m.route.set('/shipments/:id/edit', {id: this.shipment.uuid});
+                                        }},
+                                        {name: 'download', label: 'Download PDF', icon: 'download', callback: () => {
+                                            console.log('download');
+                                        }},
+                                        {name: 'delete', label: 'Delete', icon: 'trash-2', callback: () => {
+                                            Modal.create({
+                                                title: 'Delete shipment',
+                                                message: 'Are you sure you want to delete this shipment?',
+                                                confirm_label: 'Delete',
+                                                confirm_color: 'red',
+                                                confirm: () => this.delete_shipment()
+                                            });
+                                        }},
+                                    ]} />
                             </div>
                         ) : ''}
                     </div>
@@ -243,16 +248,20 @@ export default class ShipmentView {
                                                 Shipping
                                             </Badge>
                                         </div>
-                                        <div class={this.shipment.services.includes('packaging') ? 'inline-flex ml-1 mt-1' : 'hidden'}>
-                                            <Badge color="indigo" icon="box">
-                                                Packaging
-                                            </Badge>
-                                        </div>
-                                        <div class={this.shipment.services.includes('insurance') ? 'inline-flex ml-1 mt-1' : 'hidden'}>
-                                            <Badge color="indigo" icon="shield">
-                                                Insurance
-                                            </Badge>
-                                        </div>
+                                        {this.shipment.services.includes('packaging') ? (
+                                             <div class="inline-flex ml-1 mt-1">
+                                                <Badge color="indigo" icon="box">
+                                                    Packaging
+                                                </Badge>
+                                            </div>
+                                        ) : ''}
+                                        {this.shipment.services.includes('insurance') ? (
+                                            <div class="inline-flex ml-1 mt-1">
+                                                <Badge color="indigo" icon="shield">
+                                                    Insurance
+                                                </Badge>
+                                            </div>
+                                        ) : ''}
                                     </div>
                                 </div>
                                 <div>
@@ -311,11 +320,13 @@ export default class ShipmentView {
                                         ({this.shipment.quotes.length})
                                     </span>
                                 ) : ''}
-                                <span class={(this.user && this.user.role === 'shipper' && !this.is_owner) ? 'flex items-center ml-4' : 'hidden'}>
-                                    <Badge color="yellow" icon="clock">
-                                        <Timer end={this.shipment.pickup_date.value} />
-                                    </Badge>
-                                </span>
+                                {(this.user && this.user.role === 'shipper' && !this.is_owner) ? (
+                                    <span class="flex items-center ml-4">
+                                        <Badge color="yellow" icon="clock">
+                                            <Timer end={this.shipment.pickup_date.value} />
+                                        </Badge>
+                                    </span>
+                                ) : ''}
                             </div>
                             {(this.user && this.user.role === 'shipper' && !this.is_owner) ? (
                                 // hide (or disable with explaining tooltip) when user already has a quote posted
