@@ -63,7 +63,7 @@ export default class SignUpForm {
                 </div>
                 <input class="hidden" type="submit"/>
                 <div class="mt-4 flex flex-col">
-                    <Button icon="arrow-right" loading={() => this.auth.is_loading()}
+                    <Button icon="arrow-right" loading={() => this.auth.loading}
                         callback={(e) => this.signup(e)}>
                         Continue
                     </Button>

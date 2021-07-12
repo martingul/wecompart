@@ -12,10 +12,6 @@ export default class Auth {
         this.loading = false;
     }
 
-    is_loading() {
-        return this.loading;
-    }
-
     switch_action() {
         this.password.value = '';
         this.error = '';
