@@ -17,7 +17,7 @@
     "@babel/plugin-proposal-class-properties": "^7.12.1",
     "@babel/plugin-transform-react-jsx": "^7.12.10",
     "@babel/preset-env": "^7.12.10",
-    "autoprefixer": "^10.1.0",
+    "autoprefixer": "^10.3.0",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.0.1",
     "eslint": "^7.16.0",
@@ -31,12 +31,12 @@
     "file-saver": "^2.0.5",
     "http-server": "^0.12.3",
     "mithril": "^2.0.4",
-    "postcss": "^8.2.1",
+    "postcss": "^8.3.5",
     "postcss-loader": "^4.1.0",
     "postcss-preset-env": "^6.7.0",
     "style-loader": "^2.0.0",
     "svg-url-loader": "^7.1.1",
-    "tailwindcss": "^2.0.2",
+    "tailwindcss": "^2.2.4",
     "webpack": "^5.10.1",
     "webpack-cli": "^4.2.0"
   }
