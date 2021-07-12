@@ -86,7 +86,7 @@ export default class ShipmentView {
     delete_shipment() {
         console.log('delete');
         this.shipment.delete().then(_ => {
-            ShipmentStorage.delete(this.shipment);
+            ShipmentStorage.remove(this.shipment);
             m.route.set('/shipments');
         }).catch(e => {
             console.log(e);

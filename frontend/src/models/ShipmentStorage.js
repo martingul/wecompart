@@ -1,11 +1,11 @@
 export default class ShipmentStorage {
     static shipments = [];
 
-    static create(shipment) {
+    static add(shipment) {
         ShipmentStorage.shipments.push(shipment);
     }
 
-    static delete(shipment) {
+    static remove(shipment) {
         ShipmentStorage.shipments = ShipmentStorage.shipments
             .filter(s => s.uuid !== shipment.uuid);
     }

@@ -57,7 +57,7 @@ export default class ShipmentEditView {
             this.shipment.create().then(s => {
                 console.log(s);
                 const shipment = new Shipment(s);
-                ShipmentStorage.create(shipment);
+                ShipmentStorage.add(shipment);
                 m.route.set('/shipments/:id/success', {id: shipment.uuid});
             }).catch(e => {
                 console.log(e);
@@ -81,7 +81,7 @@ export default class ShipmentEditView {
             this.shipment.status = 'draft';
             this.shipment.create().then(s => {
                 console.log(s);
-                ShipmentStorage.create(new Shipment(s));
+                ShipmentStorage.add(new Shipment(s));
                 m.route.set('/shipments');
             }).catch(e => {
                 console.log(e);
@@ -105,7 +105,7 @@ export default class ShipmentEditView {
     delete_shipment() {
         console.log('delete');
         this.shipment.delete().then(_ => {
-            ShipmentStorage.delete(this.shipment);
+            ShipmentStorage.remove(this.shipment);
             m.route.set('/shipments');
         }).catch(e => {
             console.log(e);

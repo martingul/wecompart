@@ -18,7 +18,7 @@ export default class Notifications {
             name: 'new_notification_handler',
             fn: (e) => {
                 const notification = JSON.parse(e.data);
-                NotificationStorage.create(new Notification(notification));
+                NotificationStorage.add(new Notification(notification));
                 m.redraw();
             }
         });

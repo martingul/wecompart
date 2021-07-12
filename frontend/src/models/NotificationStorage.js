@@ -2,18 +2,18 @@ export default class NotificationStorage {
     static notifications = [];
     static fetched = false;
 
-    static create(notification) {
+    static add(notification) {
         NotificationStorage.notifications.unshift(notification);
     }
 
-    static delete(notification) {
+    static remove(notification) {
         NotificationStorage.notifications = NotificationStorage.notifications
-            .filter(s => s.uuid !== notification.uuid);
+            .filter(n => n.uuid !== notification.uuid);
     }
 
     static get_by_id(id) {
         console.log('get_by_id', id);
-        const notifications = NotificationStorage.notifications.filter(s => s.uuid === id);
+        const notifications = NotificationStorage.notifications.filter(n => n.uuid === id);
         if (notifications.length === 0) {
             return null;
         } else {
