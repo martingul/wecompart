@@ -1,5 +1,6 @@
 export default class ShipmentStorage {
     static shipments = [];
+    static fetched = false;
 
     static add(shipment) {
         ShipmentStorage.shipments.push(shipment);

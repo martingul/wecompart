@@ -1,6 +1,8 @@
 import m from 'mithril';
+import mailbox_img from '../assets/mailbox.svg';
 import Api from '../Api';
 import Icon from '../components/Icon';
+import InfoMessage from '../components/InfoMessage';
 import Loading from '../components/Loading';
 import Title from '../components/Title';
 import Table from '../components/Table';
@@ -17,7 +19,7 @@ export default class ShipmentsView {
     }
 
     oninit(vnode) {
-        if (ShipmentStorage.shipments.length === 0) {
+        if (!ShipmentStorage.fetched) {
             this.loading = true;
             Api.read_shipments().then(res => {
                 if (res === null) {
@@ -30,6 +32,7 @@ export default class ShipmentsView {
                 m.route.set('/auth/login');
             }).finally(() => {
                 this.loading = false;
+                ShipmentStorage.fetched = true;
             });
         }
     }
@@ -51,18 +54,16 @@ export default class ShipmentsView {
             return (
                 <AppView>
                     <div class="flex justify-center">
-                        <div class="my-2 flex flex-col items-center">
-                            <div class="my-4 text-gray-200">
-                                <Icon name="wind" class="w-12 h-12" />
+                        <div class="w-1/2 my-2 flex flex-col items-center">
+                            <img src={mailbox_img} />
+                            <div class="flex flex-col items-end">
+                                <InfoMessage>
+                                    Create a shipment listing to start receiving quotes from shippers.
+                                </InfoMessage>
+                                <Button icon="plus" callback={() => m.route.set('/shipments/new')}>
+                                    Create shipment
+                                </Button>
                             </div>
-                            <div class="mt-1 mb-6 text-gray-600">
-                                <span>
-                                    No shipments yet.
-                                </span>
-                            </div>
-                            <Button icon="plus" callback={() => m.route.set('/shipments/new')}>
-                                New shipment
-                            </Button>
                         </div>
                     </div>
                 </AppView>

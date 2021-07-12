@@ -4,6 +4,7 @@ import Api from '../Api';
 import Icon from '../components/Icon';
 import Loading from '../components/Loading';
 import Button from '../components/Button';
+import InfoMessage from '../components/InfoMessage';
 import Title from '../components/Title';
 import ItemsEdit from '../components/ItemsEdit';
 import LocationInput from '../components/LocationInput';
@@ -21,7 +22,6 @@ import AppView from './App';
 export default class ShipmentEditView {
     constructor(vnode) {
         this.id = m.route.param('id');
-        console.log(this.id);
         this.is_new = this.id === undefined;
         this.error_shipment_not_found = false;
 
@@ -200,11 +200,6 @@ export default class ShipmentEditView {
                             }
                         }} />
                     </div>
-                    {/* <div class={this.is_new ? 'flex' : 'hidden'}>
-                        <div class="w-full my-2 px-4 py-2 flex items-center rounded shadow bg-gray-100">
-                            message...
-                        </div>
-                    </div> */}
                     <form class="flex flex-col" onsubmit={(e) => e.preventDefault()}>
                         <div class="my-2 text-gray-600">
                             Shipment information
@@ -232,12 +227,9 @@ export default class ShipmentEditView {
                             <DateInput bind={this.shipment.pickup_date} future={true}
                                 id="pickup-date-input" />
                         </div>
-                        <div class="flex items-center my-4 py-2 px-4 rounded bg-gray-50 text-gray-600 border border-gray-200">
-                            <Icon name="info" class="w-5" />
-                            <span class="ml-4">
-                                Exact pickup date and time will be set once you accept a shipper's quote.
-                            </span>
-                        </div>
+                        <InfoMessage>
+                            Exact pickup date and time will be set once you accept a shipper's quote.
+                        </InfoMessage>
                         <div class="mt-4 flex flex-col">
                             <div class="text-gray-600 w-full">
                                 What items are you shipping?
