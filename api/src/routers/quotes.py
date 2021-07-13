@@ -83,6 +83,7 @@ def read_shipment_quote(shipment_id: str, quote_id: str,
     session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Read a shipment quote"""
+    # TODO rewrite for shippers (not only self)
     try:
         owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
@@ -112,6 +113,7 @@ def update_shipment_quote(shipment_id: str, quote_id: str, patch: QuoteUpdate,
     session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Update a shipment quote"""
+    # TODO rewrite for shippers (not only self)
     try:
         owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
@@ -142,8 +144,10 @@ def delete_shipment_quote(shipment_id: str, quote_id: str,
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Delete a shipment quote"""
     try:
-        owner_uuid = session.user_uuid
-        shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
+        if session.user.role != 'shipper':
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+        shipment_db = shipments.read_shipment(db, shipment_id)
 
         if shipment_db is None:
             raise HTTPException(

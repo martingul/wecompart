@@ -112,7 +112,7 @@ export default class Table {
                         
                         return (
                             <th class={`w-auto py-2 ${s.type === 'number' ? 'text-right' : 'text-left'}`}>
-                                {this.collection.length > 0 ?
+                                {this.collection.length > 1 ?
                                     <button class="text-gray-600"
                                         onclick={() => this.sort_state = s}>
                                         <span class="mr-1 text-xs uppercase border-b border-dotted border-gray-600">

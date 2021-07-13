@@ -214,6 +214,14 @@ export default class Api {
         });
     }
 
+    static delete_shipment_quote(args) {
+        return m.request({
+            method: 'DELETE',
+            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/${args.quote_id}`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+        });
+    }
+
     static read_messages(args) {
         return m.request({
             method: 'GET',

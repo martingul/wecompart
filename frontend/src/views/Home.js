@@ -17,7 +17,10 @@ export default class HomeView {
         return (
             <AppView>
                 <div>
-                    Home
+                    <ul>
+                        <li>Verify email address</li>
+                        <li>Link bank account</li>
+                    </ul>
                 </div>
             </AppView>
         );

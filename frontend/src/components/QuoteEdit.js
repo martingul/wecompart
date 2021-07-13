@@ -1,8 +1,6 @@
 import m from 'mithril';
 import Utils from '../Utils';
-import Api from '../Api';
 import Button from './Button';
-import Badge from './Badge';
 import DateInput from './DateInput';
 import Quote from '../models/Quote';
 
@@ -16,6 +14,7 @@ export default class QuoteEdit {
 
         this.quote = new Quote({
             shipment_uuid: this.shipment.uuid,
+            status: 'pending',
         });
     }
 
@@ -29,8 +28,7 @@ export default class QuoteEdit {
         console.log(this.quote);
         this.loading = true;
         this.quote.create().then(q => {
-            const quote = new Quote(q);
-            this.shipment.quotes.push(quote);
+            this.shipment.add_quote(new Quote(q));
             this.close(true);
         }).catch(e => {
             console.log(e);

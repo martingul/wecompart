@@ -104,7 +104,6 @@ export default class ShipmentView {
         if (!this.shipment) {    
             this.loading = true;        
             console.log('fetching shipment', this.id);
-            console.log(this.access_token);
     
             Api.read_shipment({
                 shipment_id: this.id,
@@ -342,7 +341,8 @@ export default class ShipmentView {
                                     </span>
                                 ) : ''}
                             </div>
-                            {(this.user && this.user.role === 'shipper' && !this.is_owner) ? (
+                            {(this.user && this.user.role === 'shipper' && !this.is_owner
+                                && this.shipment.quotes.filter(q => q.owner_uuid === this.user.uuid).length === 0) ? (
                                 // hide (or disable with explaining tooltip) when user already has a quote posted
                                 <div class="flex justify-end">
                                     <Button icon="plus" callback={() => {
@@ -368,7 +368,7 @@ export default class ShipmentView {
                                         {label: ''},
                                     ]}>
                                     {this.shipment.quotes.length > 0 ? this.shipment.quotes.map((quote, i) => 
-                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} />
+                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} shipment={this.shipment} user={this.user} />
                                     ) : ''}
                                 </Table>
                             </div>
@@ -383,16 +383,16 @@ export default class ShipmentView {
                                         {label: ''},
                                     ]}>
                                     {this.shipment.quotes.map((quote, i) => 
-                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} />
+                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} shipment={this.shipment} user={this.user} />
                                     )}
                                 </Table>
                             </div>
                         ) : ''}
                         {(!this.quote_create_show && this.shipment.quotes.length === 0) ? (
                             <div class="flex justify-center">
-                                <div class="w-1/3 my-2 flex flex-col items-center text-center">
-                                    <img src={hourglass_img} />
-                                    <span class="mt-4 mb-6 text-gray-500">
+                                <div class="w-1/2 my-2 flex flex-col items-center">
+                                    <img class="w-60" src={hourglass_img} />
+                                    <span class="mt-6 text-gray-500">
                                         {(this.user && this.user.role === 'shipper')
                                             ? 'Be the first shipper to place a quote on this shipment!'
                                             : 'Shippers will soon place their quotes if they wish to handle your shipment.'

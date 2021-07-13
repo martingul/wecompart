@@ -22,23 +22,35 @@ export default class Quote {
 
         this.is_cheapest = false;
         this.is_earliest = false;
-        this.is_user = false;
     }
 
     serialize() {
         return {
+            status: this.status,
             bid: this.bid.value,
             delivery_date: this.delivery_date.value,
         };
     }
 
     create() {
-        console.log(this.serialize())
         return Api.create_shipment_quote({
             shipment_id: this.shipment_uuid,
             quote: this.serialize()
         });
     }
 
+    update() {
+        return Api.update_shipment_quote({
+            shipment_id: this.shipment_uuid,
+            quote_id: this.uuid,
+            patch: this.serialize()
+        });
+    }
 
+    delete() {
+        return Api.delete_shipment_quote({
+            shipment_id: this.shipment_uuid,
+            quote_id: this.uuid,
+        });
+    }
 }

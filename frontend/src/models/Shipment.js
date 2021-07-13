@@ -147,6 +147,16 @@ export default class Shipment {
         this.items = this.items.filter(item => !item.delete);
     }
 
+    add_quote(quote) {
+        this.quotes.push(quote);
+        this.flag_quotes(quote.user_uuid);
+    }
+
+    remove_quote(quote) {
+        this.quotes = this.quotes.filter(q => q.uuid !== quote.uuid);
+        this.flag_quotes(quote.user_uuid);
+    }
+
     flag_quotes(user_uuid) {
         const earliest_quote_old = this.quotes.filter(q => q.is_earliest);
         if (earliest_quote_old.length > 0) {
@@ -164,11 +174,6 @@ export default class Shipment {
         const cheapest_quote = this.quotes.sort((l, r) => l.bid.value - r.bid.value)[0];
         if (cheapest_quote) {
             cheapest_quote.is_cheapest = true;
-        }
-
-        const user_quote = this.quotes.filter(q => q.owner_uuid === user_uuid);
-        if (user_quote.length > 0) {
-            user_quote[0].is_user = true;
         }
     }
 }
