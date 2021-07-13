@@ -104,7 +104,7 @@ export default class Api {
     static read_locations(args) {
         return m.request({
             method: 'GET',
-            url: `${Api.API_ROOT}/shipments/locations`,
+            url: `${Api.API_ROOT}/locations`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
             params: { q: args.q },
         });

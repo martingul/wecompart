@@ -10,7 +10,9 @@ smtp_host: str = 'mail.privateemail.com'
 smtp_port: int = 465
 
 google_maps_api_url: str = 'https://maps.googleapis.com/maps/api/'
-google_maps_id = '3af1c97252ddb98f'
+google_maps_id: str = '3af1c97252ddb98f'
+
+ipwhois_api_url: str = 'https://ipwhois.app/json/'
 
 def load_credentials():
     with open('credentials.json', 'r') as credentials_file:

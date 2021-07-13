@@ -4,25 +4,9 @@ from fastapi import APIRouter, Header, Response, Depends, HTTPException, status
 from storage import db_session, DatabaseSession
 from schemas.session import Session
 from schemas.shipment import ShipmentRead, ShipmentCreate, ShipmentUpdate
-from lib import auth, shipments, shippers, users, maps
+from lib import auth, shipments, shippers, users, maps, locations
 
 router = APIRouter()
-
-@router.get('/locations')
-def read_locations(
-    q: str,
-    session: Session = Depends(auth.auth_session)
-):
-    # TODO validate query
-    return shipments.read_locations(q)
-
-@router.get('/locations/{location_id}')
-def read_location(
-    location_id: str,
-    session: Session = Depends(auth.auth_session)
-):
-    # TODO validate query
-    return shipments.read_location(location_id)
 
 @router.get('/', response_model=List[ShipmentRead])
 def read_shipments(skip: int = 0, limit: int = 100,
@@ -48,11 +32,11 @@ def create_shipment(shipment: ShipmentCreate,
         # TODO check for shipment status and act accordingly
         owner_uuid = session.user_uuid
 
-        pickup_location = shipments.read_location(shipment.pickup_address_id)
+        pickup_location = locations.read_location(shipment.pickup_address_id)
         shipment.pickup_address_long = pickup_location['long']
         shipment.pickup_address_short = pickup_location['short']
 
-        delivery_location = shipments.read_location(shipment.delivery_address_id)
+        delivery_location = locations.read_location(shipment.delivery_address_id)
         shipment.delivery_address_long = delivery_location['long']
         shipment.delivery_address_short = delivery_location['short']
 
