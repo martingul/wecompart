@@ -392,22 +392,32 @@ export default class ShipmentView {
                             <div class="flex justify-center">
                                 <div class="w-1/2 my-2 flex flex-col items-center">
                                     <img class="w-60" src={hourglass_img} />
-                                    <span class="mt-6 text-gray-500">
-                                        {(this.user && this.user.role === 'shipper')
-                                            ? 'Be the first shipper to place a quote on this shipment!'
-                                            : 'Shippers will soon place their quotes if they wish to handle your shipment.'
-                                        }
-                                    </span>
+                                    {this.is_owner ? (
+                                        <span class="mt-6 text-gray-500">
+                                            Shippers will soon place their quotes if they wish to handle your shipment.
+                                        </span>
+                                    ) : (
+                                        <div class="flex flex-col">
+                                            <span class="mt-6 text-xl font-bold text-black">
+                                                Be first
+                                            </span>
+                                            <span class="my-1 text-gray-500">
+                                                Be the first shipper to place a quote on this shipment!
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ) : ''}
                         {this.quote_create_show ? (
-                            <div class="my-4 flex justify-center">
-                                <QuoteEdit shipment={this.shipment}
-                                    close={(success) => {
-                                        this.quote_create_success = success;
-                                        this.quote_create_show = false;
-                                    }} />
+                            <div class="my-4 w-full flex justify-center">
+                                <div class="w-full md:w-1/2">
+                                    <QuoteEdit shipment={this.shipment}
+                                        close={(success) => {
+                                            this.quote_create_success = success;
+                                            this.quote_create_show = false;
+                                        }} />
+                                </div>
                             </div>
                         ) : ''}
                         {this.quote_create_success ? (

@@ -43,7 +43,7 @@ export default class QuoteEdit {
 
     view(vnode) {
         return (
-            <form class="w-full md:w-1/2 flex flex-col"
+            <form class="flex flex-col"
                 onsubmit={(e) => this.submit(e)}>
                 <div class="w-full flex flex-col py-2 px-4 rounded border border-gray-200">
                     <div class="flex mb-4 items-center justify-between">

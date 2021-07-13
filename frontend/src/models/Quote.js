@@ -24,6 +24,14 @@ export default class Quote {
         this.is_earliest = false;
     }
 
+    is_accepted() {
+        return this.status === 'accepted';
+    }
+
+    is_declined() {
+        return this.status === 'declined';
+    }
+
     serialize() {
         return {
             status: this.status,

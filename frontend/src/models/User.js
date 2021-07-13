@@ -24,6 +24,8 @@ export default class User {
         this.role = role;
     }
 
+    // is_shipper()
+
     serialize() {
         return {
             uuid: this.uuid,

@@ -114,6 +114,7 @@ def update_shipment_quote(shipment_id: str, quote_id: str, patch: QuoteUpdate,
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Update a shipment quote"""
     # TODO rewrite for shippers (not only self)
+    # TODO notify quote owner on status change
     try:
         owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)

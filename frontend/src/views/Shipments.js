@@ -53,14 +53,19 @@ export default class ShipmentsView {
                 <AppView>
                     <div class="flex justify-center">
                         <div class="w-1/2 my-2 flex flex-col items-center">
-                            <img src={mailbox_img} />
-                            <div class="flex flex-col items-end">
-                                <span class="my-6 text-gray-500">
+                            <img class="w-60" src={mailbox_img} />
+                            <div class="flex flex-col">
+                                <span class="mt-6 text-xl font-bold text-black">
+                                    Create your first shipment
+                                </span>
+                                <span class="my-1 text-gray-500">
                                     Create a shipment listing to start receiving quotes from shippers.
                                 </span>
-                                <Button icon="plus" callback={() => m.route.set('/shipments/new')}>
-                                    Create shipment
-                                </Button>
+                                <span class="mt-6 self-end">
+                                    <Button icon="plus" callback={() => m.route.set('/shipments/new')}>
+                                        Create shipment
+                                    </Button>
+                                </span>
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,5 @@
 import m from 'mithril';
 import warning_img from '../assets/warning.svg';
-import Api from '../Api';
 import Utils from '../Utils';
 import IconButton from './IconButton';
 import Badge from './Badge';
@@ -15,7 +14,6 @@ export default class QuoteTableRow {
         this.user = vnode.attrs.user;
         this.currency = 'usd';
         this.loading = false;
-
         this.is_quote_owner = this.quote.owner_uuid === this.user.uuid;
         this.is_shipment_owner = this.shipment.owner_id === this.user.uuid;
     }
@@ -48,16 +46,27 @@ export default class QuoteTableRow {
                 </td>
                 <td class="w-1 py-2 pr-4">
                     <span class="inline-flex items-center">
-                        <span class={this.quote.is_cheapest ? 'inline-flex mx-0.5' : 'hidden'}>
-                            <Badge color="green">
-                                Cheapest
-                            </Badge>
-                        </span>
-                        <span class={this.quote.is_earliest ? 'inline-flex mx-0.5' : 'hidden'}>
-                            <Badge color="purple">
-                                Earliest
-                            </Badge>
-                        </span>
+                        {this.quote.is_declined() ? (
+                            <span class="inline-flex mx-0.5">
+                                <Badge color="red">
+                                    Declined
+                                </Badge>
+                            </span>
+                        ) : ''}
+                        {(this.quote.is_cheapest && !this.quote.is_declined()) ? (
+                            <span class="inline-flex mx-0.5">
+                                <Badge color="green">
+                                    Cheapest
+                                </Badge>
+                            </span>
+                        ) : ''}
+                        {(this.quote.is_earliest && !this.quote.is_declined()) ? (
+                            <span class="inline-flex mx-0.5">
+                                <Badge color="purple">
+                                    Earliest
+                                </Badge>
+                            </span>
+                        ) : ''}
                     </span>
                 </td>
                 <td class="w-full py-2 pr-4 whitespace-nowrap">
@@ -66,11 +75,15 @@ export default class QuoteTableRow {
                     </span>
                 </td>
                 <td class="w-full">
-                    {this.is_shipment_owner ? (
+                    {(this.is_shipment_owner && !this.quote.is_declined()) ? (
                         <Actions actions={[
                             {name: 'accept', label: 'Accept', icon: 'check', callback: () => {
                                 console.log('accept');
                                 // this.update_quote_status('accepted');
+                                // TODO show modal confirming acceptance:
+                                //    - show quote summary
+                                //    - show what is due to pay (include taxes)
+                                //    - show button to go to checkout
                             }},
                             {name: 'decline', label: 'Decline', icon: 'slash', callback: () => {
                                 console.log('decline');
