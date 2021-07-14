@@ -95,15 +95,7 @@ export default class ShipmentsView {
                             {label: 'date', attr: 'pickup_date', type: 'date'},
                         ]}>
                         {ShipmentStorage.shipments.map(s =>
-                            <ShipmentTableRow key={s.uuid} shipment={s} 
-                                callback={(s) => {
-                                    if (s.status === 'draft') {
-                                        m.route.set('/shipments/:id/edit', {id: s.uuid});
-                                    } else {
-                                        m.route.set('/shipments/:id', {id: s.uuid});
-                                    }
-                                }}
-                            />
+                            <ShipmentTableRow key={s.uuid} shipment={s} />
                         )}
                     </Table>
                     <div class="my-2">

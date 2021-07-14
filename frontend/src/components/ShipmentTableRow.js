@@ -8,14 +8,21 @@ export default class ShipmentListRow {
     constructor(vnode) {
         console.log('construct ShipmentListRow');
         this.shipment = vnode.attrs.shipment;
-        this.callback = vnode.attrs.callback;
+    }
+
+    navigate() {
+        if (this.shipment.status === 'draft') {
+            m.route.set('/shipments/:id/edit', {id: this.shipment.uuid});
+        } else {
+            m.route.set('/shipments/:id', {id: this.shipment.uuid});
+        }
     }
 
     view(vnode) {
         return (
             <tr class="whitespace-nowrap cursor-pointer transition-all
                 border-b border-gray-200 text-gray-600 hover:bg-gray-50 hover:shadow"
-                onclick={() => this.callback(this.shipment)}>
+                onclick={() => this.navigate()}>
                 <td class="w-1 py-2 text-black font-bold text-right">
                     {this.shipment.get_total_value_fmt()}
                 </td>
