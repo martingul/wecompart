@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Depends, HTTPException, status
 from storage import db_session, DatabaseSession
 from schemas.session import Session
 from schemas.user import UserRead, UserCreate, UserUpdate
-from lib import auth, users, locations
+from lib import auth, users, locations, payments
 from error import ApiError
 
 # TODO add permissions (only user itself can modify/access info)
@@ -25,9 +25,28 @@ def read_users(skip: int = 0, limit: int = 100,
         raise e
 
 @router.get('/me', response_model=UserRead)
-def read_self(session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> UserRead:
-    return read_user(session.user_uuid, session, db)
+def read_self(session: Session = Depends(auth.auth_session)) -> UserRead:
+    return session.user
+
+@router.post('/onboard')
+def onboard_user(session: Session = Depends(auth.auth_session),
+    db: DatabaseSession = Depends(db_session)):
+    try:
+        user_db = users.read_user(db, index=session.user_uuid, by='uuid')
+        user_db.stripe_account_id = payments.create_account(
+            country=user_db.country_code,
+            email=user_db.username,
+            role=user_db.role,
+            fullname=user_db.fullname
+        )
+        db.commit()
+        db.refresh(user_db)
+        
+        onboard_url = payments.create_account_links(user_db.stripe_account_id)
+        return onboard_url
+
+    except Exception as e:
+        print(e)
 
 @router.post('/', status_code=status.HTTP_201_CREATED,
     response_model=UserRead, response_model_exclude_unset=True)

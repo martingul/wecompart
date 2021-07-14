@@ -1,5 +1,7 @@
 import m from 'mithril';
+import Api from '../Api';
 import warning_img from '../assets/warning.svg';
+import card_img from '../assets/card.svg';
 import Utils from '../Utils';
 import IconButton from './IconButton';
 import Badge from './Badge';
@@ -18,10 +20,25 @@ export default class QuoteTableRow {
         this.is_shipment_owner = this.shipment.owner_id === this.user.uuid;
     }
 
+    accept_quote() {
+        return this.update_quote_status('accepted')
+            .then(_ => this.shipment.checkout(this.quote.uuid))
+            .then(url => {
+                window.location.replace(url);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
+
+    decline_quote() {
+        return this.update_quote_status('declined');
+    }
+
     update_quote_status(status) {
         this.loading = true;
         this.quote.status = status;
-        this.quote.update().finally(() => {
+        return this.quote.update().finally(() => {
             this.loading = false;
         });
     }
@@ -84,6 +101,26 @@ export default class QuoteTableRow {
                                 //    - show quote summary
                                 //    - show what is due to pay (include taxes)
                                 //    - show button to go to checkout
+                                Modal.create({
+                                    title: 'Accept quote',
+                                    content: (
+                                        <div class="flex flex-col items-center">
+                                            <img class="w-60" src={card_img} />
+                                            <div class="my-6 flex flex-col">
+                                                <span class="text-gray-800">
+                                                    Are you sure you want to accept this quote?
+                                                </span>
+                                                <span class="mt-2 text-gray-500">
+                                                    You will be redirected to a confirmation page in order to complete your order.
+                                                </span>
+                                            </div>
+                                        </div>
+                                    ),
+                                    confirm_label: 'Accept',
+                                    confirm_color: 'indigo',
+                                    confirm: () => this.accept_quote(),
+                                    loading: () => this.loading,
+                                })
                             }},
                             {name: 'decline', label: 'Decline', icon: 'slash', callback: () => {
                                 console.log('decline');
@@ -104,7 +141,7 @@ export default class QuoteTableRow {
                                     ),
                                     confirm_label: 'Decline',
                                     confirm_color: 'red',
-                                    confirm: () => this.update_quote_status('declined'),
+                                    confirm: () => this.decline_quote(),
                                     loading: () => this.loading,
                                 });
                             }},

@@ -10,6 +10,7 @@ class UserRead(BaseModel):
     username: str
     fullname: str
     role: str
+    country_code: Optional[str]
 
     created_at: datetime
     updated_at: datetime
@@ -21,11 +22,17 @@ class UserCreate(BaseModel):
     fullname: str
     username: str
     password: str
-
+    role: str = 'standard'
     ip_address: Optional[str]
     currency: Optional[str]
     country: Optional[str]
     country_code: Optional[str]
+
+    @validator('role')
+    def validate_role(cls, v: str):
+        if v not in user_roles:
+            raise ValueError('error_invalid_role')
+        return v
 
     @validator('fullname')
     def validate_fullname(cls, v: str):

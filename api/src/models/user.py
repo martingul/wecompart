@@ -18,6 +18,7 @@ class User(Base, Entity):
     currency = Column(String, nullable=False)
     country = Column(String, nullable=False)
     country_code = Column(String, nullable=False)
+    stripe_account_id = Column(String, nullable=True)
 
     session = relationship('Session', back_populates='user', uselist=False)
     shipper = relationship('Shipper', back_populates='users')

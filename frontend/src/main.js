@@ -6,6 +6,7 @@ import ShipmentsView from './views/Shipments';
 import ShipmentSuccessView from './views/ShipmentSuccess';
 import ShipmentEditView from './views/ShipmentEdit';
 import ShipmentView from './views/Shipment';
+import AccountView from './views/Account';
 
 Api.websocket.onmessage = (e) => {
     Api.websocket_handlers.forEach(h => h.fn(e));
@@ -19,7 +20,8 @@ m.route(document.body, '/', {
     '/shipments/new': {render: () => <ShipmentEditView />},
     '/shipments/:id': {render: (vnode) => <ShipmentView id={vnode.attrs.id} />},
     '/shipments/:id/success': {render: (vnode) => <ShipmentSuccessView id={vnode.attrs.id} />},
-    '/shipments/:id/edit': {render: (vnode) => <ShipmentEditView id={vnode.attrs.id} />}
+    '/shipments/:id/edit': {render: (vnode) => <ShipmentEditView id={vnode.attrs.id} />},
+    '/account': {render: () => <AccountView />},
     // '/messages': {render: () => <LayoutView><MessagesView /></LayoutView>}
     // '/:404...': errorPageComponent
 });

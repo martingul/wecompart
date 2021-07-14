@@ -104,6 +104,13 @@ export default class Shipment {
         });
     }
 
+    checkout(quote_id) {
+        return Api.checkout_shipment_quote({
+            shipment_id: this.uuid,
+            quote_id: quote_id,
+        });
+    }
+
     create_items() {
         this.items.filter(item => item.uuid === null).forEach(item => {
             Api.create_shipment_item({

@@ -222,6 +222,14 @@ export default class Api {
         });
     }
 
+    static checkout_shipment_quote(args) {
+        return m.request({
+            method: 'POST',
+            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/${args.quote_id}/checkout`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+        });
+    }
+
     static read_messages(args) {
         return m.request({
             method: 'GET',

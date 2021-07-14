@@ -1,6 +1,6 @@
 import m from 'mithril';
 import FileSaver from 'file-saver';
-import hourglass_img from '../assets/hourglass.svg';
+import time_img from '../assets/time.svg';
 import success_img from '../assets/success.svg';
 import warning_img from '../assets/warning.svg';
 import Api from '../Api';
@@ -391,7 +391,7 @@ export default class ShipmentView {
                         {(!this.quote_create_show && this.shipment.quotes.length === 0) ? (
                             <div class="flex justify-center">
                                 <div class="w-1/2 my-2 flex flex-col items-center">
-                                    <img class="w-60" src={hourglass_img} />
+                                    <img class="w-60" src={time_img} />
                                     {this.is_owner ? (
                                         <span class="mt-6 text-gray-500">
                                             Shippers will soon place their quotes if they wish to handle your shipment.
@@ -421,6 +421,7 @@ export default class ShipmentView {
                             </div>
                         ) : ''}
                         {this.quote_create_success ? (
+                            // TODO show a little notification on top of page instead of extra step like this
                             <div class="flex flex-col items-center">
                                 <div class="w-1/2 my-2 flex flex-col items-center text-center rounded border border-gray-200">
                                     <div class="w-full flex justify-end p-2">

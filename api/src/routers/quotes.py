@@ -1,17 +1,42 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import RedirectResponse
 
 from storage import db_session, DatabaseSession
 from schemas.session import Session
 from schemas.quote import QuoteRead, QuoteCreate, QuoteUpdate
 from schemas.notification import NotificationRead, NotificationCreate
-from lib import auth, shipments, quotes, notifications
+from lib import auth, shipments, quotes, notifications, payments
 from error import ApiError
 
 # TODO make sure these endpoints are restricted to shippers having access
 # to the requested shipment
 
 router = APIRouter()
+
+# TODO change to '/{shipment_id}/checkout?quote_id={quote_id}'
+# @router.post('/{shipment_id}/quotes/{quote_id}/checkout',
+#     response_class=RedirectResponse, status_code=303)
+@router.post('/{shipment_id}/quotes/{quote_id}/checkout')
+def checkout_shipment_quote(shipment_id: str, quote_id: str,
+    session: Session = Depends(auth.auth_session),
+    db: DatabaseSession = Depends(db_session)):
+    # TODO check permissions
+    try:
+        quote_db = quotes.read_quote(db, quote_id, shipment_id)
+
+        if not quote_db:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='error_quote_not_found'
+            )
+
+        return payments.create_checkout_url(
+            name=f'Shipment #{shipment_id}',
+            amount=int(quote_db.bid*100)
+        )
+    except Exception as e:
+        print(e)
 
 @router.get('/{shipment_id}/quotes/', response_model=List[QuoteRead])
 def read_shipment_quotes(shipment_id: str,
@@ -84,6 +109,7 @@ def read_shipment_quote(shipment_id: str, quote_id: str,
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Read a shipment quote"""
     # TODO rewrite for shippers (not only self)
+    # TODO access quote directly instead of shipment then quote
     try:
         owner_uuid = session.user_uuid
         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
@@ -93,6 +119,7 @@ def read_shipment_quote(shipment_id: str, quote_id: str,
                 detail='error_shipment_not_found'
             )
 
+        # TODO access shipment_db.quotes.query() instead
         quote_db = [x for x in shipment_db.quotes if x.uuid == quote_id]
 
         if not quote_db:

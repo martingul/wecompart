@@ -5,7 +5,8 @@ import Logo from './Logo';
 
 export default class Navigation {
     static views = [
-        {name: 'Home', icon: 'command', navigate: () => m.route.set('/')},
+        {name: 'Home', icon: 'sun', navigate: () => m.route.set('/')},
+        {name: 'Account', icon: 'user', navigate: () => m.route.set('/account')},
         {name: 'Shipments', icon: 'package', navigate: () => m.route.set('/shipments')},
         {name: 'Messages', icon: 'message-circle', navigate: () => {}},
         {name: 'Sign out', icon: 'log-out', navigate: () => {
@@ -32,7 +33,8 @@ export default class Navigation {
         }
 
         if (this.path[0] === 'shipments') {
-            Navigation.selected_view = Navigation.views[1];
+            Navigation.selected_view = Navigation.views
+                .filter(v => v.name === 'Shipments')[0];
         }
     }
 
@@ -50,11 +52,11 @@ export default class Navigation {
                     </button>
                 </div>
                 {Navigation.views.map(v => (
-                    <button class={'flex items-center w-full px-6 py-2 my-0.5 transition-all '
+                    <button class={'flex items-center w-full px-6 py-1 my-0.5 transition-all '
                         + (Navigation.selected_view === v ? 'text-indigo-600 font-bold' : 'text-gray-600 hover:text-black')}
                         onclick={() => {
-                            v.navigate();
                             Navigation.selected_view = v;
+                            v.navigate();
                         }}>
                         <Icon name={v.icon} class="w-5" />
                         <span class="ml-3">
