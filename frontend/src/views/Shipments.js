@@ -88,7 +88,6 @@ export default class ShipmentsView {
                         fields={[
                             {label: 'value', attr: 'total_value', type: 'number'},
                             {label: ''},
-                            {label: ''},
                             {label: 'pickup', attr: 'pickup_address_short', type: 'string'},
                             {label: ''},
                             {label: 'delivery', attr: 'delivery_address_short', type: 'string'},

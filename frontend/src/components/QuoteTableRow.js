@@ -7,6 +7,7 @@ import IconButton from './IconButton';
 import Badge from './Badge';
 import Actions from './Actions';
 import Modal from './Modal';
+import MoneyText from './MoneyText';
 
 export default class QuoteTableRow {
     constructor(vnode) {
@@ -18,6 +19,7 @@ export default class QuoteTableRow {
         this.loading = false;
         this.is_quote_owner = this.quote.owner_uuid === this.user.uuid;
         this.is_shipment_owner = this.shipment.owner_id === this.user.uuid;
+        this.callback = vnode.attrs.callback;
     }
 
     accept_quote() {
@@ -52,16 +54,21 @@ export default class QuoteTableRow {
         });
     }
 
+    navigate() {
+        m.route.set('/quotes/:id', {id: this.quote.uuid});
+    }
+
     view(vnode) {
         return (
-            <tr class="text-gray-600 border-b border-gray-200">
-                <td class="w-1 py-2 text-black font-bold text-right">
-                    {Utils.format_money(this.quote.bid.value, this.currency)}
+            <tr class={`border-b border-gray-200 text-gray-600
+                ${this.is_shipment_owner ? 'whitespace-nowrap cursor-pointer transition-all hover:bg-gray-50 hover:shadow' : ''}`}
+                onclick={() => this.navigate()}>
+                <td class="w-1 py-2 text-right">
+                    <MoneyText currency={this.currency}>
+                        {this.quote.bid.value}
+                    </MoneyText>
                 </td>
-                <td class="w-1 py-2 px-2 uppercase text-gray-400">
-                    {this.currency}
-                </td>
-                <td class="w-1 py-2 pr-4">
+                <td class="w-1 py-2 px-2">
                     <span class="inline-flex items-center">
                         {this.quote.is_declined() ? (
                             <span class="inline-flex mx-0.5">

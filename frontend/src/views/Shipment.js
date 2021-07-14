@@ -18,11 +18,12 @@ import ItemTableRow from '../components/ItemTableRow';
 import QuoteTableRow from '../components/QuoteTableRow';
 import QuoteEdit from '../components/QuoteEdit';
 import Modal from '../components/Modal';
+import IconButton from '../components/IconButton';
+import MoneyText from '../components/MoneyText';
 import ShipmentStorage from '../models/ShipmentStorage';
 import Shipment from '../models/Shipment';
 import User from '../models/User';
 import AppView from './App';
-import IconButton from '../components/IconButton';
 
 export default class ShipmentView {
     constructor(vnode) {
@@ -242,14 +243,9 @@ export default class ShipmentView {
                                     <div class="text-gray-500 mb-1">
                                         Total value
                                     </div>
-                                    <div class="flex items-center">
-                                        <span class="font-bold text-lg text-black">
-                                            {this.shipment.get_total_value_fmt()}
-                                        </span>
-                                        <span class="ml-2 uppercase text-gray-400">
-                                            {this.shipment.currency.value}
-                                        </span>
-                                    </div>
+                                    <MoneyText currency={this.shipment.currency.value}>
+                                        {this.shipment.total_value.value}
+                                    </MoneyText>
                                 </div>
                                 <div class="mb-2">
                                     <div class="text-gray-500 mb-1">
@@ -362,7 +358,6 @@ export default class ShipmentView {
                                 <Table collection={this.shipment.quotes}
                                     fields={[
                                         {label: 'bid', type: 'number'},
-                                        {label: '', attr: 'currency', type: 'string'},
                                         {label: ''},
                                         {label: 'delivery date', attr: 'delivery_date', type: 'date'},
                                         {label: ''},

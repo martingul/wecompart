@@ -3,6 +3,7 @@ import Shipment from '../models/Shipment';
 import Utils from '../Utils';
 import Badge from './Badge';
 import Icon from './Icon';
+import MoneyText from './MoneyText';
 
 export default class ShipmentListRow {
     constructor(vnode) {
@@ -23,13 +24,12 @@ export default class ShipmentListRow {
             <tr class="whitespace-nowrap cursor-pointer transition-all
                 border-b border-gray-200 text-gray-600 hover:bg-gray-50 hover:shadow"
                 onclick={() => this.navigate()}>
-                <td class="w-1 py-2 text-black font-bold text-right">
-                    {this.shipment.get_total_value_fmt()}
+                <td class="w-1 py-2">
+                    <MoneyText currency={this.shipment.currency.value}>
+                        {this.shipment.total_value.value}
+                    </MoneyText>
                 </td>
-                <td class="w-1 py-2 px-2 uppercase text-gray-400">
-                    {this.shipment.currency.value}
-                </td>
-                <td class="w-1 py-2 pr-4">
+                <td class="w-1 py-2 px-2">
                     <Badge color={Shipment.status_colors[this.shipment.status]}>
                         {Utils.capitalize(this.shipment.status)}
                     </Badge>

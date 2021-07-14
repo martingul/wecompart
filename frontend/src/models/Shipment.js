@@ -71,12 +71,6 @@ export default class Shipment {
         };
     }
 
-    get_total_value_fmt() {
-        return Utils.format_money(
-            this.total_value.value, this.currency.value
-        );
-    }
-
     get_total_item_quantity() {
         return this.items.map(item => item.quantity).reduce((a, c) => a + c);
     }
