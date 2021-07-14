@@ -22,6 +22,11 @@ class UserCreate(BaseModel):
     username: str
     password: str
 
+    ip_address: Optional[str]
+    currency: Optional[str]
+    country: Optional[str]
+    country_code: Optional[str]
+
     @validator('fullname')
     def validate_fullname(cls, v: str):
         if len(v) < 2:

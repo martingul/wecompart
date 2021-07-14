@@ -1,10 +1,10 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Request, Depends, HTTPException, status
 
 from storage import db_session, DatabaseSession
 from schemas.session import Session
 from schemas.user import UserRead, UserCreate, UserUpdate
-from lib import auth, users
+from lib import auth, users, locations
 from error import ApiError
 
 # TODO add permissions (only user itself can modify/access info)
@@ -31,10 +31,18 @@ def read_self(session: Session = Depends(auth.auth_session),
 
 @router.post('/', status_code=status.HTTP_201_CREATED,
     response_model=UserRead, response_model_exclude_unset=True)
-def create_user(user: UserCreate,
+def create_user(user: UserCreate, request: Request,
     db: DatabaseSession = Depends(db_session)) -> UserRead:
     """Create a new user"""
     try:
+        #  user.ip_address = request.client.host
+        user.ip_address = '8.8.8.8'
+
+        location = locations.get_location_from_ip_address(user.ip_address)
+        user.currency = location['currency']
+        user.country = location['country']
+        user.country_code = location['country_code']
+
         user_db = users.create_user(db, user)
         user = UserRead.from_orm(user_db)
         return user
@@ -44,6 +52,8 @@ def create_user(user: UserCreate,
         if e.detail == 'error_username_taken':
             status_code = status.HTTP_400_BAD_REQUEST
         raise HTTPException(status_code=status_code, detail=e.detail)
+    except Exception as e:
+        print(e)
 
 @router.get('/{user_id}', response_model=UserRead)
 def read_user(user_id: str,

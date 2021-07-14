@@ -22,7 +22,7 @@ class Shipment(Base, Entity):
     map_url = Column(String, nullable=False)
     country = Column(String, nullable=False)
 
-    currency = Column(String, nullable=True)
+    currency = Column(String, nullable=True) # TODO use user's currency
     total_value = Column(Float, nullable=True)
     services = Column(ARRAY(String), default=[], nullable=False)
     comments = Column(String, nullable=True)

@@ -14,6 +14,10 @@ class User(Base, Entity):
     shipper_uuid = Column(String, ForeignKey('shippers.uuid'), nullable=True)
     fullname = Column(String, nullable=False)
     role = Column(String, nullable=False, default='standard')
+    ip_address = Column(String, nullable=False)
+    currency = Column(String, nullable=False)
+    country = Column(String, nullable=False)
+    country_code = Column(String, nullable=False)
 
     session = relationship('Session', back_populates='user', uselist=False)
     shipper = relationship('Shipper', back_populates='users')
