@@ -1,5 +1,4 @@
 import m from 'mithril';
-import {loadStripe} from '@stripe/stripe-js';
 import Button from './Button';
 
 export default class Payment {
@@ -17,17 +16,19 @@ export default class Payment {
     }
 
     oncreate(vnode) {
-        loadStripe('pk_test_51HQv03K6ue4fIDgfb8OLq9yVLnE4w22Aycf6GHjgqh4mLpdvO31rkn8PXlGN0P9qaX3Nya4jCY9fL2SGWxYzuEuc00Nv0OYTrx')
-            .then(stripe => {
-                const elements = stripe.elements();
-                const style = {
-                    base: { color: '#32325d' }
-                }
-                const card = elements.create('card', { style });
-                card.mount('#card-element');
-            }).finally(() => {
-                this.loading = false;
-            });
+        import('@stripe/stripe-js')
+        .then(module => module.loadStripe('pk_test_51HQv03K6ue4fIDgfb8OLq9yVLnE4w22Aycf6GHjgqh4mLpdvO31rkn8PXlGN0P9qaX3Nya4jCY9fL2SGWxYzuEuc00Nv0OYTrx'))
+        .then(stripe => {
+            const elements = stripe.elements();
+            const style = {
+                base: { color: '#32325d' }
+            }
+            const card = elements.create('card', { style });
+            card.mount('#card-element');
+        }).finally(() => {
+            this.loading = false;
+            m.redraw();
+        });
     }
 
     view(vnode) {

@@ -13,6 +13,7 @@ Api.websocket.onmessage = (e) => {
     Api.websocket_handlers.forEach(h => h.fn(e));
 }
 
+// TODO implement lazy loading
 m.route(document.body, '/', {
     '/': {render: () => <HomeView />},
     '/auth/signup': {render: () => <AuthView action="signup" />},
