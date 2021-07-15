@@ -205,6 +205,14 @@ export default class Api {
         });
     }
 
+    static read_shipment_quote(args) {
+        return m.request({
+            method: 'GET',
+            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/${args.quote_id}`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+        });
+    }
+
     static update_shipment_quote(args) {
         return m.request({
             method: 'PATCH',

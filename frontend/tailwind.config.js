@@ -13,7 +13,7 @@ module.exports = {
                 'helvetica neue',
                 'Arial',
                 'noto sans',
-                'sans-serif'
+                'sans-serif',
             ],
             'body': [
                 'Ubuntu',
@@ -24,8 +24,14 @@ module.exports = {
                 'helvetica neue',
                 'Arial',
                 'noto sans',
-                'sans-serif'
-            ]
+                'sans-serif',
+            ],
+            'serif': ['ui-serif'],
+            'mono': [
+                'Ubuntu Mono',
+                'monospace',
+                'ui-monospace',
+            ],
         },
         extend: {},
     },

@@ -105,13 +105,13 @@ export default class Table {
         return (               
             <table class="w-full">
                 <tr class="whitespace-nowrap text-xs">
-                    {this.sortable.map((s, i) => {
+                    {this.sortable.map(s => {
                         if (s.label === '') {
                             return <th class="w-auto py-2"></th>
                         }
                         
                         return (
-                            <th class={`w-auto py-2 ${(s.type === 'number' && i !== 0) ? 'text-right' : 'text-left'}`}>
+                            <th class={`w-auto py-2 ${s.type === 'number' ? 'text-right' : 'text-left'}`}>
                                 {this.collection.length > 1 ?
                                     <button class="text-gray-600"
                                         onclick={() => this.sort_state = s}>
