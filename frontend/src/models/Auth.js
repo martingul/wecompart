@@ -6,6 +6,7 @@ export default class Auth {
         this.fullname = {value: ''};
         this.email = {value: ''};
         this.password = {value: ''};
+        this.role = 'standard';
         
         this.action = action;
         this.error = '';
@@ -16,6 +17,10 @@ export default class Auth {
         this.password.value = '';
         this.error = '';
         this.action = this.action === 'signup' ? 'signin' : 'signup'; 
+    }
+
+    switch_role() {
+        this.role = this.role === 'standard' ? 'shipper' : 'standard';
     }
 
     validate_fullname() {
@@ -73,12 +78,15 @@ export default class Auth {
             return Promise.reject(new Error('invalid_password'));
         }
 
-        this.loading = true;
-        return Api.create_user({
+        const user = {
             fullname: this.fullname.value,
             username: this.email.value,
-            password: this.password.value
-        }).then(res => {
+            password: this.password.value,
+            role: this.role,
+        };
+
+        this.loading = true;
+        return Api.create_user({user}).then(res => {
             return this.authenticate();
         }).catch(e => {
             if (e.response.detail === 'error_username_taken') {

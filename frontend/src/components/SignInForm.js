@@ -22,10 +22,20 @@ export default class SignInForm {
     view(vnode) {
         return (
             <form onsubmit={(e) => this.signin(e)}>
-                <div class="mb-4 font-bold text-xl">
+                <div class="font-bold text-xl">
                     Log in
                 </div>
-                <div class="flex flex-col">
+                {this.auth.error !== '' ? (
+                    <div class="mt-2">
+                        <div class="flex items-center px-4 py-1 rounded bg-red-100 text-red-600" id="form-error">
+                            <Icon name="alert-triangle" class="w-4" />
+                            <span class="ml-4">
+                                {this.auth.error}
+                            </span>
+                        </div>
+                    </div>
+                ) : ''}
+                <div class="mt-4 flex flex-col">
                     <label class="text-gray-600 mb-1" for="email-input">
                         Email
                     </label>
@@ -40,7 +50,7 @@ export default class SignInForm {
                             }
                         }}/>
                 </div>
-                <div class="flex flex-col mt-4">
+                <div class="mt-2 flex flex-col">
                     <div class="flex">
                         <label class="text-gray-600 mb-1" for="password-input">
                             Password
@@ -60,16 +70,6 @@ export default class SignInForm {
                         callback={(e) => this.signin(e)}>
                         Log in
                     </Button>
-                    <div class="mt-4">
-                        <div class={this.auth.error !== '' ? 'block' : 'hidden'}>
-                            <div class="flex items-center px-4 py-1 rounded bg-red-100 text-red-600" id="form-error">
-                                <Icon name="alert-triangle" class="w-4" />
-                                <span class="ml-4">
-                                    {this.auth.error}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
                     <div class="mt-4 text-center">
                         <span class="text-gray-700">
                             Don't have an account?

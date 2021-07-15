@@ -36,11 +36,8 @@ export default class AuthView {
                                 Continue with Google
                             </span>
                         </button>
-                        <div class="my-4 text-gray-600">
-                            —&nbsp; or &nbsp;—
-                        </div>
                     </div>
-                    <div class="flex flex-col mx-2 p-4 rounded border border-gray-300">
+                    <div class="flex flex-col mt-6 mx-2 p-4 rounded border border-gray-300">
                         {this.auth.action === 'signin' ? <SignInForm auth={this.auth} /> : <SignUpForm auth={this.auth} />}
                     </div>
                     {/* <Footer /> */}

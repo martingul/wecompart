@@ -22,12 +22,46 @@ export default class SignUpForm {
     view(vnode) {
         return (
             <form onsubmit={(e) => this.signup(e)}>
-                <div class="mb-4 font-bold text-xl">
+                <div class="font-bold text-xl">
                     Sign up
                 </div>
-                <div class="flex flex-col">
+                {this.auth.error !== '' ? (
+                    <div class="mt-2">
+                        <div class="flex items-center px-4 py-1 rounded bg-red-100 text-red-600" id="form-error">
+                            <Icon name="alert-triangle" class="w-4" />
+                            <span class="ml-4">
+                                {this.auth.error}
+                            </span>
+                        </div>
+                    </div>
+                ) : ''}
+                <div class="mt-4 flex flex-col">
+                    <label class="text-gray-600">
+                        You are
+                    </label>
+                    <div class="mt-2 flex justify-evenly items-center">
+                        <div class={`py-1 px-4 font-bold cursor-pointer rounded-md
+                            ${this.auth.role !== 'shipper'
+                                ? 'bg-indigo-500 text-white border border-white hover:bg-indigo-600'
+                                : 'bg-white text-indigo-500 border border-indigo-500 hover:text-indigo-600 hover:border-indigo-600'}`}
+                            onclick={() => this.auth.switch_role()}>
+                            Customer
+                        </div>
+                        <div class="text-gray-400">
+                            or
+                        </div>
+                        <div class={`py-1 px-4 font-bold cursor-pointer rounded
+                            ${this.auth.role === 'shipper'
+                                ? 'bg-indigo-500 text-white border border-white hover:bg-indigo-600'
+                                : 'bg-white text-indigo-500 border border-indigo-500 hover:text-indigo-600 hover:border-indigo-600'}`}
+                            onclick={() => this.auth.switch_role()}>
+                            Shipper
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-4 flex flex-col">
                     <label class="text-gray-600 mb-1" for="email-input">
-                        Full name
+                        {this.auth.role === 'shipper' ? 'Company name' : 'Full name'}
                     </label>
                     <input id="fullname-input" type="text" spellcheck="false" required
                         value={this.auth.fullname.value}
@@ -40,9 +74,9 @@ export default class SignUpForm {
                             }
                         }}/>
                 </div>
-                <div class="mt-4 flex flex-col">
+                <div class="mt-2 flex flex-col">
                     <label class="text-gray-600 mb-1" for="email-input">
-                        Enter your email
+                        Email
                     </label>
                     <input id="email-input" type="email" placeholder="user@example.com" spellcheck="false" required
                         value={this.auth.email.value}
@@ -55,7 +89,7 @@ export default class SignUpForm {
                             }
                         }}/>
                 </div>
-                <div class="mt-4 flex flex-col">
+                <div class="mt-2 flex flex-col">
                     <label class="text-gray-600 mb-1" for="password-input">
                         Choose a password
                     </label>
@@ -67,16 +101,6 @@ export default class SignUpForm {
                         callback={(e) => this.signup(e)}>
                         Continue
                     </Button>
-                    <div class="mt-4">
-                        <div class={this.auth.error !== '' ? 'block' : 'hidden'}>
-                            <div class="flex items-center px-4 py-1 rounded bg-red-100 text-red-600" id="form-error">
-                                <Icon name="alert-triangle" class="w-4" />
-                                <span class="ml-4">
-                                    {this.auth.error}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
                     <div class="mt-4 text-center">
                         <span class="text-gray-700">
                              Have an account?
