@@ -2,7 +2,7 @@ from typing import Optional
 from pydantic import BaseModel
 from datetime import datetime
 
-from schemas.user import UserRead
+from .user import UserRead
 
 class Session(BaseModel):
     uuid: str

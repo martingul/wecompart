@@ -3,8 +3,8 @@ from typing import Optional, List
 from datetime import date, datetime
 from pydantic import BaseModel, validator
 
-from schemas.item import ItemRead, ItemCreate
-from schemas.quote import QuoteRead
+from .item import ItemRead, ItemCreate
+from .quote import QuoteRead
 
 class ShipmentStatus(str, Enum):
     draft = 'draft'
