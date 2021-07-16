@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import Optional, List
 from datetime import date, datetime
 from pydantic import BaseModel, validator
@@ -5,7 +6,9 @@ from pydantic import BaseModel, validator
 from schemas.item import ItemRead, ItemCreate
 from schemas.quote import QuoteRead
 
-shipment_statuses = ['draft', 'pending']
+class ShipmentStatus(str, Enum):
+    draft = 'draft'
+    pending = 'pending'
 
 class ShipmentDownload(BaseModel):
     uuid: str
@@ -14,7 +17,7 @@ class ShipmentDownload(BaseModel):
     pickup_address_long: str
     delivery_address_long: str
 
-    status: str
+    status: ShipmentStatus
     currency: str
     total_value: float
     services: List[str]
@@ -44,7 +47,7 @@ class ShipmentRead(BaseModel):
     map_url: str
     # country: str
 
-    status: str
+    status: ShipmentStatus
     currency: str
     total_value: float
     comments: str
@@ -74,7 +77,7 @@ class ShipmentCreate(BaseModel):
     map_url: Optional[str]
     country: Optional[str]
 
-    status: str
+    status: ShipmentStatus
     currency: str
     total_value: float
     comments: str
@@ -82,24 +85,12 @@ class ShipmentCreate(BaseModel):
     services: List[str]
     items: List[ItemCreate]
 
-    @validator('status')
-    def validate_status(cls, v):
-        if v not in shipment_statuses:
-            raise ValueError('error_invalid_shipment_status')
-        return v
-
 class ShipmentUpdate(BaseModel):
     # pickup_address: Optional[str] = None
     # pickup_date: Optional[date] = None
     # delivery_address: Optional[str] = None
-    status: Optional[str] = None
+    status: Optional[ShipmentStatus] = None
     currency: Optional[str] = None
     total_value: Optional[float] = None
     services: Optional[List[str]] = None
     comments: Optional[str] = None
-
-    @validator('status')
-    def validate_status(cls, v):
-        if v not in shipment_statuses:
-            raise ValueError('error_invalid_shipment_status')
-        return v
