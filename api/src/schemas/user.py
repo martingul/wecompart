@@ -1,15 +1,19 @@
+from enum import Enum
 from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, validator
 import re
 
-user_roles = ['standard', 'shipper', 'admin']
+class UserRole(str, Enum):
+    standard = 'standard'
+    shipper = 'shipper'
+    admin = 'admin'
 
 class UserRead(BaseModel):
     uuid: str
-    username: str
     fullname: str
-    role: str
+    username: str
+    role: UserRole
     country_code: Optional[str]
 
     created_at: datetime
@@ -22,17 +26,11 @@ class UserCreate(BaseModel):
     fullname: str
     username: str
     password: str
-    role: str = 'standard'
+    role: UserRole = UserRole.standard
     ip_address: Optional[str]
     currency: Optional[str]
     country: Optional[str]
     country_code: Optional[str]
-
-    @validator('role')
-    def validate_role(cls, v: str):
-        if v not in user_roles:
-            raise ValueError('error_invalid_role')
-        return v
 
     @validator('fullname')
     def validate_fullname(cls, v: str):
@@ -68,14 +66,8 @@ class UserCreate(BaseModel):
 class UserUpdate(BaseModel):
     username: Optional[str] = None
     fullname: Optional[str] = None
-    role: Optional[str] = None
+    role: Optional[UserRole] = None
     password: Optional[str] = None
-
-    @validator('role')
-    def verify_role(cls, v: str):
-        if v not in user_roles:
-            raise ValueError('error_invalid_user_role')
-        return v
 
 class UserCredentials(BaseModel):
     username: str
