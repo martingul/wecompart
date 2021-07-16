@@ -1,14 +1,18 @@
+from enum import Enum
 from typing import Optional
 from datetime import date, datetime
 from pydantic import BaseModel, validator
 
-quote_statuses = ['pending', 'accepted', 'declined']
+class QuoteStatus(str, Enum):
+    pending = 'pending'
+    accepted = 'accepted'
+    declined = 'declined'
 
 class QuoteRead(BaseModel):
     uuid: str
     owner_uuid: str
     shipment_uuid: str
-    status: str
+    status: QuoteStatus
     bid: float
     delivery_date: date
 
@@ -19,7 +23,7 @@ class QuoteRead(BaseModel):
         orm_mode = True
 
 class QuoteCreate(BaseModel):
-    status: str = 'pending'
+    status: QuoteStatus = QuoteStatus.pending
     bid: float
     delivery_date: str
 
@@ -27,12 +31,6 @@ class QuoteCreate(BaseModel):
     def validate_bid(cls, v: float):
         if v < 0:
             raise ValueError('error_invalid_bid')
-        return v
-
-    @validator('status')
-    def validate_status(cls, v: str):
-        if v != 'pending':
-            raise ValueError('error_invalid_status')
         return v
 
     @validator('delivery_date')
@@ -43,10 +41,4 @@ class QuoteCreate(BaseModel):
 
 class QuoteUpdate(BaseModel):
     # bid: Optional[float] = None
-    status: Optional[str] = None
-
-    @validator('status')
-    def validate_status(cls, v: str):
-        if v not in quote_statuses:
-            raise ValueError('error_invalid_status')
-        return v
+    status: Optional[QuoteStatus] = None
