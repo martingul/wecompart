@@ -21,6 +21,8 @@ requests = "*"
 jinja2 = "*"
 pandas = "*"
 stripe = "*"
+faker = "*"
+pytest = "*"
 
 [requires]
 python_version = "3.8"
