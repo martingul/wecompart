@@ -1,6 +1,5 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.responses import RedirectResponse
 
 from storage import db_session, DatabaseSession
 from schemas.session import Session
@@ -14,9 +13,7 @@ from error import ApiError
 
 router = APIRouter()
 
-# TODO change to '/{shipment_id}/checkout?quote_id={quote_id}'
-# @router.post('/{shipment_id}/quotes/{quote_id}/checkout',
-#     response_class=RedirectResponse, status_code=303)
+# TODO move to its own checkout router
 @router.post('/{shipment_id}/quotes/{quote_id}/checkout')
 def checkout_shipment_quote(shipment_id: str, quote_id: str,
     session: Session = Depends(auth.auth_session),

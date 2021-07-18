@@ -1,5 +1,6 @@
 from typing import List
-from fastapi import APIRouter, Request, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status
+import stripe
 
 from storage import db_session, DatabaseSession
 from schemas.session import Session
@@ -33,24 +34,39 @@ def onboard_user(session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)):
     try:
         user_db = users.read_user(db, index=session.user_uuid, by='uuid')
-        user_db.stripe_account_id = payments.create_account(
-            country=user_db.country_code,
-            email=user_db.username,
-            role=user_db.role,
-            fullname=user_db.fullname
-        )
-        db.commit()
-        db.refresh(user_db)
-        
-        onboard_url = payments.create_account_links(user_db.stripe_account_id)
-        return onboard_url
 
+        if not user_db.stripe_account_id:
+            user_db.stripe_account_id = payments.create_account(
+                country=user_db.country_code,
+                email=user_db.username
+            )
+            db.commit()
+            db.refresh(user_db)
+        
+        return payments.create_account_link(user_db.stripe_account_id)
+    except stripe.error.InvalidRequestError as e:
+        print(vars(e))
+        if not e.code or e.code == 'resource_missing':
+            account_id = payments.create_account(
+                country=user_db.country_code,
+                email=user_db.username
+            )
+            if account_id:
+                user_db.stripe_account_id = account_id
+                db.commit()
+                db.refresh(user_db)
+                return payments.create_account_link(user_db.stripe_account_id)
+            else:
+                raise e
+        else:
+            raise e
     except Exception as e:
-        print(e)
+        print(vars(e))
+        raise e
 
 @router.post('/', status_code=status.HTTP_201_CREATED,
     response_model=UserRead, response_model_exclude_unset=True)
-def create_user(user: UserCreate, request: Request,
+def create_user(user: UserCreate,
     db: DatabaseSession = Depends(db_session)) -> UserRead:
     """Create a new user"""
     try:

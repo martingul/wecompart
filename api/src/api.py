@@ -1,9 +1,13 @@
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, shippers, users, shipments, items, quotes,\
-    notifications, messages, locations, websockets
+import uvicorn
+import stripe
 import config
+
+stripe.api_key = config.credentials.get('stripe_test_key')
+
+from routers import auth, shippers, users, shipments, items, quotes,\
+    notifications, messages, locations, payments, websockets
 
 api = FastAPI()
 
@@ -51,6 +55,11 @@ api.include_router(
     locations.router,
     tags=['locations'],
     prefix='/locations'
+)
+api.include_router(
+    payments.router,
+    tags=['payments'],
+    prefix='/payments'
 )
 api.include_router(
     websockets.router,

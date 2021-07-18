@@ -32,6 +32,9 @@ def read_quote(db: DatabaseSession, quote_uuid: str, shipment_uuid: str):
     return db.query(Quote).filter(Quote.uuid == quote_uuid,
         Quote.shipment_uuid == shipment_uuid).first()
 
+def _read_quote(db: DatabaseSession, quote_uuid: str):
+    return db.query(Quote).filter(Quote.uuid == quote_uuid).first()
+
 def update_quote(db: DatabaseSession, quote: Quote, patch: QuoteUpdate):
     for field, value in patch:
         if value is not None:
