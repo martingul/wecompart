@@ -1,5 +1,5 @@
 import csv
-from typing import List, Any
+from typing import Any
 from datetime import datetime
 from storage import DatabaseSession
 from schemas.shipper import ShipperCreate, ShipperUpdate
@@ -17,7 +17,7 @@ def load_shippers(db: DatabaseSession) -> None:
                 email_domain='', emails=emails, country=country, name=name
             ))
 
-def load_email_domains(db: DatabaseSession, shippers_db: List[Shipper]) -> None:
+def load_email_domains(db: DatabaseSession, shippers_db: list[Shipper]) -> None:
     for s in shippers_db:
         if not s.email_domain and s.emails:
             emails = s.emails.split(',')

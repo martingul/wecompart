@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from storage import db_session, DatabaseSession
@@ -11,10 +10,10 @@ from lib import auth, shipments, items
 
 router = APIRouter()
 
-@router.get('/{shipment_id}/items/', response_model=List[ItemRead])
+@router.get('/{shipment_id}/items/', response_model=list[ItemRead])
 def read_shipment_items(shipment_id: str,
     session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> List[ItemRead]:
+    db: DatabaseSession = Depends(db_session)) -> list[ItemRead]:
     """Read shipment items"""
     try:
         owner_uuid = session.user_uuid

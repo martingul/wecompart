@@ -1,8 +1,7 @@
-from typing import List
 import urllib
 import config
 
-def generate_map_url(path: List[str]) -> str:
+def generate_map_url(path: list[str]) -> str:
     # FIXME this method leaks the api key, better design is to:
     # store the image on cloud (e.g. S3 bucket), return the url to it,
     # and check permissions on image access

@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 import stripe
 
@@ -12,10 +11,10 @@ from error import ApiError
 
 router = APIRouter()
 
-@router.get('/', response_model=List[UserRead])
+@router.get('/', response_model=list[UserRead])
 def read_users(skip: int = 0, limit: int = 100,
     session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> List[UserRead]:
+    db: DatabaseSession = Depends(db_session)) -> list[UserRead]:
     """Read all users"""
     try:
         users_db = users.read_users(db, skip=skip, limit=limit)

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import Optional
 from fastapi import APIRouter, Header, Response, Depends, HTTPException, status
 
 from storage import db_session, DatabaseSession
@@ -8,10 +8,10 @@ from lib import auth, shipments, shippers, users, maps, locations
 
 router = APIRouter()
 
-@router.get('/', response_model=List[ShipmentRead])
+@router.get('/', response_model=list[ShipmentRead])
 def read_shipments(skip: int = 0, limit: int = 100,
     session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> List[ShipmentRead]:
+    db: DatabaseSession = Depends(db_session)) -> list[ShipmentRead]:
     """Read all shipments of a user"""
     try:
         owner_uuid = session.user_uuid

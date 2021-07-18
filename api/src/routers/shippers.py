@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from storage import db_session, DatabaseSession
@@ -23,10 +22,10 @@ router = APIRouter()
 #             detail='error_general'
 #         )
 
-@router.get('/', response_model=List[ShipperRead])
+@router.get('/', response_model=list[ShipperRead])
 def read_shippers(skip: int = 0, limit: int = 100,
     session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> List[ShipperRead]:
+    db: DatabaseSession = Depends(db_session)) -> list[ShipperRead]:
     """Read shippers"""
     try:
         # shippers.load_shippers(db)

@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from storage import db_session, DatabaseSession
@@ -35,10 +34,10 @@ def checkout_shipment_quote(shipment_id: str, quote_id: str,
     except Exception as e:
         print(e)
 
-@router.get('/{shipment_id}/quotes/', response_model=List[QuoteRead])
+@router.get('/{shipment_id}/quotes/', response_model=list[QuoteRead])
 def read_shipment_quotes(shipment_id: str,
     session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> List[QuoteRead]:
+    db: DatabaseSession = Depends(db_session)) -> list[QuoteRead]:
     """Read shipment quotes"""
     try:
         owner_uuid = session.user_uuid

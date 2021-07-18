@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 
 from storage import db_session, DatabaseSession
@@ -27,9 +26,9 @@ def create_notification(notification: NotificationCreate,
             detail='error_invalid_notification'
         )
 
-@router.get('/', response_model=List[NotificationRead])
+@router.get('/', response_model=list[NotificationRead])
 def read_notifications(session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> List[NotificationRead]:
+    db: DatabaseSession = Depends(db_session)) -> list[NotificationRead]:
     """Read notifications"""
     try:
         user_db = users.read_user(db, index=session.user_uuid, by='uuid')

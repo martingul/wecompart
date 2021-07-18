@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional, List
+from typing import Optional
 from datetime import date, datetime
 from pydantic import BaseModel, validator
 
@@ -20,9 +20,9 @@ class ShipmentDownload(BaseModel):
     status: ShipmentStatus
     currency: str
     total_value: float
-    services: List[str]
+    services: list[str]
     comments: str
-    items: List[ItemRead]
+    items: list[ItemRead]
 
     created_at: datetime
     updated_at: datetime
@@ -52,9 +52,9 @@ class ShipmentRead(BaseModel):
     total_value: float
     comments: str
 
-    services: List[str]
-    items: List[ItemRead]
-    quotes: List[QuoteRead] # should not be accessible by other users than owner
+    services: list[str]
+    items: list[ItemRead]
+    quotes: list[QuoteRead] # should not be accessible by other users than owner
 
     created_at: datetime
     updated_at: datetime
@@ -82,8 +82,8 @@ class ShipmentCreate(BaseModel):
     total_value: float
     comments: str
 
-    services: List[str]
-    items: List[ItemCreate]
+    services: list[str]
+    items: list[ItemCreate]
 
 class ShipmentUpdate(BaseModel):
     # pickup_address: Optional[str] = None
@@ -92,5 +92,5 @@ class ShipmentUpdate(BaseModel):
     status: Optional[ShipmentStatus] = None
     currency: Optional[str] = None
     total_value: Optional[float] = None
-    services: Optional[List[str]] = None
+    services: Optional[list[str]] = None
     comments: Optional[str] = None

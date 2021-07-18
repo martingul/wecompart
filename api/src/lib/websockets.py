@@ -1,4 +1,3 @@
-from typing import List
 from fastapi import WebSocket
 from starlette.websockets import WebSocketDisconnect
 
@@ -9,7 +8,7 @@ class Connection:
 
 class ConnectionManager:
     def __init__(self):
-        self.active_connections: List[Connection] = []
+        self.active_connections: list[Connection] = []
 
     async def connect(self, conn: Connection):
         await conn.websocket.accept()
@@ -27,7 +26,7 @@ class ConnectionManager:
         except WebSocketDisconnect:
             self.disconnect(conn)
 
-    async def broadcast(self, message: str, ignore: List[Connection] = None):
+    async def broadcast(self, message: str, ignore: list[Connection] = None):
         connections = self.active_connections
         if ignore:
             connections = [c for c in connections if c not in ignore]

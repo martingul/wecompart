@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
 from pydantic import BaseModel, validator
 
@@ -6,7 +6,7 @@ class ShipperRead(BaseModel):
     uuid: str
 
     email_domain: str
-    emails: Optional[List[str]]
+    emails: Optional[list[str]]
     country: str
     name: Optional[str]
 
@@ -24,7 +24,7 @@ class ShipperRead(BaseModel):
 
 class ShipperCreate(BaseModel):
     email_domain: str
-    emails: Optional[List[str]]
+    emails: Optional[list[str]]
     country: str
     name: Optional[str]
 
@@ -36,6 +36,6 @@ class ShipperCreate(BaseModel):
 
 class ShipperUpdate(BaseModel):
     email_domain: Optional[str] = None
-    emails: Optional[List[str]] = None
+    emails: Optional[list[str]] = None
     country: Optional[str] = None
     name: Optional[str] = None
