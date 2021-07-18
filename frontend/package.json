@@ -20,6 +20,7 @@
     "autoprefixer": "^10.3.0",
     "babel-loader": "^8.2.2",
     "css-loader": "^5.0.1",
+    "cssnano": "^5.0.6",
     "eslint": "^7.16.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-mithril": "^0.2.0",

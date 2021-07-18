@@ -38,7 +38,7 @@ const config = {
                 use: {
                     loader: 'file-loader',
                     options: {
-                        outputPath: './assets'
+                        outputPath: './../assets'
                     }
                 }
             },

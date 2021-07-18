@@ -1,34 +1,35 @@
 module.exports = {
     important: true,
-    purge: ['./src/**/*.{html,vue,js,ts,jsx,tsx}'],
+    purge: [
+        './src/components/*.{html,js,ts,jsx,tsx}',
+        './src/views/*.{html,js,ts,jsx,tsx}',
+        './src/*.{html,js,ts,jsx,tsx}'
+    ],
     darkMode: false, // or 'media' or 'class'
     theme: {
         fontFamily: {
             'display': [
-                'Ubuntu',
+                'Inter',
                 'system-ui',
                 '-apple-system',
                 'BlinkMacSystemFont',
                 'segoe ui', 'Roboto',
                 'helvetica neue',
                 'Arial',
-                'noto sans',
                 'sans-serif',
             ],
             'body': [
-                'Ubuntu',
+                'Inter',
                 'system-ui',
                 '-apple-system',
                 'BlinkMacSystemFont',
                 'segoe ui', 'Roboto',
                 'helvetica neue',
                 'Arial',
-                'noto sans',
                 'sans-serif',
             ],
             'serif': ['ui-serif'],
             'mono': [
-                'Ubuntu Mono',
                 'monospace',
                 'ui-monospace',
             ],
