@@ -158,6 +158,9 @@
 }
 
 @layer components {
+     body {
+          font-feature-settings: "liga", "case", "calt", "ss01", "locl";
+     }
     button:focus,
     input:focus,
     select:focus,
@@ -184,5 +187,9 @@
     select:focus,
     textarea:focus {
         @apply border-gray-400 !important;
+    }
+
+    .monospace {
+          font-feature-settings: "tnum", "zero";
     }
 }

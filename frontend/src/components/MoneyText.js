@@ -11,7 +11,7 @@ export default class MoneyText {
                 <span class="mr-1.5 uppercase text-gray-400 text-sm">
                     {this.currency}
                 </span>
-                <span class="font-mono text-black text-lg">
+                <span class="monospace text-black">
                     {vnode.children}
                 </span>
             </span>
