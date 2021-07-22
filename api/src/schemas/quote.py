@@ -15,7 +15,7 @@ class QuoteStripe(BaseModel):
     stripe_invoice_number: Optional[str]
     stripe_invoice_url: Optional[str]
     stripe_invoice_pdf: Optional[str]
-    stripe_paid: bool = False
+    stripe_paid: Optional[bool]
 
 class QuoteRead(BaseModel):
     uuid: str
@@ -27,7 +27,7 @@ class QuoteRead(BaseModel):
     comments: str
     bids: list[BidRead]
     stripe_quote_id: Optional[str]
-    stripe: Optional[QuoteStripe]
+    stripe_data: Optional[QuoteStripe]
 
     created_at: datetime
     updated_at: datetime

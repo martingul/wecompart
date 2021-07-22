@@ -76,11 +76,11 @@ export default class ShipmentsView {
         return (
             <AppView>
                 <div class="flex flex-col">
-                    <div class="mb-6 flex items-start justify-between">
+                    <div class="mb-6 flex items-center justify-between">
                         <Title>
                             Shipments
                         </Title>
-                        <Button icon="plus" callback={() => m.route.set('/shipments/new')}>
+                        <Button active={false} icon="plus" callback={() => m.route.set('/shipments/new')}>
                             Create shipment
                         </Button>
                     </div>

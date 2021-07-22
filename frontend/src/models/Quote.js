@@ -16,7 +16,7 @@ export default class Quote {
         comments = '',
         bids = [],
         stripe_quote_id = '',
-        stripe = {},
+        stripe_data = {},
         created_at = '',
         updated_at = '',
     }) {
@@ -28,7 +28,7 @@ export default class Quote {
         this.comments = comments;
         this.bids = bids;
         this.stripe_quote_id = stripe_quote_id;
-        this.stripe = stripe;
+        this.stripe_data = stripe_data;
         this.created_at = created_at;
         this.updated_at = updated_at;
 
@@ -53,10 +53,10 @@ export default class Quote {
     }
 
     is_paid() {
-        if (this.stripe) {
-            return this.stripe.stripe_paid;
+        if (this.stripe_data) {
+            return this.stripe_data.stripe_paid;
         } else {
-            return false;
+            return null;
         }
     }
 

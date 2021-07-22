@@ -30,8 +30,8 @@ export default class ShipmentView {
         console.log('construct ShipmentView');
         this.id = m.route.param('id');
         this.access_token = m.route.param('access_token');
-        this.shipment = ShipmentStorage.get_by_id(this.id);
         this.error_shipment_not_found = false;
+        this.shipment = null;
 
         this.user = User.load();
         if (!this.user && !this.access_token) {
@@ -43,29 +43,11 @@ export default class ShipmentView {
         }
 
         this.is_owner = false;
-        if (this.shipment) {
-            this.is_owner = this.shipment.owner_id === this.user.uuid;
-        }
-
         this.loading = false;
         this.delete_loading = false;
 
         this.quote_create_show = false;
         this.quote_create_success = false;
-
-        // Api.register_websocket_handler({
-        //     name: 'new_quote_handler',
-        //     fn: (e) => {
-        //         const notification = JSON.parse(e.data);
-        //         if (notification.type === 'new_quote') {
-        //             const quote = JSON.parse(notification.content);
-        //             console.log(quote);
-        //             this.shipment.quotes.push(new Quote(quote));
-        //             this.shipment.flag_quotes();
-        //             m.redraw();
-        //         }
-        //     }
-        // });
     }
 
     delete_shipment() {
@@ -94,8 +76,6 @@ export default class ShipmentView {
                 } else {
                     this.is_owner = false;
                 }
-
-                // ShipmentStorage.add(this.shipment);
             }).catch(e => {
                 console.log(e);
                 if (e.code === 401) {
@@ -124,7 +104,7 @@ export default class ShipmentView {
             );
         }
 
-        if (this.shipment && this.shipment.status === 'draft') {
+        if (this.shipment && this.shipment.is_draft()) {
             m.route.set('/shipments/:id/edit', {id: this.shipment.uuid});
         }
 
@@ -197,7 +177,9 @@ export default class ShipmentView {
                             </div>
                         ) : ''}
                     </div>
-                    {(this.shipment.accepted_quote && !this.shipment.accepted_quote.is_paid()) ? (
+                    {(this.shipment.accepted_quote
+                        && !this.shipment.accepted_quote.is_paid()
+                        && !this.shipment.is_booked()) ? (
                         <div class="mt-6 py-3 px-5 flex items-center justify-between rounded border border-gray-200">
                             <span class="mr-4 text-gray-800">
                                 You have accepted a quote without providing payment. Please confirm and pay the associated invoice in order to complete your booking.
@@ -209,108 +191,109 @@ export default class ShipmentView {
                             </Button>
                         </div>
                     ) : ''}
-                    <div class="mt-6 flex flex-col">
-                        <div class="flex justify-between px-4">
-                            <div class="mt-2 w-1/2 flex flex-col">
-                                <div class="mb-2">
-                                    <div class="text-gray-500 mb-1">
-                                        Pickup address
-                                    </div>
-                                    <div class="text-black">
-                                        {this.shipment.pickup_address_formatted.line1}
-                                    </div>
-                                    {this.shipment.pickup_address_formatted.line2 ? (
-                                        <div class="mt-1 text-black">
-                                            {this.shipment.pickup_address_formatted.line2}
-                                        </div>
-                                    ) : ''}
-                                </div>
-                                <div class="mb-2">
-                                    <div class="text-gray-500 mb-1">
-                                        Delivery address
-                                    </div>
-                                    <div class="text-black">
-                                        {this.shipment.delivery_address_formatted.line1}
-                                    </div>
-                                    {this.shipment.delivery_address_formatted.line2 ? (
-                                        <div class="mt-1 text-black">
-                                            {this.shipment.delivery_address_formatted.line2}
-                                        </div>
-                                    ) : ''}
-                                </div>
-                                <div class="mb-2">
-                                    <div class="text-gray-500 mb-1">
-                                        Total value
-                                    </div>
-                                    <MoneyText currency={this.shipment.currency.value}>
-                                        {this.shipment.total_value.value}
-                                    </MoneyText>
-                                </div>
-                                <div class="mb-2">
-                                    <div class="text-gray-500 mb-1">
-                                        Services requested ({this.shipment.services.length})
-                                    </div>
-                                    <div class="flex flex-wrap">
-                                        {this.shipment.services.map(s => (
-                                            <div class="inline-flex mt-1 mr-1">
-                                                <Badge color="indigo" icon={Shipment.service_icons[s.name]}>
-                                                    {Utils.capitalize(s.name)}
-                                                </Badge>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                                {this.shipment.comments.value ? (
-                                    <div>
-                                        <div class="text-gray-500 mb-1">
-                                            Additional comments
-                                        </div>
-                                        <div class="text-black">
-                                            <ShipmentComments comments={this.shipment.comments.value} />
-                                        </div>
-                                    </div>
-                                ) : ''}
+                    <div class="px-4 mt-6 flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <div class="text-gray-500 mb-1">
+                                Pickup address
                             </div>
-                            <div class="mt-2 ml-8 w-1/2 flex flex-col">
-                                <img class="shadow-lg rounded" src={this.shipment.map_url} />
+                            <div class="text-black">
+                                {this.shipment.pickup_address_formatted.line1}
                             </div>
+                            {this.shipment.pickup_address_formatted.line2 ? (
+                                <div class="mt-1 text-black">
+                                    {this.shipment.pickup_address_formatted.line2}
+                                </div>
+                            ) : ''}
                         </div>
-                        <div class="mt-4 flex flex-col">
-                            <div class="mb-4 flex items-center">
-                                <span class="rounded text-lg font-bold text-black">
-                                    Shipment content
-                                </span>
-                                <span>
-                                    <span class="ml-2 text-gray-500">
-                                        {(() => {
-                                            const total_item_quantity = this.shipment.get_total_item_quantity();
-                                            const total_items_weight = this.shipment.get_total_item_weight();
-                                            return `(${total_item_quantity} ${total_item_quantity === 1 ? 'item' : 'items'}, ${total_items_weight} kg)`
-                                        })()}
-                                    </span>
-                                </span>
+                        <div class="flex flex-col items-center">
+                            <Icon name="arrow-right" class="w-6 text-gray-300" />
+                        </div>
+                        <div class="flex flex-col">
+                            <div class="text-gray-500 mb-1">
+                                Delivery address
                             </div>
-                            <div class="px-2">
-                                <Table collection={this.shipment.items}
-                                    fields={[
-                                        {label: 'description', type: 'string'},
-                                        {label: 'quantity', type: 'number'},
-                                        {label: 'length', type: 'number'},
-                                        {label: 'width', type: 'number'},
-                                        {label: 'height', type: 'number'},
-                                        {label: 'weight', type: 'number'},
-                                    ]}>
-                                    {this.shipment.items.map(item =>
-                                        <ItemTableRow key={item.uuid} item={item} />
-                                    )}
-                                </Table> 
+                            <div class="text-black">
+                                {this.shipment.delivery_address_formatted.line1}
                             </div>
+                            {this.shipment.delivery_address_formatted.line2 ? (
+                                <div class="mt-1 text-black">
+                                    {this.shipment.delivery_address_formatted.line2}
+                                </div>
+                            ) : ''}
                         </div>
                     </div>
-                    <div class="mt-8 flex flex-col">
+                    {/* <div class="mt-6 mx-8 flex flex-col">
+                        <img class="shadow-lg rounded" src={this.shipment.map_url} />
+                    </div> */}
+                    <div class="mt-10 flex flex-col">
+                        <div class="mb-4 flex items-center">
+                            <span class="rounded text-lg font-semibold text-black">
+                                Shipment content
+                            </span>
+                            <span>
+                                <span class="ml-2 text-gray-500">
+                                    {(() => {
+                                        const total_item_quantity = this.shipment.get_total_item_quantity();
+                                        const total_items_weight = this.shipment.get_total_item_weight();
+                                        return `(${total_item_quantity} ${total_item_quantity === 1 ? 'item' : 'items'}, ${total_items_weight} kg)`
+                                    })()}
+                                </span>
+                            </span>
+                        </div>
+                        <div class="px-4">
+                            <Table collection={this.shipment.items}
+                                fields={[
+                                    {label: 'description', type: 'string'},
+                                    {label: 'quantity', type: 'number'},
+                                    {label: 'length', type: 'number'},
+                                    {label: 'width', type: 'number'},
+                                    {label: 'height', type: 'number'},
+                                    {label: 'weight', type: 'number'},
+                                ]}>
+                                {this.shipment.items.map(item =>
+                                    <ItemTableRow key={item.uuid} item={item} />
+                                )}
+                            </Table> 
+                        </div>
+                    </div>
+                    <div class="mt-6 px-4 flex justify-between items-start">
+                        <div>
+                            <div class="text-gray-500 mb-1.5">
+                                Services requested ({this.shipment.services.length})
+                            </div>
+                            <div class="flex flex-wrap">
+                                {this.shipment.services.map(s => (
+                                    <div class="inline-flex mr-2">
+                                        <Badge color="gray">
+                                            {Utils.capitalize(s.name)}
+                                        </Badge>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div class="ml-2">
+                            <div class="text-gray-500 mb-1">
+                                Total value
+                            </div>
+                            <MoneyText currency={this.shipment.currency.value}>
+                                {this.shipment.total_value.value}
+                            </MoneyText>
+                        </div>
+                    </div>
+                    {this.shipment.comments.value ? (
+                        <div class="mt-4 px-4 flex flex-col">
+                            <div class="text-gray-500 mb-1">
+                                Additional comments
+                            </div>
+                            <div class="text-black">
+                                <ShipmentComments comments={this.shipment.comments.value} />
+                            </div>
+                        </div>
+                    ) : ''}
+                    <div class="mt-10 flex flex-col">
                         <div class="mb-4 flex items-center justify-between">
                             <div class="flex items-center">
-                                <span class="rounded text-lg font-bold text-black">
+                                <span class="rounded text-lg font-semibold text-black">
                                     Quotes
                                 </span>
                                 {this.is_owner ? (
@@ -318,7 +301,9 @@ export default class ShipmentView {
                                         ({this.shipment.quotes.length})
                                     </span>
                                 ) : ''}
-                                {(this.user && this.user.role === 'shipper' && !this.is_owner) ? (
+                                {(this.user
+                                    && this.user.role === 'shipper'
+                                    && !this.is_owner) ? (
                                     <span class="flex items-center ml-4">
                                         <Badge color="yellow" icon="clock">
                                             <Timer end={this.shipment.pickup_date.value} />
@@ -326,7 +311,9 @@ export default class ShipmentView {
                                     </span>
                                 ) : ''}
                             </div>
-                            {(this.user && this.user.role === 'shipper' && !this.is_owner
+                            {(this.user
+                                && this.user.role === 'shipper'
+                                && !this.is_owner
                                 && this.shipment.quotes.filter(q => q.owner_uuid === this.user.uuid).length === 0) ? (
                                 // hide (or disable with explaining tooltip) when user already has a quote posted
                                 <div class="flex justify-end">
@@ -344,7 +331,7 @@ export default class ShipmentView {
                             ) : ''}
                         </div>
                         {(this.is_owner && this.shipment.quotes.length > 0) ? (
-                            <div class="flex px-2">
+                            <div class="flex px-4">
                                 <Table collection={this.shipment.quotes}
                                     fields={[
                                         {label: 'bid', type: 'number'},
@@ -358,8 +345,11 @@ export default class ShipmentView {
                                 </Table>
                             </div>
                         ) : ''}
-                        {(this.user && this.user.role === 'shipper' && !this.is_owner && this.shipment.quotes.length > 0 && !this.quote_create_success) ? (
-                            <div class="flex flex-col px-2">
+                        {(this.user
+                            && this.user.role === 'shipper'
+                            && !this.is_owner && this.shipment.quotes.length > 0
+                            && !this.quote_create_success) ? (
+                            <div class="flex flex-col px-4">
                                 <Table fields={[
                                         {label: 'bid', type: 'number'},
                                         {label: ''},

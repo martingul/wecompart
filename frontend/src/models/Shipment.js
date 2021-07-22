@@ -82,6 +82,14 @@ export default class Shipment {
         };
     }
 
+    is_draft() {
+        return this.status === 'draft';
+    }
+
+    is_booked() {
+        return this.status === 'booked';
+    }
+
     get_total_item_quantity() {
         return this.items.map(item => item.quantity).reduce((a, c) => a + c, 0);
     }

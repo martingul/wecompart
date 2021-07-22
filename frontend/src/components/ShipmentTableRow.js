@@ -12,7 +12,7 @@ export default class ShipmentListRow {
     }
 
     navigate() {
-        if (this.shipment.status === 'draft') {
+        if (this.shipment.is_draft()) {
             m.route.set('/shipments/:id/edit', {id: this.shipment.uuid});
         } else {
             m.route.set('/shipments/:id', {id: this.shipment.uuid});

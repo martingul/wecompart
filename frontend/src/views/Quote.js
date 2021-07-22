@@ -105,7 +105,7 @@ export default class QuoteView {
                                     <span class="text-gray-400 font-normal">
                                         #
                                     </span>
-                                    {this.quote.stripe.stripe_quote_number}
+                                    {this.quote.stripe_data.stripe_quote_number}
                                 </Title>
                                 <div class="ml-2 mt-1">
                                     <Badge color={Quote.status_colors[this.quote.status]}>
@@ -164,7 +164,7 @@ export default class QuoteView {
                                         this.quote.status = 'accepted';
                                         this.quote.update().then(q => {
                                             console.log(q);
-                                            const invoice_url = q.stripe.stripe_invoice_url;
+                                            const invoice_url = q.stripe_data.stripe_invoice_url;
                                             if (invoice_url) {
                                                 window.open(invoice_url);
                                             }
@@ -178,7 +178,7 @@ export default class QuoteView {
                             </div>
                         </div>
                     ) : ''}
-                    {(this.quote.is_accepted() && !this.quote.stripe.stripe_paid) ? (
+                    {(this.quote.is_accepted() && !this.quote.is_paid()) ? (
                         <div class="mt-6 py-3 px-5 flex flex-col rounded border border-gray-200">
                             <div class="flex">
                                 <span class="text-gray-800">
@@ -187,12 +187,12 @@ export default class QuoteView {
                             </div>
                             <div class="mt-4 flex justify-between">
                                 <Button active={false} callback={() => {
-                                    window.location.replace(this.quote.stripe.stripe_invoice_pdf);
+                                    window.location.replace(this.quote.stripe_data.stripe_invoice_pdf);
                                 }}>
-                                    Download invoice {this.quote.stripe.stripe_invoice_number}
+                                    Download invoice {this.quote.stripe_data.stripe_invoice_number}
                                 </Button>
                                 <Button active={false} callback={() => {
-                                    window.location.replace(this.quote.stripe.stripe_invoice_url);
+                                    window.location.replace(this.quote.stripe_data.stripe_invoice_url);
                                 }}>
                                     Pay invoice
                                 </Button>

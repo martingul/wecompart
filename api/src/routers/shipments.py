@@ -89,7 +89,7 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
             accepted_quote = [q for q in shipment.quotes if q.status == QuoteStatus.accepted]
             if accepted_quote:
                 accepted_quote = accepted_quote[0]
-                accepted_quote.stripe = quotes.read_stripe_quote(accepted_quote)
+                accepted_quote.stripe_data = quotes.read_stripe_quote(accepted_quote)
             print(accepted_quote)
         if shipment_db.owner_uuid != user_uuid and shipment.quotes:
             print(shipment.quotes, end='\n\n')

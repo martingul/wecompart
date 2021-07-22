@@ -193,7 +193,7 @@ export default class ShipmentEditView {
                             </Title>
                         </div>
                         <IconButton icon="x" callback={() => {
-                            if (this.is_new || (this.shipment && this.shipment.status === 'draft')) {
+                            if (this.is_new || (this.shipment && this.shipment.is_draft())) {
                                 m.route.set('/shipments');
                             } else {
                                 m.route.set('/shipments/:id', {id: this.id});
@@ -297,7 +297,7 @@ export default class ShipmentEditView {
                                     }}>
                                         {`Save ${this.is_new ? 'as draft' : ''}`}
                                     </Button>
-                                    <div class={this.is_new || this.shipment.status === 'draft' ? 'block ml-2' : 'hidden'}>
+                                    <div class={this.is_new || this.shipment.is_draft() ? 'block ml-2' : 'hidden'}>
                                         <Button icon="arrow-right" callback={(e) => {
                                             this.save = false;
                                             this.submit(e)
