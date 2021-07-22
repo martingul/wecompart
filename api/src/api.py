@@ -7,7 +7,7 @@ import config
 stripe.api_key = config.credentials.get('stripe_test_key')
 
 from routers import auth, shippers, users, shipments, items, quotes,\
-    notifications, messages, locations, websockets
+    notifications, messages, locations, webhooks, websockets
 
 api = FastAPI()
 
@@ -55,6 +55,11 @@ api.include_router(
     locations.router,
     tags=['locations'],
     prefix='/locations'
+)
+api.include_router(
+    webhooks.router,
+    tags=['webhooks'],
+    prefix='/webhooks'
 )
 api.include_router(
     websockets.router,

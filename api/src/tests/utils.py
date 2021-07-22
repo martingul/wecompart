@@ -9,7 +9,7 @@ fake = Faker()
 session = requests.Session()
 
 def random_address():
-    f = open('./src/tests/assets/addresses-us-all.min.json')
+    f = open('./src/tests/assets/addresses_us_100.min.json')
     addresses = json.load(f)
     addresses = addresses['addresses']
     f.close()

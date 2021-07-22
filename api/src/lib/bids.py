@@ -13,11 +13,12 @@ def create_bid(db: DatabaseSession, bid: BidCreate):
         db.commit()
         db.refresh(bid_db)
 
-        bid_db.stripe_price_id = stripe.Price.create(
+        price_stripe = stripe.Price.create(
             unit_amount=bid_db.amount,
             currency='eur',
             product=bid_db.service.stripe_product_id
         )
+        bid_db.stripe_price_id = price_stripe['id']
 
         db.commit()
         db.refresh(bid_db)

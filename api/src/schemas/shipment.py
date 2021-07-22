@@ -10,6 +10,7 @@ from .service import ServiceRead, ServiceCreate
 class ShipmentStatus(str, Enum):
     draft = 'draft'
     pending = 'pending'
+    booked = 'booked'
 
 class ShipmentRead(BaseModel):
     uuid: str

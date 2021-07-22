@@ -7,7 +7,7 @@ export default class Shipment {
     static status_colors = {
         'draft': 'gray',
         'pending': 'blue',
-        'ready': 'green',
+        'booked': 'green',
     };
 
     static service_icons = {
@@ -63,6 +63,9 @@ export default class Shipment {
         this.quotes = quotes.map(quote => new Quote(quote));
         this.created_at = created_at;
         this.updated_at = updated_at;
+
+        this.accepted_quote = this.get_accepted_quote();
+        this.flag_quotes();
     }
 
     serialize() {
@@ -187,7 +190,7 @@ export default class Shipment {
         }
     }
 
-    accepted_quote() {
+    get_accepted_quote() {
         const quotes = this.quotes.filter(q => q.is_accepted());
         if (quotes.length === 0) {
             return null;

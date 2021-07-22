@@ -165,7 +165,7 @@ export default class QuoteTableRow {
                             }},
                         ]} />
                     ) : ''}
-                    {(this.is_shipment_owner && this.quote.is_accepted()) ? (
+                    {(this.is_shipment_owner && this.quote.is_accepted() && !this.quote.is_paid()) ? (
                         <Badge color="yellow" icon="alert-circle">
                             Payment needed
                         </Badge>

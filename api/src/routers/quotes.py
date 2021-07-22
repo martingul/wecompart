@@ -4,7 +4,7 @@ from fastapi.responses import StreamingResponse
 
 from storage import db_session, DatabaseSession
 from schemas.session import Session
-from schemas.quote import QuoteRead, QuoteCreate, QuoteUpdate, QuoteStatus
+from schemas.quote import QuoteRead, QuoteCreate, QuoteUpdate, QuoteStatus, QuoteStripe
 from schemas.notification import NotificationRead, NotificationCreate
 from lib import auth, shipments, quotes, notifications
 from error import ApiError
@@ -103,7 +103,7 @@ def read_quote(quote_id: str,
 
         return quote
     except Exception as e:
-        print(vars(e))
+        print(e)
         if isinstance(e, HTTPException):
             raise e
 
@@ -125,8 +125,11 @@ def update_quote(quote_id: str, patch: QuoteUpdate,
         quote_db = quotes.update_quote(db, quote_db, patch)
         quote = QuoteRead.from_orm(quote_db)
 
+        if not quote.stripe:
+            quote.stripe = QuoteStripe()
+
         if patch.status == QuoteStatus.accepted:
-            quote.invoice_url = quotes.accept_quote(quote_db)
+            quote.stripe.stripe_invoice_url = quotes.accept_quote(quote_db)
 
         return quote
     except Exception as e:

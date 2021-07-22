@@ -159,16 +159,6 @@ export default class Api {
         });
     }
 
-    static download_shipment(args) {
-        return m.request({
-            method: 'GET',
-            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/download`,
-            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
-            responseType: 'blob',
-            params: {format: args.format}
-        });
-    }
-
     static create_shipment_item(args) {
         return m.request({
             method: 'POST',
@@ -269,10 +259,6 @@ export default class Api {
                 };
             },
         });
-    }
-
-    static download_quote_url(args) {
-        return `${Api.API_ROOT}/quotes/${args.quote_id}/download`;
     }
 
     static read_messages(args) {

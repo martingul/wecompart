@@ -116,6 +116,7 @@ def create_stripe_account_link(account_id: str) -> str:
             type='account_onboarding',
             collect='currently_due',
         )
+        print(account_link)
         return account_link['url']
     except Exception as e:
         print(e)

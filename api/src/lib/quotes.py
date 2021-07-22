@@ -34,7 +34,10 @@ def create_quote(db: DatabaseSession, quote: QuoteCreate, owner_uuid: str,
         quote_stripe = stripe.Quote.create(
             # on_behalf_of=account_id,
             customer=customer_id,
-            line_items=[{'price': bid.stripe_price_id} for bid in quote_db.bids]
+            line_items=[{'price': bid.stripe_price_id} for bid in quote_db.bids],
+            metadata={
+                'shipment_id': quote_db.shipment.uuid
+            }
         )
         quote_db.stripe_quote_id = quote_stripe['id']
 
@@ -96,7 +99,12 @@ def delete_quote(db: DatabaseSession, quote: Quote):
 
 def accept_quote(quote: Quote):
     quote_stripe = stripe.Quote.accept(quote.stripe_quote_id)
-    invoice = stripe.Invoice.finalize_invoice(quote_stripe['invoice'])
+    invoice_id = quote_stripe['invoice']
+    invoice = stripe.Invoice.finalize_invoice(invoice_id)
+    invoice = stripe.Invoice.modify(
+        invoice_id,
+        metadata={'shipment_id': quote.shipment.uuid}
+    )
     return invoice['hosted_invoice_url']
 
 def release_quote(quote: Quote):
@@ -105,6 +113,7 @@ def release_quote(quote: Quote):
         
         invoice_id = stripe.Quote.retrieve(quote.stripe_quote_id)['invoice']
         invoice = stripe.Invoice.retrieve(invoice_id)
+        # maybe use invoice[payment_intent] (expand)
         # TODO make sure everything is finalized and charge exists
 
         transfer = stripe.Transfer.create(

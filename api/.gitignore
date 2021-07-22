@@ -2,6 +2,5 @@
 *.db
 *.sql
 credentials.json
-assets
 .venv
 test.py

@@ -32,7 +32,6 @@ export default class ShipmentView {
         this.access_token = m.route.param('access_token');
         this.shipment = ShipmentStorage.get_by_id(this.id);
         this.error_shipment_not_found = false;
-        this.accepted_quote = null;
 
         this.user = User.load();
         if (!this.user && !this.access_token) {
@@ -46,8 +45,6 @@ export default class ShipmentView {
         this.is_owner = false;
         if (this.shipment) {
             this.is_owner = this.shipment.owner_id === this.user.uuid;
-            this.shipment.flag_quotes(this.user.uuid);
-            this.accepted_quote = this.shipment.accepted_quote();
         }
 
         this.loading = false;
@@ -70,28 +67,6 @@ export default class ShipmentView {
         //     }
         // });
     }
-
-    // download_shipment(format) {
-    //     Api.download_shipment({
-    //         shipment_id: this.id,
-    //         format: format,
-    //     }).then(res => {
-    //         /* TODO check res length is not 0 */
-    //         const date = this.shipment.created_at;
-    //         const date_fmt = [
-    //             date.getFullYear(),
-    //             (date.getMonth() + 1).toString().padStart(2, '0'),
-    //             date.getDate().toString().padStart(2, '0')
-    //         ].join('-');
-
-    //         if (format === 'text') format = 'txt';
-
-    //         const filename = `shipment-${date_fmt}.${format}`;
-    //         FileSaver.saveAs(res, filename);
-    //     }).catch(e => {
-    //         console.log(e);
-    //     });
-    // }
 
     delete_shipment() {
         this.delete_loading = true;
@@ -120,8 +95,6 @@ export default class ShipmentView {
                     this.is_owner = false;
                 }
 
-                this.shipment.flag_quotes(this.user.uuid);
-                this.accepted_quote = this.shipment.accepted_quote();
                 // ShipmentStorage.add(this.shipment);
             }).catch(e => {
                 console.log(e);
@@ -224,23 +197,19 @@ export default class ShipmentView {
                             </div>
                         ) : ''}
                     </div>
-                    {(this.accepted_quote && !this.accepted_quote.is_paid()) ? (
-                        <div class="mt-6 py-3 px-5 flex flex-col rounded border border-gray-200">
-                            <div class="flex">
-                                <span class="text-gray-800">
-                                    You have accepted a quote without providing payment. Please confirm and pay the associated invoice in order to complete your booking.
-                                </span>
-                            </div>
-                            <div class="mt-4 flex justify-end">
-                                <Button active={false} callback={() => {
-                                    m.route.set('/quotes/:id', {id: this.accepted_quote.uuid})
-                                }}>
-                                    View quote
-                                </Button>
-                            </div>
+                    {(this.shipment.accepted_quote && !this.shipment.accepted_quote.is_paid()) ? (
+                        <div class="mt-6 py-3 px-5 flex items-center justify-between rounded border border-gray-200">
+                            <span class="mr-4 text-gray-800">
+                                You have accepted a quote without providing payment. Please confirm and pay the associated invoice in order to complete your booking.
+                            </span>
+                            <Button active={false} callback={() => {
+                                m.route.set('/quotes/:id', {id: this.shipment.accepted_quote.uuid})
+                            }}>
+                                View quote
+                            </Button>
                         </div>
                     ) : ''}
-                    <div class="mt-2 flex flex-col">
+                    <div class="mt-6 flex flex-col">
                         <div class="flex justify-between px-4">
                             <div class="mt-2 w-1/2 flex flex-col">
                                 <div class="mb-2">

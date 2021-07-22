@@ -160,13 +160,13 @@ export default class QuoteView {
                                 </Button>
                                 <div class="ml-2">
                                     <Button callback={() => {
-                                        console.log('pay invoice');
+                                        this.show_accept = false;
                                         this.quote.status = 'accepted';
                                         this.quote.update().then(q => {
                                             console.log(q);
                                             const invoice_url = q.stripe.stripe_invoice_url;
                                             if (invoice_url) {
-                                                window.location.replace(invoice_url);
+                                                window.open(invoice_url);
                                             }
                                         }).catch(e => {
                                             console.log(e);
@@ -178,7 +178,7 @@ export default class QuoteView {
                             </div>
                         </div>
                     ) : ''}
-                    {!this.quote.stripe.stripe_paid ? (
+                    {(this.quote.is_accepted() && !this.quote.stripe.stripe_paid) ? (
                         <div class="mt-6 py-3 px-5 flex flex-col rounded border border-gray-200">
                             <div class="flex">
                                 <span class="text-gray-800">
