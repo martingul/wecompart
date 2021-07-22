@@ -1,20 +1,26 @@
 import requests
 
 from src.schemas.user import UserRead, UserCreate, UserRole
-import lib
+import utils
 
-endpoint = f'{lib.api_root}/users/'
+endpoint = f'{utils.api_root}/users/'
 
-def random_user():
+def random_user(role: UserRole = UserRole.standard):
     return UserCreate(
-        fullname=lib.fake.name(),
-        username=lib.fake.email(),
+        fullname=utils.fake.name(),
+        username=utils.fake.email(),
         password='password',
-        role=UserRole.standard
+        role=role
     )
 
 def test_create_user():
     user_create = random_user()
+    response = requests.post(endpoint, json=user_create.dict())
+    assert response.status_code == requests.codes.created
+    UserRead.parse_obj(response.json())
+
+def test_create_user_shipper_role():
+    user_create = random_user(role=UserRole.shipper)
     response = requests.post(endpoint, json=user_create.dict())
     assert response.status_code == requests.codes.created
     UserRead.parse_obj(response.json())
@@ -26,6 +32,3 @@ def test_create_user_username_taken():
         response = requests.post(endpoint, json=user_create.dict())
     error_json = response.json()
     assert error_json['detail'] and error_json['detail'] == 'error_username_taken'
-    
-if __name__ == '__main__':
-    test_create_user()

@@ -19,7 +19,7 @@ def create_session(credentials: UserCredentials, response: Response,
         # TODO validate credentials before checking
         user = auth.authenticate(db, credentials)
     except Exception as e:
-        print(vars(e))
+        print(e)
 
     if not user:
         # XXX Maybe hash the password anyway before to mitigate against timing

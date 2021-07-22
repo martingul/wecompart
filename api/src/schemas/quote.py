@@ -3,18 +3,31 @@ from typing import Optional
 from datetime import date, datetime
 from pydantic import BaseModel, validator
 
+from .bid import BidRead, BidCreate
+
 class QuoteStatus(str, Enum):
     pending = 'pending'
     accepted = 'accepted'
     declined = 'declined'
+
+class QuoteStripe(BaseModel):
+    stripe_quote_number: Optional[str]
+    stripe_invoice_number: Optional[str]
+    stripe_invoice_url: Optional[str]
+    stripe_invoice_pdf: Optional[str]
+    stripe_paid: bool = False
 
 class QuoteRead(BaseModel):
     uuid: str
     owner_uuid: str
     shipment_uuid: str
     status: QuoteStatus
-    bid: float
     delivery_date: date
+    # expiration_date: date
+    comments: str
+    bids: list[BidRead]
+    stripe_quote_id: Optional[str]
+    stripe: Optional[QuoteStripe]
 
     created_at: datetime
     updated_at: datetime
@@ -23,15 +36,12 @@ class QuoteRead(BaseModel):
         orm_mode = True
 
 class QuoteCreate(BaseModel):
+    shipment_uuid: str
     status: QuoteStatus = QuoteStatus.pending
-    bid: float
     delivery_date: str
-
-    @validator('bid')
-    def validate_bid(cls, v: float):
-        if v < 0:
-            raise ValueError('error_invalid_bid')
-        return v
+    comments: str
+    stripe_quote_id: Optional[str]
+    bids: list[BidCreate]
 
     @validator('delivery_date')
     def validate_delivery_date(cls, v: str):
@@ -40,5 +50,4 @@ class QuoteCreate(BaseModel):
         return v
 
 class QuoteUpdate(BaseModel):
-    # bid: Optional[float] = None
     status: Optional[QuoteStatus] = None

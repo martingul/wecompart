@@ -1,10 +1,12 @@
+import re
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import StreamingResponse
 
 from storage import db_session, DatabaseSession
 from schemas.session import Session
-from schemas.quote import QuoteRead, QuoteCreate, QuoteUpdate
+from schemas.quote import QuoteRead, QuoteCreate, QuoteUpdate, QuoteStatus
 from schemas.notification import NotificationRead, NotificationCreate
-from lib import auth, shipments, quotes, notifications, payments
+from lib import auth, shipments, quotes, notifications
 from error import ApiError
 
 # TODO make sure these endpoints are restricted to shippers having access
@@ -12,60 +14,38 @@ from error import ApiError
 
 router = APIRouter()
 
-# TODO move to its own checkout router
-@router.post('/{shipment_id}/quotes/{quote_id}/checkout')
-def checkout_shipment_quote(shipment_id: str, quote_id: str,
-    session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)):
-    # TODO check permissions
-    try:
-        quote_db = quotes.read_quote(db, quote_id, shipment_id)
+# @router.get('/quotes/', response_model=list[QuoteRead])
+# def read_quotes(session: Session = Depends(auth.auth_session),
+#     db: DatabaseSession = Depends(db_session)) -> list[QuoteRead]:
+#     """Read quotes"""
+#     try:
+#         owner_uuid = session.user_uuid
+#         shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
+#         if shipment_db is None:
+#             raise HTTPException(
+#                 status_code=status.HTTP_404_NOT_FOUND,
+#                 detail='error_shipment_not_found'
+#             )
 
-        if not quote_db:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='error_quote_not_found'
-            )
+#         quotes_list = [QuoteRead.from_orm(x) for x in shipment_db.quotes]
+#         return quotes_list
+#     except Exception as e:
+#         print(e)
+#         if isinstance(e, HTTPException):
+#             raise e 
 
-        return payments.create_checkout_url(
-            name=f'Shipment #{shipment_id}',
-            amount=int(quote_db.bid*100)
-        )
-    except Exception as e:
-        print(e)
-
-@router.get('/{shipment_id}/quotes/', response_model=list[QuoteRead])
-def read_shipment_quotes(shipment_id: str,
-    session: Session = Depends(auth.auth_session),
-    db: DatabaseSession = Depends(db_session)) -> list[QuoteRead]:
-    """Read shipment quotes"""
-    try:
-        owner_uuid = session.user_uuid
-        shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
-        if shipment_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='error_shipment_not_found'
-            )
-
-        quotes_list = [QuoteRead.from_orm(x) for x in shipment_db.quotes]
-        return quotes_list
-    except Exception as e:
-        print(e)
-        if isinstance(e, HTTPException):
-            raise e 
-
-@router.post('/{shipment_id}/quotes/', response_model=QuoteRead,
+@router.post('/', response_model=QuoteRead,
     status_code=status.HTTP_201_CREATED)
-async def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
+async def create_quote(quote: QuoteCreate,
     session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
-    """Create a new shipment quote"""
+    """Create a new quote"""
+    # TODO check for permissions
     try:
         if session.user.role != 'shipper':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-        shipment_db = shipments.read_shipment(db, shipment_id)
+        shipment_db = shipments.read_shipment(db, quote.shipment_uuid)
 
         if session.user.uuid == shipment_db.owner_uuid:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
@@ -75,8 +55,12 @@ async def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail='error_shipment_not_found'
             )
-        
-        quote_new_db = quotes.create_quote(db, quote, session.user.uuid, shipment_db.uuid)
+
+        quote_new_db = quotes.create_quote(db, quote,
+            owner_uuid=session.user.uuid,
+            account_id=session.user.stripe_account_id,
+            customer_id=shipment_db.owner.stripe_customer_id
+        )
         quote_new = QuoteRead.from_orm(quote_new_db)
 
         notification_new = NotificationCreate(
@@ -99,24 +83,14 @@ async def create_shipment_quote(shipment_id: str, quote: QuoteCreate,
         print(e)
         raise e
 
-@router.get('/{shipment_id}/quotes/{quote_id}', response_model=QuoteRead)
-def read_shipment_quote(shipment_id: str, quote_id: str,
+@router.get('/{quote_id}', response_model=QuoteRead)
+def read_quote(quote_id: str,
     session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
-    """Read a shipment quote"""
-    # TODO rewrite for shippers (not only self)
-    # TODO access quote directly instead of shipment then quote
+    """Read a quote"""
+    # TODO check for permissions
     try:
-        owner_uuid = session.user_uuid
-        shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
-        if shipment_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='error_shipment_not_found'
-            )
-
-        # TODO access shipment_db.quotes.query() instead
-        quote_db = [x for x in shipment_db.quotes if x.uuid == quote_id]
+        quote_db = quotes._read_quote(db, quote_id)
 
         if not quote_db:
             raise HTTPException(
@@ -124,31 +98,24 @@ def read_shipment_quote(shipment_id: str, quote_id: str,
                 detail='error_quote_not_found'
             )
 
-        quote = QuoteRead.from_orm(quote_db[0])
+        quote = QuoteRead.from_orm(quote_db)
+        quote.stripe = quotes.read_stripe_quote(quote_db)
+
         return quote
     except Exception as e:
         print(vars(e))
         if isinstance(e, HTTPException):
             raise e
 
-@router.patch('/{shipment_id}/quotes/{quote_id}', response_model=QuoteRead)
-def update_shipment_quote(shipment_id: str, quote_id: str, patch: QuoteUpdate,
+@router.patch('/{quote_id}', response_model=QuoteRead)
+def update_quote(quote_id: str, patch: QuoteUpdate,
     session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Update a shipment quote"""
-    # TODO rewrite for shippers (not only self)
     # TODO notify quote owner on status change
+    # TODO check for permissions
     try:
-        owner_uuid = session.user_uuid
-        shipment_db = shipments.read_shipment(db, shipment_id, owner_uuid)
-
-        if shipment_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='error_shipment_not_found'
-            )
-
-        quote_db = quotes.read_quote(db, quote_id, shipment_db.uuid)
+        quote_db = quotes._read_quote(db, quote_id)
         if quote_db is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -157,29 +124,27 @@ def update_shipment_quote(shipment_id: str, quote_id: str, patch: QuoteUpdate,
 
         quote_db = quotes.update_quote(db, quote_db, patch)
         quote = QuoteRead.from_orm(quote_db)
+
+        if patch.status == QuoteStatus.accepted:
+            quote.invoice_url = quotes.accept_quote(quote_db)
+
         return quote
     except Exception as e:
-        print(vars(e))
-        if isinstance(e, HTTPException): raise e
+        print(e)
+        if isinstance(e, HTTPException):
+            raise e
 
-@router.delete('/{shipment_id}/quotes/{quote_id}', response_model=QuoteRead)
-def delete_shipment_quote(shipment_id: str, quote_id: str,
+@router.delete('/{quote_id}', response_model=QuoteRead)
+def delete_quote(quote_id: str,
     session: Session = Depends(auth.auth_session),
     db: DatabaseSession = Depends(db_session)) -> QuoteRead:
     """Delete a shipment quote"""
+    # TODO check for permissions
     try:
         if session.user.role != 'shipper':
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
 
-        shipment_db = shipments.read_shipment(db, shipment_id)
-
-        if shipment_db is None:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail='error_shipment_not_found'
-            )
-
-        quote_db = quotes.read_quote(db, quote_id, shipment_db.uuid)
+        quote_db = quotes._read_quote(db, quote_id)
         if quote_db is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -193,3 +158,53 @@ def delete_shipment_quote(shipment_id: str, quote_id: str,
         print(vars(e))
         if isinstance(e, HTTPException):
             raise e
+
+@router.post('/{quote_id}/release')
+def release_quote(quote_id: str,
+    session: Session = Depends(auth.auth_session),
+    db: DatabaseSession = Depends(db_session)):
+    try:
+        quote_db = quotes._read_quote(db, quote_id)
+
+        if not quote_db:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='error_quote_not_found'
+            )
+
+        quotes.release_quote(quote_db)       
+    except Exception as e:
+        print(e)
+        raise e
+
+@router.get('/{quote_id}/download')
+def download_quote(quote_id: str,
+    session: Session = Depends(auth.auth_session),
+    db: DatabaseSession = Depends(db_session)):
+    try:
+        quote_db = quotes._read_quote(db, quote_id)
+
+        if not quote_db:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail='error_quote_not_found'
+            )
+
+        quote_pdf_stream = quotes.download_quote(quote_db)
+        filename_header = quote_pdf_stream.headers['Content-Disposition']
+        match = re.search(r'".*[.]pdf"', filename_header)
+        if match:
+            filename = match[0]
+        else:
+            filename = f'Quote.pdf' # TODO get quote id from stripe?
+
+        return StreamingResponse(
+            quote_pdf_stream.io.stream(),
+            headers={
+                'Content-Disposition': f'attachment; filename={filename}',
+            },
+            media_type='application/pdf'
+        )
+    except Exception as e:
+        print(e)
+        raise e

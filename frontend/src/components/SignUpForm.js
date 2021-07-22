@@ -11,7 +11,10 @@ export default class SignUpForm {
     signup(e) {
         e.preventDefault();
         this.auth.signup().then(res => {
-            if (res) m.route.set('/');
+            console.log(res);
+            if (res) {
+                m.route.set('/');
+            }
         }).catch(_ => {});
     }
 
@@ -60,8 +63,8 @@ export default class SignUpForm {
                     </div>
                 </div>
                 <div class="mt-4 flex flex-col">
-                    <label class="text-gray-600 mb-1" for="email-input">
-                        {this.auth.role === 'shipper' ? 'Company name' : 'Full name'}
+                    <label class="text-gray-600 mb-1" for="fullname-input">
+                        Full name
                     </label>
                     <input id="fullname-input" type="text" spellcheck="false" required
                         value={this.auth.fullname.value}

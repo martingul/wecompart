@@ -1,8 +1,8 @@
 import m from 'mithril';
 import FileSaver from 'file-saver';
-import time_img from '../assets/time.svg';
-import success_img from '../assets/success.svg';
-import warning_img from '../assets/warning.svg';
+import time_img from '../../assets/time.svg';
+import success_img from '../../assets/success.svg';
+import warning_img from '../../assets/warning.svg';
 import Api from '../Api';
 import Utils from '../Utils';
 import Icon from '../components/Icon';
@@ -32,6 +32,7 @@ export default class ShipmentView {
         this.access_token = m.route.param('access_token');
         this.shipment = ShipmentStorage.get_by_id(this.id);
         this.error_shipment_not_found = false;
+        this.accepted_quote = null;
 
         this.user = User.load();
         if (!this.user && !this.access_token) {
@@ -46,6 +47,7 @@ export default class ShipmentView {
         if (this.shipment) {
             this.is_owner = this.shipment.owner_id === this.user.uuid;
             this.shipment.flag_quotes(this.user.uuid);
+            this.accepted_quote = this.shipment.accepted_quote();
         }
 
         this.loading = false;
@@ -119,6 +121,8 @@ export default class ShipmentView {
                 }
 
                 this.shipment.flag_quotes(this.user.uuid);
+                this.accepted_quote = this.shipment.accepted_quote();
+                // ShipmentStorage.add(this.shipment);
             }).catch(e => {
                 console.log(e);
                 if (e.code === 401) {
@@ -220,6 +224,22 @@ export default class ShipmentView {
                             </div>
                         ) : ''}
                     </div>
+                    {(this.accepted_quote && !this.accepted_quote.is_paid()) ? (
+                        <div class="mt-6 py-3 px-5 flex flex-col rounded border border-gray-200">
+                            <div class="flex">
+                                <span class="text-gray-800">
+                                    You have accepted a quote without providing payment. Please confirm and pay the associated invoice in order to complete your booking.
+                                </span>
+                            </div>
+                            <div class="mt-4 flex justify-end">
+                                <Button active={false} callback={() => {
+                                    m.route.set('/quotes/:id', {id: this.accepted_quote.uuid})
+                                }}>
+                                    View quote
+                                </Button>
+                            </div>
+                        </div>
+                    ) : ''}
                     <div class="mt-2 flex flex-col">
                         <div class="flex justify-between px-4">
                             <div class="mt-2 w-1/2 flex flex-col">
@@ -228,16 +248,26 @@ export default class ShipmentView {
                                         Pickup address
                                     </div>
                                     <div class="text-black">
-                                        {this.shipment.pickup_address.value}
+                                        {this.shipment.pickup_address_formatted.line1}
                                     </div>
+                                    {this.shipment.pickup_address_formatted.line2 ? (
+                                        <div class="mt-1 text-black">
+                                            {this.shipment.pickup_address_formatted.line2}
+                                        </div>
+                                    ) : ''}
                                 </div>
                                 <div class="mb-2">
                                     <div class="text-gray-500 mb-1">
                                         Delivery address
                                     </div>
                                     <div class="text-black">
-                                        {this.shipment.delivery_address.value}
+                                        {this.shipment.delivery_address_formatted.line1}
                                     </div>
+                                    {this.shipment.delivery_address_formatted.line2 ? (
+                                        <div class="mt-1 text-black">
+                                            {this.shipment.delivery_address_formatted.line2}
+                                        </div>
+                                    ) : ''}
                                 </div>
                                 <div class="mb-2">
                                     <div class="text-gray-500 mb-1">
@@ -252,35 +282,25 @@ export default class ShipmentView {
                                         Services requested ({this.shipment.services.length})
                                     </div>
                                     <div class="flex flex-wrap">
-                                        <div class="inline-flex mt-1 mr-1">
-                                            <Badge color="indigo" icon="truck">
-                                                Shipping
-                                            </Badge>
+                                        {this.shipment.services.map(s => (
+                                            <div class="inline-flex mt-1 mr-1">
+                                                <Badge color="indigo" icon={Shipment.service_icons[s.name]}>
+                                                    {Utils.capitalize(s.name)}
+                                                </Badge>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                                {this.shipment.comments.value ? (
+                                    <div>
+                                        <div class="text-gray-500 mb-1">
+                                            Additional comments
                                         </div>
-                                        {this.shipment.services.includes('packaging') ? (
-                                             <div class="inline-flex mr-1 mt-1">
-                                                <Badge color="indigo" icon="box">
-                                                    Packaging
-                                                </Badge>
-                                            </div>
-                                        ) : ''}
-                                        {this.shipment.services.includes('insurance') ? (
-                                            <div class="inline-flex mt-1">
-                                                <Badge color="indigo" icon="shield">
-                                                    Insurance
-                                                </Badge>
-                                            </div>
-                                        ) : ''}
+                                        <div class="text-black">
+                                            <ShipmentComments comments={this.shipment.comments.value} />
+                                        </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <div class="text-gray-500 mb-1">
-                                        Additional comments
-                                    </div>
-                                    <div class="text-black">
-                                        <ShipmentComments comments={this.shipment.comments.value} />
-                                    </div>
-                                </div>
+                                ) : ''}
                             </div>
                             <div class="mt-2 ml-8 w-1/2 flex flex-col">
                                 <img class="shadow-lg rounded" src={this.shipment.map_url} />
@@ -341,9 +361,10 @@ export default class ShipmentView {
                                 && this.shipment.quotes.filter(q => q.owner_uuid === this.user.uuid).length === 0) ? (
                                 // hide (or disable with explaining tooltip) when user already has a quote posted
                                 <div class="flex justify-end">
-                                    <Button icon="plus" callback={() => {
+                                    <Button icon="plus" active={false} callback={() => {
                                         if (this.user && this.user.role === 'shipper') {
-                                            this.quote_create_show = true;
+                                            // this.quote_create_show = true;
+                                            m.route.set('/shipments/:id/quotes/new', {id: this.shipment.uuid});
                                         } else {
                                             m.route.set('/auth/signup');
                                         }
@@ -372,7 +393,6 @@ export default class ShipmentView {
                             <div class="flex flex-col px-2">
                                 <Table fields={[
                                         {label: 'bid', type: 'number'},
-                                        {label: '', attr: 'currency', type: 'string'},
                                         {label: ''},
                                         {label: 'delivery date', attr: 'delivery_date', type: 'date'},
                                         {label: ''},

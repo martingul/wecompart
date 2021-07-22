@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 # to synchronize: `pip-sync`
-pip-compile -v --upgrade --generate-hashes requirements.in
+pip-compile --upgrade --generate-hashes requirements.in

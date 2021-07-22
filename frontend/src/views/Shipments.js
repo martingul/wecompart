@@ -1,5 +1,5 @@
 import m from 'mithril';
-import mailbox_img from '../assets/mailbox.svg';
+import mailbox_img from '../../assets/mailbox.svg';
 import Api from '../Api';
 import Loading from '../components/Loading';
 import Title from '../components/Title';

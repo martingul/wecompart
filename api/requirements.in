@@ -2,7 +2,6 @@ aiofiles
 base58
 faker
 fastapi
-jinja2
 pandas
 passlib[bcrypt]
 psycopg2
@@ -16,4 +15,4 @@ sqlalchemy-utils
 starlette
 stripe
 uvicorn
-# weasyprint
+websockets

@@ -1,13 +1,15 @@
 import pytest
 
 from src.schemas.session import SessionEncoded
-import lib
+from src.schemas.user import UserCredentials
+import utils
 
 @pytest.fixture
 def auth():
-    credentials = {
-        'username': 'test@test.test',
-        'password': 'password'
-    }
-    response = lib.session.post(f'{lib.api_root}/auth/', json=credentials)
+    endpoint = f'{utils.api_root}/auth/'
+    credentials = UserCredentials(
+        username='test@test.test',
+        password='password'
+    )
+    response = utils.session.post(endpoint, json=credentials.dict())
     SessionEncoded.parse_obj(response.json())

@@ -33,7 +33,7 @@ export default class ShipmentEditView {
         if (this.is_new) {
             this.shipment = new Shipment({});
             this.shipment.items.push(new Item({key: Utils.generate_key()}));
-            this.shipment.services.push('shipping');
+            this.shipment.services.push({name: 'shipping'});
         } else {
             this.shipment = ShipmentStorage.get_by_id(this.id);
         }
@@ -200,7 +200,8 @@ export default class ShipmentEditView {
                             }
                         }} />
                     </div>
-                    <form class="flex flex-col" onsubmit={(e) => e.preventDefault()}>
+                    <form class="flex flex-col"
+                        onsubmit={(e) => e.preventDefault()}>
                         <div class="my-2 text-gray-600">
                             Shipment information
                         </div>

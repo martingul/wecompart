@@ -4,7 +4,7 @@ import stripe
 from storage import db_session, DatabaseSession
 from schemas.session import Session
 from schemas.user import UserRead, UserCreate, UserUpdate
-from lib import auth, users, locations, payments
+from lib import auth, users, locations
 from error import ApiError
 
 # TODO add permissions (only user itself can modify/access info)
@@ -35,18 +35,18 @@ def onboard_user(session: Session = Depends(auth.auth_session),
         user_db = users.read_user(db, index=session.user_uuid, by='uuid')
 
         if not user_db.stripe_account_id:
-            user_db.stripe_account_id = payments.create_account(
+            user_db.stripe_account_id = users.create_stripe_account(
                 country=user_db.country_code,
                 email=user_db.username
             )
             db.commit()
             db.refresh(user_db)
         
-        return payments.create_account_link(user_db.stripe_account_id)
+        return users.create_stripe_account_link(user_db.stripe_account_id)
     except stripe.error.InvalidRequestError as e:
         print(vars(e))
         if not e.code or e.code == 'resource_missing':
-            account_id = payments.create_account(
+            account_id = users.create_stripe_account(
                 country=user_db.country_code,
                 email=user_db.username
             )
@@ -54,7 +54,7 @@ def onboard_user(session: Session = Depends(auth.auth_session),
                 user_db.stripe_account_id = account_id
                 db.commit()
                 db.refresh(user_db)
-                return payments.create_account_link(user_db.stripe_account_id)
+                return users.create_stripe_account_link(user_db.stripe_account_id)
             else:
                 raise e
         else:
@@ -69,6 +69,7 @@ def create_user(user: UserCreate,
     db: DatabaseSession = Depends(db_session)) -> UserRead:
     """Create a new user"""
     try:
+        # TODO validate
         #  user.ip_address = request.client.host
         user.ip_address = '8.8.8.8'
 
@@ -76,6 +77,11 @@ def create_user(user: UserCreate,
         user.currency = location['currency']
         user.country = location['country']
         user.country_code = location['country_code']
+
+        user.stripe_customer_id = users.create_stripe_customer(
+            name=user.fullname,
+            email=user.username
+        )
 
         user_db = users.create_user(db, user)
         user = UserRead.from_orm(user_db)

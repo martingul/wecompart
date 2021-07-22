@@ -9,7 +9,7 @@ export default class Badge {
 
     view(vnode) {
         return (
-            <div class={`px-2 rounded text-sm text-center font-bold
+            <div class={`px-1.5 rounded text-sm text-center font-bold
                 ${this.icon ? 'flex items-center' : 'py-0.5'}
                 bg-${this.color}-100 text-${this.color}-500`}>
                 {this.icon ? (

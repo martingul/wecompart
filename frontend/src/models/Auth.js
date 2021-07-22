@@ -86,16 +86,27 @@ export default class Auth {
         };
 
         this.loading = true;
-        return Api.create_user({user}).then(res => {
-            return this.authenticate();
-        }).catch(e => {
-            if (e.response.detail === 'error_username_taken') {
-                this.error = 'An account with this email already exists.';
-            }
-            return false;
-        }).finally(() => {
-            this.loading = false;
-        });
+        return Api.create_user({user})
+            .then(res => this.authenticate())
+            .then(res => {
+                if (user.role === 'shipper') {
+                    return Api.onboard_user({})
+                }
+            })
+            .then(onboard_url => {
+                if (onboard_url) {
+                    window.location.replace(onboard_url);
+                } else {
+                    return true;
+                }
+            })
+            .catch(e => {
+                this.loading = false;
+                if (e.response.detail === 'error_username_taken') {
+                    this.error = 'An account with this email already exists.';
+                }
+                return false;
+            });
     }
 
     signin() {

@@ -1,7 +1,7 @@
 import m from 'mithril';
 import Api from '../Api';
-import warning_img from '../assets/warning.svg';
-import card_img from '../assets/card.svg';
+import warning_img from '../../assets/warning.svg';
+import card_img from '../../assets/card.svg';
 import Utils from '../Utils';
 import IconButton from './IconButton';
 import Badge from './Badge';
@@ -63,13 +63,21 @@ export default class QuoteTableRow {
             <tr class={`border-b border-gray-200 text-gray-600
                 ${this.is_shipment_owner ? 'whitespace-nowrap cursor-pointer transition-all hover:bg-gray-50 hover:shadow' : ''}`}
                 onclick={() => this.navigate()}>
-                <td class="w-1 py-2 text-right">
+                <td class="w-1 pl-2 py-1 text-right">
                     <MoneyText currency={this.currency}>
-                        {this.quote.bid.value}
+                        {/* {this.quote.bid.value} */}
+                        150
                     </MoneyText>
                 </td>
-                <td class="w-1 py-2 px-2">
+                <td class="w-1 py-1 px-4">
                     <span class="inline-flex items-center">
+                        {this.quote.is_accepted() ? (
+                            <span class="inline-flex mx-0.5">
+                                <Badge color="green">
+                                    Accepted
+                                </Badge>
+                            </span>
+                        ) : ''}
                         {this.quote.is_declined() ? (
                             <span class="inline-flex mx-0.5">
                                 <Badge color="red">
@@ -79,7 +87,7 @@ export default class QuoteTableRow {
                         ) : ''}
                         {(this.quote.is_cheapest && !this.quote.is_declined()) ? (
                             <span class="inline-flex mx-0.5">
-                                <Badge color="green">
+                                <Badge color="pink">
                                     Cheapest
                                 </Badge>
                             </span>
@@ -93,13 +101,13 @@ export default class QuoteTableRow {
                         ) : ''}
                     </span>
                 </td>
-                <td class="w-full py-2 pr-4 whitespace-nowrap">
+                <td class="w-full py-1 whitespace-nowrap">
                     <span class="inline-flex items-baseline">
                         {Utils.absolute_date(this.quote.delivery_date.value, true)}
                     </span>
                 </td>
-                <td class="w-full">
-                    {(this.is_shipment_owner && !this.quote.is_declined()) ? (
+                <td class="w-full py-1 pr-2">
+                    {(this.is_shipment_owner && this.quote.is_pending()) ? (
                         <Actions actions={[
                             {name: 'accept', label: 'Accept', icon: 'check', callback: () => {
                                 console.log('accept');
@@ -157,7 +165,12 @@ export default class QuoteTableRow {
                             }},
                         ]} />
                     ) : ''}
-                    {this.is_quote_owner ? (
+                    {(this.is_shipment_owner && this.quote.is_accepted()) ? (
+                        <Badge color="yellow" icon="alert-circle">
+                            Payment needed
+                        </Badge>
+                    ) : ''}
+                    {(this.is_quote_owner && !this.quote.is_accepted()) ? (
                         <IconButton icon="x" callback={() => {
                             console.log('delete');
                             Modal.create({

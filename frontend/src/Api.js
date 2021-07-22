@@ -96,6 +96,14 @@ export default class Api {
         });
     }
 
+    static onboard_user(args) {
+        return m.request({
+            method: 'POST',
+            url: `${Api.API_ROOT}/users/onboard`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+        });
+    }
+
     static read_locations(args) {
         return m.request({
             method: 'GET',
@@ -191,46 +199,80 @@ export default class Api {
         });
     }
 
-    static create_shipment_quote(args) {
+    static create_quote(args) {
         return m.request({
             method: 'POST',
-            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/`,
+            url: `${Api.API_ROOT}/quotes/`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
             body: args.quote,
         });
     }
 
-    static read_shipment_quote(args) {
+    static read_quote(args) {
         return m.request({
             method: 'GET',
-            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/${args.quote_id}`,
+            url: `${Api.API_ROOT}/quotes/${args.quote_id}`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
         });
     }
 
-    static update_shipment_quote(args) {
+    static update_quote(args) {
         return m.request({
             method: 'PATCH',
-            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/${args.quote_id}`,
+            url: `${Api.API_ROOT}/quotes/${args.quote_id}`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
             body: args.patch,
         });
     }
 
-    static delete_shipment_quote(args) {
+    static delete_quote(args) {
         return m.request({
             method: 'DELETE',
-            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/${args.quote_id}`,
+            url: `${Api.API_ROOT}/quotes/${args.quote_id}`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
         });
     }
 
-    static checkout_shipment_quote(args) {
+    static checkout_quote(args) {
         return m.request({
             method: 'POST',
-            url: `${Api.API_ROOT}/shipments/${args.shipment_id}/quotes/${args.quote_id}/checkout`,
+            url: `${Api.API_ROOT}/quotes/${args.quote_id}/checkout`,
             headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
         });
+    }
+
+    static release_quote(args) {
+        return m.request({
+            method: 'POST',
+            url: `${Api.API_ROOT}/quotes/${args.quote_id}/release`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+        });
+    }
+
+    static download_quote(args) {
+        return m.request({
+            method: 'GET',
+            url: `${Api.API_ROOT}/quotes/${args.quote_id}/download`,
+            headers: {'Authorization': `Bearer ${Api.encode_session(Api.get_session())}`},
+            responseType: 'blob',
+            extract: (xhr) => {
+                const header = xhr.getResponseHeader('content-disposition');
+                const filename_regex = /(?<=").*[.]pdf(?=")/;
+                const filename_match = header.match(filename_regex);
+                let filename = 'Quote';
+                if (filename_match.length > 0) {
+                    filename = filename_match[0];
+                }
+                return {
+                    filename: filename,
+                    blob: xhr.response,
+                };
+            },
+        });
+    }
+
+    static download_quote_url(args) {
+        return `${Api.API_ROOT}/quotes/${args.quote_id}/download`;
     }
 
     static read_messages(args) {

@@ -12,7 +12,6 @@ export default class ShipmentStorage {
     }
 
     static get_by_id(id) {
-        console.log('get_by_id', id);
         const shipments = ShipmentStorage.shipments.filter(s => s.uuid === id);
         if (shipments.length === 0) {
             return null;

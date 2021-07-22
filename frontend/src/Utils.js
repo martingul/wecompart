@@ -121,4 +121,20 @@ export default class Utils {
     static capitalize(s) {
         return s[0].toUpperCase() + s.slice(1);
     }
+
+    static format_address(address) {
+        const components = address.split(', ');
+        let line1 = '';
+        if (components.length >= 0 && components.length < 3) {
+            line1 = components.join(', ');
+            return { line1, line2: null };
+        }
+        const mid = Math.floor(components.length / 2)
+        line1 = components.slice(0, mid);
+        const line2 = components.slice(mid, components.length);
+        return {
+            line1: line1.join(', '),
+            line2: line2.join(', ')
+        };
+    }
 }

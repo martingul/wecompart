@@ -1,6 +1,6 @@
 import m from 'mithril';
-import loading_light from '../assets/loading-light.svg';
-import loading_dark from '../assets/loading-dark.svg';
+import loading_light from '../../assets/loading-light.svg';
+import loading_dark from '../../assets/loading-dark.svg';
 
 export default class Loading {
     constructor(vnode) {

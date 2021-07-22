@@ -14,20 +14,20 @@ export default class ShipmentServicesInput {
     }
 
     toggle(service) {
-        const i = this.services.indexOf(service);
+        const i = this.services.map(s => s.name).indexOf(service.name);
         if (i >= 0) {
             this.services.splice(i, 1);
         } else {
-            this.services.push(service)
+            this.services.push({name: service.name});
         }
     }
 
     style(service) {
-        if (service === 'shipping') {
+        if (service.name === 'shipping') {
             return 'bg-indigo-100 text-indigo-500 cursor-not-allowed';
         }
 
-        if (this.services.includes(service)) {
+        if (this.services.map(s => s.name).includes(service.name)) {
             return 'bg-indigo-100 hover:bg-indigo-200 text-indigo-500 hover:text-indigo-600'
         } else {
             return 'bg-gray-100 hover:bg-indigo-200 text-gray-500 hover:text-indigo-600'
@@ -38,8 +38,8 @@ export default class ShipmentServicesInput {
         return (
             <div class="flex justify-start">
                 {this.services_all.map(s => (
-                    <button class={'mr-4 last:mr-0 flex items-center px-2 rounded text-sm text-center font-bold transition-colors ' + this.style(s.name)}
-                        onclick={() => this.toggle(s.name)}
+                    <button class={'mr-4 last:mr-0 flex items-center px-2 rounded text-sm text-center font-bold transition-colors ' + this.style(s)}
+                        onclick={() => this.toggle(s)}
                         disabled={s.name === 'shipping'}>
                         <Icon name={s.icon} class="w-4 mr-1.5" />
                         <span>

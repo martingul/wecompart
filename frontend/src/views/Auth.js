@@ -2,11 +2,10 @@ import m from 'mithril';
 import Api from '../Api';
 import Auth from '../models/Auth';
 import Logo from '../components/Logo';
-import Loading from '../components/Loading';
 import SignUpForm from '../components/SignUpForm';
 import SignInForm from '../components/SignInForm';
 
-import google from '../assets/google.svg';
+import google from '../../assets/google.svg';
 
 export default class AuthView {
     constructor(vnode) {

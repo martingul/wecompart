@@ -4,3 +4,4 @@
 credentials.json
 assets
 .venv
+test.py

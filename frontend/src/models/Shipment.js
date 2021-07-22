@@ -6,8 +6,14 @@ import Quote from './Quote';
 export default class Shipment {
     static status_colors = {
         'draft': 'gray',
-        'pending': 'yellow',
+        'pending': 'blue',
         'ready': 'green',
+    };
+
+    static service_icons = {
+        'shipping': 'truck',
+        'packaging': 'box',
+        'insurance': 'shield',
     };
 
     constructor({
@@ -41,11 +47,13 @@ export default class Shipment {
             place_id: pickup_address_id,
         };
         this.pickup_address_short = pickup_address_short;
+        this.pickup_address_formatted = Utils.format_address(pickup_address_long);
         this.delivery_address = {
             value: delivery_address_long,
             place_id: delivery_address_id,
         };
         this.delivery_address_short = delivery_address_short;
+        this.delivery_address_formatted = Utils.format_address(delivery_address_long);
         this.pickup_date = {value: new Date(pickup_date)};
         this.currency = {value: currency};
         this.total_value = {value: total_value};
@@ -72,11 +80,11 @@ export default class Shipment {
     }
 
     get_total_item_quantity() {
-        return this.items.map(item => item.quantity).reduce((a, c) => a + c);
+        return this.items.map(item => item.quantity).reduce((a, c) => a + c, 0);
     }
 
     get_total_item_weight() {
-        return this.items.map(item => item.weight).reduce((a, c) => a + c);
+        return this.items.map(item => item.weight).reduce((a, c) => a + c, 0);
     }
 
     create() {
@@ -99,10 +107,7 @@ export default class Shipment {
     }
 
     checkout(quote_id) {
-        return Api.checkout_shipment_quote({
-            shipment_id: this.uuid,
-            quote_id: quote_id,
-        });
+        return Api.checkout_quote({ quote_id: quote_id });
     }
 
     create_items() {
@@ -159,6 +164,10 @@ export default class Shipment {
     }
 
     flag_quotes(user_uuid) {
+        if (this.quotes.length <= 1) {
+            return;
+        }
+        
         const earliest_quote_old = this.quotes.filter(q => q.is_earliest);
         if (earliest_quote_old.length > 0) {
             earliest_quote_old.is_earliest = false;
@@ -176,5 +185,21 @@ export default class Shipment {
         if (cheapest_quote) {
             cheapest_quote.is_cheapest = true;
         }
+    }
+
+    accepted_quote() {
+        const quotes = this.quotes.filter(q => q.is_accepted());
+        if (quotes.length === 0) {
+            return null;
+        }
+        return quotes[0];
+    }
+
+    paid_quote() {
+        const quotes = this.quotes.filter(q => (q.is_accepted() && q.is_paid()));
+        if (quotes.length === 0) {
+            return null;
+        }
+        return quotes[0];
     }
 }

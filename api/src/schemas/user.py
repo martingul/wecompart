@@ -15,6 +15,8 @@ class UserRead(BaseModel):
     username: str
     role: UserRole
     country_code: Optional[str]
+    stripe_customer_id: Optional[str] # maybe do not show that publicly
+    stripe_account_id: Optional[str]
 
     created_at: datetime
     updated_at: datetime
@@ -31,6 +33,8 @@ class UserCreate(BaseModel):
     currency: Optional[str]
     country: Optional[str]
     country_code: Optional[str]
+    stripe_customer_id: Optional[str]
+    # stripe_account_id: Optional[str]
 
     @validator('fullname')
     def validate_fullname(cls, v: str):
@@ -57,8 +61,8 @@ class UserCreate(BaseModel):
     class Config:
         schema_extra = {
             'example': {
-                'username': 'example@company.com',
                 'fullname': 'John Doe',
+                'username': 'example@company.com',
                 'password': 'example',
             }
         }

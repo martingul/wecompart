@@ -7,7 +7,7 @@ import config
 stripe.api_key = config.credentials.get('stripe_test_key')
 
 from routers import auth, shippers, users, shipments, items, quotes,\
-    notifications, messages, locations, payments, websockets
+    notifications, messages, locations, websockets
 
 api = FastAPI()
 
@@ -39,7 +39,7 @@ api.include_router(
 api.include_router(
     quotes.router,
     tags=['quotes'],
-    prefix='/shipments'
+    prefix='/quotes'
 )
 api.include_router(
     notifications.router,
@@ -57,11 +57,6 @@ api.include_router(
     prefix='/locations'
 )
 api.include_router(
-    payments.router,
-    tags=['payments'],
-    prefix='/payments'
-)
-api.include_router(
     websockets.router,
     tags=['websockets']
 )
@@ -72,6 +67,9 @@ api.add_middleware(
     allow_credentials=True,
     allow_methods=['*'],
     allow_headers=['*'],
+    expose_headers=[
+        'content-disposition'
+    ]
 )
 
 @api.on_event('startup')
