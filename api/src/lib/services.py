@@ -13,10 +13,11 @@ def create_service(db: DatabaseSession, service: ServiceCreate):
         db.commit()
         db.refresh(service_db)
 
-        service_db.stripe_product_id = stripe.Product.create(
+        product_stripe = stripe.Product.create(
             name=service.name,
             shippable=False
         )
+        service_db.stripe_product_id = product_stripe['id']
 
         db.commit()
         db.refresh(service_db)
