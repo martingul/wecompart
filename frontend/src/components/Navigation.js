@@ -6,15 +6,9 @@ import Logo from './Logo';
 export default class Navigation {
     static views = [
         {name: 'Home', icon: 'sun', navigate: () => m.route.set('/')},
-        {name: 'Account', icon: 'user', navigate: () => m.route.set('/account')},
         {name: 'Shipments', icon: 'package', navigate: () => m.route.set('/shipments')},
-        {name: 'Messages', icon: 'message-circle', navigate: () => {}},
-        {name: 'Sign out', icon: 'log-out', navigate: () => {
-            Api.signout().finally(() => {
-                localStorage.clear();
-                m.route.set('/auth/login');
-            });
-        }},
+        {name: 'Account', icon: 'user', navigate: () => m.route.set('/account')},
+        // {name: 'Messages', icon: 'message-circle', navigate: () => {}},
     ];
     static selected_view = Navigation.views[0];
     static show = true;
@@ -36,11 +30,32 @@ export default class Navigation {
             Navigation.selected_view = Navigation.views
                 .filter(v => v.name === 'Shipments')[0];
         }
+        this.inline = vnode.attrs.inline !== undefined ? vnode.attrs.inline : true;
     }
 
     view(vnode) {
         if (!Navigation.show) {
             return;
+        }
+
+        if (this.inline) {
+            return (
+                <div class="flex items-center">
+                    {Navigation.views.map(v => (
+                        <button class={'flex items-center w-full mr-4 px-0.5 py-1 transition-all hover:text-black '
+                            + (Navigation.selected_view === v ? 'border-b border-dotted border-gray-800 text-black font-semibold' : 'text-gray-600')}
+                            onclick={() => {
+                                Navigation.selected_view = v;
+                                v.navigate();
+                            }}>
+                            {/* <Icon name={v.icon} class="w-4" /> */}
+                            <span class="whitespace-nowrap">
+                                {v.name}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            );
         }
         
         return (

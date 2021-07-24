@@ -121,7 +121,7 @@ export default class ShipmentView {
         return (
             <AppView>
                 <div class='flex flex-col'>
-                    <div class='flex justify-between items-end pb-2 border-b border-gray-200'>
+                    <div class='flex justify-between items-end pb-3 border-b border-gray-300'>
                         <div class="flex flex-col">
                             <div class="mb-1 flex items-center text-gray-500">
                                 <Icon name="hexagon" class="w-4" />
@@ -205,7 +205,7 @@ export default class ShipmentView {
                                 </div>
                             ) : ''}
                         </div>
-                        <div class="flex flex-col items-center">
+                        <div class="mx-8 flex flex-col items-center">
                             <Icon name="arrow-right" class="w-6 text-gray-300" />
                         </div>
                         <div class="flex flex-col">

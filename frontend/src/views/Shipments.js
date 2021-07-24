@@ -76,7 +76,7 @@ export default class ShipmentsView {
         return (
             <AppView>
                 <div class="flex flex-col">
-                    <div class="mb-6 flex items-center justify-between">
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-300">
                         <Title>
                             Shipments
                         </Title>
@@ -84,20 +84,22 @@ export default class ShipmentsView {
                             Create shipment
                         </Button>
                     </div>
-                    <Table collection={ShipmentStorage.shipments}
-                        fields={[
-                            {label: 'value', attr: 'total_value', type: 'number'},
-                            {label: ''},
-                            {label: 'pickup', attr: 'pickup_address_short', type: 'string'},
-                            {label: ''},
-                            {label: 'delivery', attr: 'delivery_address_short', type: 'string'},
-                            {label: 'date', attr: 'pickup_date', type: 'date'},
-                        ]}>
-                        {ShipmentStorage.shipments.map(s =>
-                            <ShipmentTableRow key={s.uuid} shipment={s} />
-                        )}
-                    </Table>
-                    <div class="my-2">
+                    <div class="mt-4">
+                        <Table collection={ShipmentStorage.shipments}
+                            fields={[
+                                {label: 'value', attr: 'total_value', type: 'number'},
+                                {label: ''},
+                                {label: 'pickup', attr: 'pickup_address_short', type: 'string'},
+                                {label: ''},
+                                {label: 'delivery', attr: 'delivery_address_short', type: 'string'},
+                                {label: 'date', attr: 'pickup_date', type: 'date'},
+                            ]}>
+                            {ShipmentStorage.shipments.map(s =>
+                                <ShipmentTableRow key={s.uuid} shipment={s} />
+                            )}
+                        </Table>
+                    </div>
+                    <div class="mt-2">
                         <span class="text-black">
                             {ShipmentStorage.shipments.length}
                         </span>

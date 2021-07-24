@@ -12,8 +12,8 @@ export default class Button {
 
     view(vnode) {
         return (
-            <button type="button" class={`h-8 flex items-center justify-center py-1 px-2 rounded whitespace-nowrap font-semibold hover:shadow transition-all
-            + ${this.active ? 'text-white bg-indigo-500 hover:bg-indigo-600'
+            <button type="button" class={`h-8 flex items-center justify-center py-1 px-2 whitespace-nowrap font-semibold hover:shadow transition-all
+            + ${this.active ? 'text-white bg-blue-600 hover:bg-blue-700'
                             : 'border border-gray-300 hover:border-gray-300 text-gray-800 bg-white hover:text-black'}`}
                 onclick={this.callback}>
                 <div class="flex items-center">

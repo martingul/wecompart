@@ -21,12 +21,12 @@ export default class AppView {
 
         return (
             <div class="flex w-full h-full min-h-screen antialiased">
-                <div class={this.user ? 'flex' : 'hidden'}>
+                {/* <div class={this.user ? 'flex' : 'hidden'}>
                     <Navigation />
-                </div>
+                </div> */}
                 <div class="flex flex-col items-center w-full">
                     <Header />
-                    <div class="p-12 w-full">
+                    <div class="p-10 w-full">
                         {vnode.children}
                     </div>
                 </div>

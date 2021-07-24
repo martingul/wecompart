@@ -37,13 +37,22 @@ export default class Header {
         }
 
         return (
-            <div class="w-full flex justify-between items-center py-4 border-b border-gray-100">
-                <IconButton class="mx-8" icon="menu"
+            <div class="w-full flex items-center py-4 shadow-sm border-b border-gray-200">
+                {/* <IconButton class="mx-8" icon="menu"
                     callback={() => Navigation.show = !Navigation.show} />
                 <div class="w-full">
                     <SearchInput />
+                </div> */}
+                <div class="flex items-baseline px-8 border-r border-gray-30">
+                    <button class="flex items-center whitespace-nowrap"
+                        onclick={() => m.route.set('/')}>
+                        <Logo />
+                    </button>
                 </div>
-                <div class="mx-8">
+                <div class="pl-8">
+                    <Navigation />
+                </div>
+                <div class="mx-8 flex w-full justify-end">
                     <Notifications />
                 </div>
             </div>

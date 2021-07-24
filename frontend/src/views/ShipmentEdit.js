@@ -181,7 +181,7 @@ export default class ShipmentEditView {
         return (
             <AppView>
                 <div class="flex flex-col">
-                    <div class="mb-2 flex justify-between items-start">
+                    <div class="mb-2 flex justify-between items-start pb-3 border-b border-gray-300">
                         <div class={this.is_new ? 'block' : 'hidden'}>
                             <Title>
                                 New Shipment
@@ -200,12 +200,12 @@ export default class ShipmentEditView {
                             }
                         }} />
                     </div>
-                    <form class="flex flex-col"
+                    <form class="mt-4 flex flex-col"
                         onsubmit={(e) => e.preventDefault()}>
-                        <div class="my-2 text-gray-600">
+                        <div class="mt-2 text-gray-600">
                             Shipment information
                         </div>
-                        <div class="m-2 flex justify-between">
+                        <div class="mt-3 mx-2 flex justify-between">
                             <div class="mr-4 w-full flex flex-col">
                                 <label class="mb-1 whitespace-nowrap overflow-hidden overflow-ellipsis" for="from-input">
                                     Pickup address
@@ -221,17 +221,17 @@ export default class ShipmentEditView {
                                     placeholder="Delivery address" id="to-input" />
                             </div>
                         </div>
-                        <div class="flex flex-col m-2">
+                        <div class="flex flex-col mt-3 mx-2">
                             <label class="mb-1 whitespace-nowrap overflow-hidden overflow-ellipsis" for="pickup-date-input">
                                 Desired pickup date
                             </label>
                             <DateInput id="pickup-date-input" bind={this.shipment.pickup_date}
                                 min={new Date(Date.now()).toISOString().split('T')[0]} />
                         </div>
-                        <InfoMessage class="my-4">
+                        <InfoMessage class="mt-4">
                             Exact pickup date and time will be set once you accept a shipper's quote.
                         </InfoMessage>
-                        <div class="flex flex-col">
+                        <div class="flex flex-col mt-4">
                             <div class="text-gray-600 w-full">
                                 What items are you shipping?
                                 <span class="ml-1 italic">
@@ -265,7 +265,7 @@ export default class ShipmentEditView {
                             <div class="text-gray-600 w-full">
                                 Anything else to add?
                             </div>
-                            <div class="my-2 py-2 px-4">
+                            <div class="mt-2 py-2 px-4">
                                 <textarea rows="2" class="max-h-64" placeholder="Additional comments..."
                                     oninput={(e) => this.shipment.comments.value = e.target.value}
                                     value={this.shipment.comments.value}>
@@ -297,7 +297,7 @@ export default class ShipmentEditView {
                                     }}>
                                         {`Save ${this.is_new ? 'as draft' : ''}`}
                                     </Button>
-                                    <div class={this.is_new || this.shipment.is_draft() ? 'block ml-2' : 'hidden'}>
+                                    <div class={this.is_new || this.shipment.is_draft() ? 'block ml-3' : 'hidden'}>
                                         <Button icon="arrow-right" callback={(e) => {
                                             this.save = false;
                                             this.submit(e)
