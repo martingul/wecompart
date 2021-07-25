@@ -181,7 +181,7 @@ export default class ShipmentEditView {
         return (
             <AppView>
                 <div class="flex flex-col">
-                    <div class="mb-2 flex justify-between items-start pb-3 border-b border-gray-300">
+                    <div class="flex justify-between items-start pb-3 border-b border-gray-300">
                         <div class={this.is_new ? 'block' : 'hidden'}>
                             <Title>
                                 New Shipment

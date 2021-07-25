@@ -2,6 +2,7 @@ import m from 'mithril';
 import Utils from '../Utils';
 import Button from './Button';
 import DateInput from './DateInput';
+import Loading from './Loading';
 import Quote from '../models/Quote';
 
 export default class QuoteEdit {
@@ -9,111 +10,73 @@ export default class QuoteEdit {
         console.log('construct QuoteEdit');
         this.shipment = vnode.attrs.shipment;
         this.close = vnode.attrs.close ? vnode.attrs.close : () => {};
-        this.add_fee = true;
-        this.loading = false;
+        this.create_loading = false;
+        // this.add_fee = true;
 
         this.quote = new Quote({
             shipment_uuid: this.shipment.uuid,
             status: 'pending',
+            bids: this.shipment.services.map(s => ({
+                service_uuid: s.uuid,
+                amount: 0,
+            }))
         });
     }
 
-    calculate_fee() {
-        // TODO get fee from backend
-        return 0.10 * Number(this.quote.bid.value);
-    }
-
     submit(e) {
-        e.preventDefault();
-        console.log(this.quote);
-        this.loading = true;
+        if (e){
+            e.preventDefault();
+        }
+        this.create_loading = true;
         this.quote.create().then(q => {
-            this.shipment.add_quote(new Quote(q));
+            this.shipment.add_quote(new Quote(q))
             this.close(true);
         }).catch(e => {
             console.log(e);
         }).finally(() => {
-            this.loading = false;
+            this.create_loading = false;
         });
     }
 
-    oncreate(vnode) {
-        vnode.dom.querySelector('#quote-bid-input').focus();
-    }
+    // oncreate(vnode) {
+    //     vnode.dom.querySelector('#...-input').focus();
+    // }
 
     view(vnode) {
         return (
             <form class="flex flex-col"
-                onsubmit={(e) => this.submit(e)}>
-                <div class="w-full flex flex-col py-2 px-4 rounded border border-gray-200">
-                    <div class="flex mb-4 items-center justify-between">
-                        <span class="font-bold text-lg text-black">
-                            Place a quote
-                        </span>
-                    </div>
+                onsubmit={(e) => e.preventDefault()}>
+                <div class="flex flex-col">
                     <div class="flex flex-col">
-                        <div class="flex flex-col w-full">
-                            <div class="flex flex-col">
-                                <label class="mb-1" for="quote-bid-input">
-                                    Bid
-                                </label>
-                                <input id="quote-bid-input" type="number" min="0" step="any"
-                                    oninput={(e) => this.quote.bid.value = e.target.value} />
-                            </div>
-                            {/* <div class="my-1 flex">
-                                <input class="filter grayscale" type="checkbox" id="add-fee" value="add-fee"
-                                    checked={this.add_fee}
-                                    oninput={(e) => this.add_fee = !this.add_fee} />
-                                <label class="ml-2 text-gray-600 text-sm" for="add-fee">
-                                    Add service fee to show total bid seen by client
-                                </label>
-                            </div> */}
-                        </div>
-                        <div class="mt-2 flex flex-col w-full">
-                            <div class="flex flex-col">
-                                <label class="mb-1" for="delivery-date-input">
-                                    Delivery date
-                                </label>
-                                <DateInput id="delivery-date-input" bind={this.quote.delivery_date}
-                                    min={(new Date(this.shipment.pickup_date.value - (24*60*60*1000))).toISOString().split('T')[0]} />
-                            </div>
-                        </div>
+                        <label class="mb-1" for="delivery-date-input">
+                            Expected delivery date
+                        </label>
+                        <DateInput id="delivery-date-input" bind={this.quote.delivery_date}
+                            min={(new Date(this.shipment.pickup_date.value - (24*60*60*1000))).toISOString().split('T')[0]} />
                     </div>
-                    <div class="flex flex-col items-end mt-4 pt-2 border-t border-gray-200">
-                        <span class="text-gray-800">
-                            <span>
-                                Your bid:
-                            </span>
-                            <code class="ml-2 font-bold">
-                                {Utils.format_money(this.quote.bid.value, 'usd')}
-                            </code>
-                        </span>
-                        <span class="mt-1 text-sm text-gray-600">
-                            <span>
-                                Service fee:
-                            </span>
-                            <code class="ml-2 font-bold">
-                                +{Utils.format_money(this.calculate_fee(), 'usd')}
-                            </code>
-                        </span>
-                        <span class="mt-2 text-black">
-                            <span>
-                                Total bid:
-                            </span>
-                            <code class="ml-2 font-bold">
-                                {Utils.format_money(Number(this.quote.bid.value) + this.calculate_fee(), 'usd')}
-                            </code>
-                        </span>
-                    </div>
+                    {this.shipment.services.map(s => (
+                        <div class="mt-2 flex flex-col">
+                            <label for={`${s.name}-input`}>
+                                {Utils.capitalize(s.name)} service cost
+                            </label>
+                            <input type="number" class="mt-1"
+                                value={this.quote.bids.filter(b => b.service_uuid === s.uuid)[0].amount}
+                                oninput={(e) => {
+                                    this.quote.bids.filter(b => b.service_uuid === s.uuid)[0].amount = e.target.value;
+                                }} />
+                        </div>
+                    ))}
                 </div>
-                <div class="mt-4 flex items-center justify-end">
+                <div class="mt-6 flex justify-end">
                     <Button active={false} callback={() => this.close(false)}>
                         Cancel
                     </Button>
-                    <div class="ml-2">
-                        <Button loading={() => this.loading}
-                            callback={(e) => this.submit(e)}>
-                            Create
+                    <div class="ml-3">
+                        <Button callback={() => this.submit()}>
+                            {this.create_loading ? (
+                                <Loading color="light" class="w-8" />
+                            ) : ''}
+                            Submit quote
                         </Button>
                     </div>
                 </div>

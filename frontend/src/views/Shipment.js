@@ -1,15 +1,13 @@
 import m from 'mithril';
-import FileSaver from 'file-saver';
 import time_img from '../../assets/time.svg';
-import success_img from '../../assets/success.svg';
 import warning_img from '../../assets/warning.svg';
 import Api from '../Api';
 import Utils from '../Utils';
 import Icon from '../components/Icon';
+import Button from '../components/Button';
 import Loading from '../components/Loading';
 import Title from '../components/Title';
 import Timer from '../components/Timer';
-import Button from '../components/Button';
 import Table from '../components/Table';
 import Badge from '../components/Badge';
 import Actions from '../components/Actions';
@@ -48,6 +46,7 @@ export default class ShipmentView {
 
         this.quote_create_show = false;
         this.quote_create_success = false;
+        this.quote_create_success_close = false;
     }
 
     delete_shipment() {
@@ -121,7 +120,18 @@ export default class ShipmentView {
         return (
             <AppView>
                 <div class='flex flex-col'>
-                    <div class='flex justify-between items-end pb-3 border-b border-gray-300'>
+                    {(this.quote_create_success && !this.quote_create_success_close) ? (
+                        <div class="mb-6 flex items-center p-2 shadow border border-green-400">
+                            <Icon name="check-circle" class="w-5 ml-2 text-green-500" />
+                            <span class="w-full text-gray-600 mx-5">
+                                Your quote has been placed and you will be notified once the client accepts or declines it.
+                            </span>
+                            <IconButton icon="x" callback={() => {
+                                this.quote_create_success_close = true;
+                            }} />
+                        </div>
+                    ) : ''}
+                    <div class='flex justify-between items-end pb-3 border-b border-gray-200'>
                         <div class="flex flex-col">
                             <div class="mb-1 flex items-center text-gray-500">
                                 <Icon name="hexagon" class="w-4" />
@@ -230,7 +240,7 @@ export default class ShipmentView {
                         <img class="shadow-lg rounded" src={this.shipment.map_url} />
                     </div> */}
                     <div class="mt-10 flex flex-col">
-                        <div class="mb-4 flex items-center">
+                        <div class="flex items-center pb-3 border-b border-gray-200">
                             <span class="rounded text-lg font-semibold text-black">
                                 Shipment content
                             </span>
@@ -244,7 +254,7 @@ export default class ShipmentView {
                                 </span>
                             </span>
                         </div>
-                        <div class="px-4">
+                        <div class="mt-4 px-4">
                             <Table collection={this.shipment.items}
                                 fields={[
                                     {label: 'description', type: 'string'},
@@ -295,7 +305,7 @@ export default class ShipmentView {
                         </div>
                     ) : ''}
                     <div class="mt-10 flex flex-col">
-                        <div class="mb-4 flex items-center justify-between">
+                        <div class="mb-4 flex items-center justify-between pb-3 border-b border-gray-200">
                             <div class="flex items-center">
                                 <span class="rounded text-lg font-semibold text-black">
                                     Quotes
@@ -323,8 +333,7 @@ export default class ShipmentView {
                                 <div class="flex justify-end">
                                     <Button active={false} callback={() => {
                                         if (this.user && this.user.role === 'shipper') {
-                                            // this.quote_create_show = true;
-                                            m.route.set('/shipments/:id/quotes/new', {id: this.shipment.uuid});
+                                            this.quote_create_show = true;
                                         } else {
                                             m.route.set('/auth/signup');
                                         }
@@ -354,8 +363,7 @@ export default class ShipmentView {
                         ) : ''}
                         {(this.user
                             && this.user.role === 'shipper'
-                            && !this.is_owner && this.shipment.quotes.length > 0
-                            && !this.quote_create_success) ? (
+                            && !this.is_owner && this.shipment.quotes.length > 0) ? (
                             <div class="flex flex-col px-4">
                                 <Table fields={[
                                         {label: 'bid', type: 'number'},
@@ -392,26 +400,12 @@ export default class ShipmentView {
                         ) : ''}
                         {this.quote_create_show ? (
                             <div class="my-4 w-full flex justify-center">
-                                <div class="w-full md:w-1/2">
+                                <div class="px-4 w-full md:w-1/2">
                                     <QuoteEdit shipment={this.shipment}
                                         close={(success) => {
                                             this.quote_create_success = success;
                                             this.quote_create_show = false;
                                         }} />
-                                </div>
-                            </div>
-                        ) : ''}
-                        {this.quote_create_success ? (
-                            // TODO show a little notification on top of page instead of extra step like this
-                            <div class="flex flex-col items-center">
-                                <div class="w-1/2 my-2 flex flex-col items-center text-center rounded border border-gray-200">
-                                    <div class="w-full flex justify-end p-2">
-                                        <IconButton icon="x" callback={() => this.quote_create_success = false} />
-                                    </div>
-                                    <img class="w-60" src={success_img} />
-                                    <span class="pt-4 pb-8 px-2 text-gray-500">
-                                        Your quote has been placed and you will be notified once the client accepts or declines it.
-                                    </span>
                                 </div>
                             </div>
                         ) : ''}
