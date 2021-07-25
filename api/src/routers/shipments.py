@@ -94,7 +94,7 @@ def read_shipment(shipment_id: str, access_token: Optional[str] = None,
         if shipment_db.owner_uuid != user_uuid and shipment.quotes:
             print(shipment.quotes, end='\n\n')
             _quotes = {}
-            user_quote = [q for q in shipment.quotes if q.owner_uuid == user_uuid]
+            user_quote = [q for q in shipment.quotes if q.owner.uuid == user_uuid]
             if user_quote:
                 _quotes[user_quote[0].uuid] = user_quote[0]
             cheapest_quote = shipment.quotes[0] # FIXME might not be ordered by price at all

@@ -4,6 +4,7 @@ from datetime import date, datetime
 from pydantic import BaseModel, validator
 
 from .bid import BidRead, BidCreate
+from .user import UserRead
 
 class QuoteStatus(str, Enum):
     pending = 'pending'
@@ -19,7 +20,7 @@ class QuoteStripe(BaseModel):
 
 class QuoteRead(BaseModel):
     uuid: str
-    owner_uuid: str
+    owner: UserRead
     shipment_uuid: str
     status: QuoteStatus
     delivery_date: date

@@ -3,6 +3,7 @@ from typing import Optional
 from datetime import date, datetime
 from pydantic import BaseModel, validator
 
+from .user import UserRead
 from .item import ItemRead, ItemCreate
 from .quote import QuoteRead
 from .service import ServiceRead, ServiceCreate
@@ -14,7 +15,7 @@ class ShipmentStatus(str, Enum):
 
 class ShipmentRead(BaseModel):
     uuid: str
-    owner_uuid: str
+    owner: UserRead
     access_token: str # maybe do not return this
     pickup_date: date
     pickup_address_id: str
