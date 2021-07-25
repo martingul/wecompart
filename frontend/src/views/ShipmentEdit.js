@@ -135,9 +135,7 @@ export default class ShipmentEditView {
             }).then(s => {
                 console.log('init success from ShipmentView')
                 this.shipment = new Shipment(s);
-                this.is_owner = this.shipment.owner_id === this.user.uuid;
-                console.log(this.is_owner);
-                console.log(this.shipment.owner_id, this.user.uuid);
+                this.is_owner = this.shipment.owner.uuid === this.user.uuid;
             }).catch(e => {
                 console.log(e);
                 if (e.code === 401) {

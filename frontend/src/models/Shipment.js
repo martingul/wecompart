@@ -18,7 +18,7 @@ export default class Shipment {
 
     constructor({
         uuid = null,
-        owner_uuid = null,
+        owner = {},
         map_url = '',
         status = '',
         pickup_address_id = '',
@@ -39,7 +39,7 @@ export default class Shipment {
     }) {
         // TODO instead of having *.value, pass field as {field} for reference?
         this.uuid = uuid;
-        this.owner_id = owner_uuid;
+        this.owner = owner;
         this.map_url = map_url;
         this.status = status
         this.pickup_address = {
@@ -212,5 +212,9 @@ export default class Shipment {
             return null;
         }
         return quotes[0];
+    }
+
+    has_quote_with_owner(user_uuid) {
+        return this.quotes.filter(q => q.owner.uuid === user_uuid).length > 0;
     }
 }

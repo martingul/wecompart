@@ -29,8 +29,9 @@ export default class QuoteEdit {
         }
         this.create_loading = true;
         this.quote.create().then(q => {
-            this.shipment.add_quote(new Quote(q))
-            this.close(true);
+            const quote = new Quote(q);
+            this.shipment.add_quote(quote);
+            this.close(quote);
         }).catch(e => {
             console.log(e);
         }).finally(() => {
@@ -68,7 +69,7 @@ export default class QuoteEdit {
                     ))}
                 </div>
                 <div class="mt-6 flex justify-end">
-                    <Button active={false} callback={() => this.close(false)}>
+                    <Button active={false} callback={() => this.close()}>
                         Cancel
                     </Button>
                     <div class="ml-3">

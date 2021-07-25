@@ -22,6 +22,7 @@ import ShipmentStorage from '../models/ShipmentStorage';
 import Shipment from '../models/Shipment';
 import User from '../models/User';
 import AppView from './App';
+import ButtonLink from '../components/ButtonLink';
 
 export default class ShipmentView {
     constructor(vnode) {
@@ -47,6 +48,7 @@ export default class ShipmentView {
         this.quote_create_show = false;
         this.quote_create_success = false;
         this.quote_create_success_close = false;
+        this.quote_new = null;
     }
 
     delete_shipment() {
@@ -71,7 +73,7 @@ export default class ShipmentView {
                 this.shipment = new Shipment(s);
 
                 if (this.user) {
-                    this.is_owner = this.shipment.owner_id === this.user.uuid;
+                    this.is_owner = this.shipment.owner.uuid === this.user.uuid;
                 } else {
                     this.is_owner = false;
                 }
@@ -121,10 +123,22 @@ export default class ShipmentView {
             <AppView>
                 <div class='flex flex-col'>
                     {(this.quote_create_success && !this.quote_create_success_close) ? (
-                        <div class="mb-6 flex items-center p-2 shadow border border-green-400">
-                            <Icon name="check-circle" class="w-5 ml-2 text-green-500" />
-                            <span class="w-full text-gray-600 mx-5">
-                                Your quote has been placed and you will be notified once the client accepts or declines it.
+                        <div class="mb-6 flex items-center p-2 shadow border border-blue-400">
+                            <Icon name="check-circle" class="w-5 ml-2 text-blue-500" />
+                            <span class="w-full text-gray-700 mx-5">
+                                Your quote has been placed and you will be notified once {this.shipment.owner.fullname} accepts or declines it.
+                                {this.quote_new ? (
+                                    <span class="ml-2">
+                                        <ButtonLink callback={() => {
+                                            m.route.set('/quotes/:id', {id: this.quote_new.uuid})
+                                        }}>
+                                            <span>
+                                                View
+                                            </span>
+                                            <Icon name="external-link" class="w-5 ml-1.5" />
+                                        </ButtonLink>
+                                    </span>
+                                ) : ''}
                             </span>
                             <IconButton icon="x" callback={() => {
                                 this.quote_create_success_close = true;
@@ -201,13 +215,26 @@ export default class ShipmentView {
                             </Button>
                         </div>
                     ) : ''}
-                    <div class="px-4 mt-6 flex justify-between items-center">
-                        <div class="flex flex-col">
-                            <div class="flex items-center">
-                                <span class="text-gray-500">
-                                    Pickup address
-                                </span>
+                    {!this.is_owner ? (
+                        <div class="px-4 mt-6 flex flex-col">
+                            <span class="text-gray-500">
+                                Customer
+                            </span>
+                            <div class="mt-1">
+                                <ButtonLink active={false}>
+                                    <span>
+                                        {this.shipment.owner.fullname}
+                                    </span>
+                                    <Icon name="external-link" class="w-4 ml-1.5" />
+                                </ButtonLink>
                             </div>
+                        </div>
+                    ) : ''}
+                    <div class="px-4 mt-4 flex justify-between items-center">
+                        <div class="flex flex-col">
+                            <span class="text-gray-500">
+                                Pickup address
+                            </span>
                             <div class="mt-1 text-black">
                                 {this.shipment.pickup_address_formatted.line1}
                             </div>
@@ -221,11 +248,9 @@ export default class ShipmentView {
                             <Icon name="arrow-right" class="w-6 text-gray-300" />
                         </div>
                         <div class="flex flex-col">
-                            <div class="flex items-center">
-                                <span class="text-gray-500">
-                                    Delivery address
-                                </span>
-                            </div>
+                            <span class="text-gray-500">
+                                Delivery address
+                            </span>
                             <div class="mt-1 text-black">
                                 {this.shipment.delivery_address_formatted.line1}
                             </div>
@@ -317,7 +342,8 @@ export default class ShipmentView {
                                 ) : ''}
                                 {(this.user
                                     && this.user.role === 'shipper'
-                                    && !this.is_owner) ? (
+                                    && !this.is_owner
+                                    && !this.shipment.has_quote_with_owner(this.user.uuid)) ? (
                                     <span class="flex items-center ml-4">
                                         <Badge color="yellow" icon="clock">
                                             <Timer end={this.shipment.pickup_date.value} />
@@ -328,7 +354,7 @@ export default class ShipmentView {
                             {(this.user
                                 && this.user.role === 'shipper'
                                 && !this.is_owner
-                                && this.shipment.quotes.filter(q => q.owner_uuid === this.user.uuid).length === 0) ? (
+                                && !this.shipment.has_quote_with_owner(this.user.uuid)) ? (
                                 // hide (or disable with explaining tooltip) when user already has a quote posted
                                 <div class="flex justify-end">
                                     <Button active={false} callback={() => {
@@ -356,14 +382,15 @@ export default class ShipmentView {
                                         {label: ''},
                                     ]}>
                                     {this.shipment.quotes.length > 0 ? this.shipment.quotes.map((quote, i) => 
-                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} shipment={this.shipment} user={this.user} />
+                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} shipment={this.shipment} />
                                     ) : ''}
                                 </Table>
                             </div>
                         ) : ''}
                         {(this.user
                             && this.user.role === 'shipper'
-                            && !this.is_owner && this.shipment.quotes.length > 0) ? (
+                            && !this.is_owner
+                            && this.shipment.quotes.length > 0) ? (
                             <div class="flex flex-col px-4">
                                 <Table fields={[
                                         {label: 'bid', type: 'number'},
@@ -372,7 +399,7 @@ export default class ShipmentView {
                                         {label: ''},
                                     ]}>
                                     {this.shipment.quotes.map((quote, i) => 
-                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} shipment={this.shipment} user={this.user} />
+                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} shipment={this.shipment} />
                                     )}
                                 </Table>
                             </div>
@@ -402,8 +429,11 @@ export default class ShipmentView {
                             <div class="my-4 w-full flex justify-center">
                                 <div class="px-4 w-full md:w-1/2">
                                     <QuoteEdit shipment={this.shipment}
-                                        close={(success) => {
-                                            this.quote_create_success = success;
+                                        close={(quote) => {
+                                            if (quote) {
+                                                this.quote_create_success = true;
+                                                this.quote_new = quote;
+                                            }
                                             this.quote_create_show = false;
                                         }} />
                                 </div>

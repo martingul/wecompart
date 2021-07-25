@@ -9,7 +9,7 @@ export default class Quote {
 
     constructor({
         uuid = '',
-        owner_uuid = '',
+        owner = {},
         shipment_uuid = '',
         status = '',
         delivery_date = '',
@@ -21,7 +21,7 @@ export default class Quote {
         updated_at = '',
     }) {
         this.uuid = uuid;
-        this.owner_uuid = owner_uuid;
+        this.owner = owner;
         this.shipment_uuid = shipment_uuid;
         this.status = status;
         this.delivery_date = {value: delivery_date};

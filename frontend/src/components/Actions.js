@@ -43,7 +43,7 @@ export default class Actions {
                     <div class="absolute overflow-y-auto -ml-32 w-44 z-10 shadow border border-gray-100 bg-white">
                         {this.actions.map(action => (
                             <div class="flex items-center w-full cursor-pointer py-1 px-4 whitespace-nowrap overflow-hidden
-                                text-gray-800 hover:text-indigo-800 hover:bg-indigo-50"
+                                text-gray-800 hover:text-blue-800 hover:bg-blue-50"
                                 onclick={() => this.handle_action(action)}>
                                 <Icon name={action.icon} class="w-4" />
                                 <span class="ml-3">

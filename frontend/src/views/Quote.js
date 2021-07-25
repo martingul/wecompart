@@ -1,4 +1,5 @@
 import m from 'mithril';
+import warning_img from '../../assets/warning.svg';
 import Api from '../Api';
 import Utils from '../Utils';
 import AppView from './App';
@@ -13,36 +14,39 @@ import Payment from '../components/Payment';
 import Actions from '../components/Actions';
 import Loading from '../components/Loading';
 import ButtonLink from '../components/ButtonLink';
+import Modal from '../components/Modal';
+import User from '../models/User';
+import Shipment from '../models/Shipment';
 
 export default class QuoteView {
     constructor(vnode) {
         this.quote_id = vnode.attrs.id;
         this.quote = null;
+
+        this.user = User.load();
+        if (!this.user && !this.access_token) {
+            m.route.set('/auth/login');
+        }
         
         console.log('construct QuoteView', this.quote_id);
-        this.loading = false;  
         this.show_payment = false;
         this.show_accept = false;
+
+        this.quote_read_loading = false;  
         this.quote_accept_loading = false;
         this.quote_download_loading = false;
+        this.quote_delete_loading = false;
+
+        this.is_quote_owner = false;
+        this.is_shipment_owner = false;
     }
 
-    accept_quote() {
-        return this.update_quote_status('accepted')
-            .then(_ => this.shipment.checkout(this.quote.uuid))
-            .then(url => {
-                window.location.replace(url);
-            })
-            .catch(e => {
-                console.log(e);
-            });
-    }
-
-    update_quote_status(status) {
-        this.loading = true;
-        this.quote.status = status;
-        return this.quote.update().finally(() => {
-            this.loading = false;
+    delete_quote() {
+        this.quote_delete_loading = true;
+        return this.quote.delete().then(_ => {
+            this.shipment.remove_quote(this.quote);
+        }).finally(() => {
+            this.quote_delete_loading = false;
         });
     }
 
@@ -65,24 +69,31 @@ export default class QuoteView {
 
     oninit(vnode) {
         // TODO retrieve from local cache
-        if (!this.quote) {
-            this.loading = true;
-            console.log('fetching quote', this.quote_id);
+        this.quote_read_loading = true;
+        console.log('fetching quote', this.quote_id);
 
-            Api.read_quote({
-                quote_id: this.quote_id
-            }).then(s => {
-                this.quote = new Quote(s);
-            }).catch(e => {
-                console.log(e);
-            }).finally(() => {
-                this.loading = false;
+        Api.read_quote({
+            quote_id: this.quote_id
+        }).then(q => {
+            console.log(q);
+            this.quote = new Quote(q);
+            this.is_quote_owner = this.quote.owner.uuid === this.user.uuid;
+            return Api.read_shipment({
+                shipment_id: this.quote.shipment_uuid
             });
-        }
+        }).then(s => {
+            console.log(s);
+            this.shipment = new Shipment(s);
+            this.is_shipment_owner = this.shipment.owner.uuid === this.user.uuid
+        }).catch(e => {
+            console.log(e);
+        }).finally(() => {
+            this.quote_read_loading = false;
+        });
     }
 
     view(vnode) {
-        if (this.loading || !this.quote) {
+        if (this.quote_read_loading || !this.quote) {
             return (
                 <AppView>
                     <div class="flex justify-center">
@@ -97,6 +108,33 @@ export default class QuoteView {
         return (
             <AppView>
                 <div class="flex flex-col">
+                    {(this.quote.is_accepted() && !this.quote.is_paid()) ? (
+                        <div class="mb-6 py-3 px-5 flex flex-col rounded border border-gray-200">
+                            <div class="flex">
+                                <span class="text-gray-800">
+                                    After having accepted a quote, you will need to pay the associated invoice in order to complete your booking.
+                                </span>
+                            </div>
+                            <div class="mt-6 flex justify-between">
+                                <ButtonLink callback={() => {
+                                    window.location.replace(this.quote.stripe_data.stripe_invoice_pdf);
+                                }}>
+                                    <Icon name="arrow-down" class="w-5 mr-1.5" />
+                                    <span>
+                                        Invoice {this.quote.stripe_data.stripe_invoice_number}
+                                    </span>
+                                </ButtonLink>
+                                <Button active={false} callback={() => {
+                                    window.open(this.quote.stripe_data.stripe_invoice_url);
+                                }}>
+                                    <span>
+                                        Pay invoice
+                                    </span>
+                                    <Icon name="external-link" class="w-4 ml-1.5" />
+                                </Button>
+                            </div>
+                        </div>
+                    ) : ''}
                     <div class='flex justify-between items-end pb-2 border-b border-gray-200'>
                         <div class="flex flex-col">
                             <div class="mb-1 flex items-center text-gray-500">
@@ -124,31 +162,59 @@ export default class QuoteView {
                         </div>
                         {this.quote.is_accepted() ? (
                             <div class="flex items-center">
-                                <Button active={false} icon="arrow-down"
-                                    loading={() => this.quote_download_loading}
-                                    callback={() => {
+                                <Button active={false} callback={() => {
                                         this.download_quote();
                                     }}>
-                                    Download
+                                    {this.quote_download_loading ? (
+                                        <Loading class="w-8" />
+                                    ) : ''}
+                                    <span>
+                                        Download
+                                    </span>
                                 </Button>
                             </div>
                         ) : (
                             <div class="flex items-center">
-                                <Button active={false} icon="check" callback={() => {
-                                    this.show_accept = true;
-                                }}>
-                                    Accept
-                                </Button>
-                                <div class="ml-4">
-                                    <Actions actions={[
-                                        {name: 'download', label: 'Download PDF', icon: 'download', callback: () => {
-                                            console.log('download');
-                                        }},
-                                        {name: 'decline', label: 'Decline', icon: 'slash', callback: () => {
+                                {!this.is_quote_owner ? (
+                                    <div class="mr-4">
+                                        <Button active={false} callback={() => {
+                                            this.show_accept = true;
+                                        }}>
+                                            Accept
+                                        </Button>
+                                    </div>
+                                ) : ''}
+                                <Actions actions={[
+                                    {name: 'download', label: 'Download PDF', icon: 'download', callback: () => {
+                                        this.download_quote();
+                                    }},
+                                    this.is_quote_owner
+                                        ? {name: 'delete', label: 'Delete', icon: 'trash-2', callback: () => {
+                                            Modal.create({
+                                                title: 'Delete quote',
+                                                content: (
+                                                    <div class="flex flex-col items-center">
+                                                        <img class="w-60" src={warning_img} />
+                                                        <div class="my-6 flex flex-col">
+                                                            <span class="text-gray-800">
+                                                                Are you sure you want to delete this quote?
+                                                            </span>
+                                                            <span class="mt-2 text-gray-500">
+                                                                You will have to place a new quote in order to notify the client of your interest.
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                ),
+                                                confirm_label: 'Delete',
+                                                confirm_color: 'red',
+                                                confirm: () => this.delete_quote(),
+                                                loading: () => this.loading,
+                                            });
+                                        }}
+                                        : {name: 'decline', label: 'Decline', icon: 'slash', callback: () => {
                                             console.log('decline');
                                         }},
-                                    ]} />
-                                </div>
+                                ]} />
                             </div>
                         )}
                     </div>
@@ -165,7 +231,7 @@ export default class QuoteView {
                                 }}>
                                     Cancel
                                 </Button>
-                                <div class="ml-2">
+                                <div class="ml-3">
                                     <Button loading={() => this.quote_accept_loading} callback={() => {
                                         this.quote_accept_loading = true;
                                         this.quote.update({
@@ -190,33 +256,6 @@ export default class QuoteView {
                             </div>
                         </div>
                     ) : ''}
-                    {(this.quote.is_accepted() && !this.quote.is_paid()) ? (
-                        <div class="mt-6 py-3 px-5 flex flex-col rounded border border-gray-200">
-                            <div class="flex">
-                                <span class="text-gray-800">
-                                    After having accepted a quote, you will need to pay the associated invoice in order to complete your booking.
-                                </span>
-                            </div>
-                            <div class="mt-4 flex justify-between">
-                                <ButtonLink callback={() => {
-                                    window.location.replace(this.quote.stripe_data.stripe_invoice_pdf);
-                                }}>
-                                    <Icon name="arrow-down" class="w-5 mr-1.5" />
-                                    <span>
-                                        Invoice {this.quote.stripe_data.stripe_invoice_number}
-                                    </span>
-                                </ButtonLink>
-                                <Button active={false} callback={() => {
-                                    window.open(this.quote.stripe_data.stripe_invoice_url);
-                                }}>
-                                    <span>
-                                        Pay invoice
-                                    </span>
-                                    <Icon name="external-link" class="w-4 ml-1.5" />
-                                </Button>
-                            </div>
-                        </div>
-                    ) : ''}
                     <table class="mt-6">
                         <tr>
                             <td class="w-full whitespace-nowrap">
@@ -226,7 +265,7 @@ export default class QuoteView {
                                     </span>
                                     <div class="flex items-center">
                                         <span class="text-black font-semibold mr-1.5">
-                                            Shipper company
+                                            {this.quote.owner.fullname}
                                         </span>
                                         <Badge color="gray">
                                             Service provider
@@ -241,7 +280,7 @@ export default class QuoteView {
                                     </span>
                                     <div class="flex items-center">
                                         <span class="text-black font-semibold mr-1.5">
-                                            Alex Parkinson
+                                            {this.shipment.owner.fullname}
                                         </span>
                                         <Badge color="gray">
                                             Customer

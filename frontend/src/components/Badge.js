@@ -23,7 +23,7 @@ export default class Badge {
                 {this.icon ? (
                     <Icon name={this.icon} class={this.icon ? 'w-4 mr-1.5' : 'hidden'} />
                 ) : ''}
-                <span>
+                <span class="whitespace-nowrap">
                     {vnode.children}
                 </span>
             </div>
