@@ -21,7 +21,7 @@ def create_session(db: DatabaseSession,
 
     try:
         db.add(session_db)
-        db.commit()
+        db.flush()
     except Exception as e:
         db.rollback()
 
@@ -29,11 +29,11 @@ def create_session(db: DatabaseSession,
             session_db_old = read_session(db, user_uuid)
             session_db_old = delete_session(db, session_db_old)
             db.add(session_db)
-            db.commit()
         else:
             print(e)
             raise e
 
+    db.commit()
     db.refresh(session_db)
     return session_db, token
 

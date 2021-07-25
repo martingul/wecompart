@@ -23,8 +23,7 @@ def create_quote(db: DatabaseSession, quote: QuoteCreate, owner_uuid: str,
         )
 
         db.add(quote_db)
-        db.commit()
-        db.refresh(quote_db)
+        db.flush()
 
         for bid in _bids:
             bid.quote_uuid = quote_db.uuid
@@ -34,18 +33,20 @@ def create_quote(db: DatabaseSession, quote: QuoteCreate, owner_uuid: str,
         quote_stripe = stripe.Quote.create(
             # on_behalf_of=account_id,
             customer=customer_id,
-            line_items=[{'price': bid.stripe_price_id} for bid in quote_db.bids],
+            line_items=[
+                {'price': bid.stripe_price_id} for bid in quote_db.bids
+            ],
             metadata={
                 'shipment_id': quote_db.shipment.uuid
             }
         )
         quote_db.stripe_quote_id = quote_stripe['id']
 
-        db.commit()
-        db.refresh(quote_db)
+        db.flush()
 
         stripe.Quote.finalize_quote(quote_db.stripe_quote_id)
 
+        db.commit()
         return quote_db
     except Exception as e:
         db.rollback()
@@ -83,7 +84,7 @@ def read_stripe_quote(quote: Quote) -> QuoteStripe:
             _quote_stripe.stripe_invoice_pdf = quote_stripe['invoice']['invoice_pdf']
     return _quote_stripe
 
-def update_quote(db: DatabaseSession, quote: Quote, patch: QuoteUpdate) -> QuoteRead:
+def update_quote(db: DatabaseSession, quote: Quote, patch: QuoteUpdate):
     for field, value in patch:
         if value is not None:
             setattr(quote, field, value)
@@ -100,12 +101,11 @@ def delete_quote(db: DatabaseSession, quote: Quote):
 def accept_quote(quote: Quote):
     quote_stripe = stripe.Quote.accept(quote.stripe_quote_id)
     invoice_id = quote_stripe['invoice']
-    invoice = stripe.Invoice.finalize_invoice(invoice_id)
-    invoice = stripe.Invoice.modify(
+    stripe.Invoice.finalize_invoice(invoice_id)
+    stripe.Invoice.modify(
         invoice_id,
         metadata={'shipment_id': quote.shipment.uuid}
     )
-    return invoice['hosted_invoice_url']
 
 def release_quote(quote: Quote):
     try:

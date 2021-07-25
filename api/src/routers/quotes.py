@@ -125,11 +125,10 @@ def update_quote(quote_id: str, patch: QuoteUpdate,
         quote_db = quotes.update_quote(db, quote_db, patch)
         quote = QuoteRead.from_orm(quote_db)
 
-        if not quote.stripe:
-            quote.stripe_data = QuoteStripe()
-
         if patch.status == QuoteStatus.accepted:
-            quote.stripe_data.stripe_invoice_url = quotes.accept_quote(quote_db)
+            quotes.accept_quote(quote_db)
+
+        quote.stripe_data = quotes.read_stripe_quote(quote_db)
 
         return quote
     except Exception as e:

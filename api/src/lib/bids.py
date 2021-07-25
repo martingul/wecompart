@@ -10,8 +10,7 @@ def create_bid(db: DatabaseSession, bid: BidCreate):
             **bid.dict()
         )
         db.add(bid_db)
-        db.commit()
-        db.refresh(bid_db)
+        db.flush()
 
         price_stripe = stripe.Price.create(
             unit_amount=bid_db.amount,

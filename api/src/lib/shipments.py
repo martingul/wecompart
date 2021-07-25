@@ -31,8 +31,7 @@ def create_shipment(db: DatabaseSession, shipment: ShipmentCreate, owner_uuid: s
         **shipment.dict()
     )
     db.add(shipment_db)
-    db.commit()
-    db.refresh(shipment_db)
+    db.flush()
 
     for item in _items:
         # TODO place shipment_uuid in item schema

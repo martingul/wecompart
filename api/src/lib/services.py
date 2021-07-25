@@ -10,8 +10,7 @@ def create_service(db: DatabaseSession, service: ServiceCreate):
             **service.dict()
         )
         db.add(service_db)
-        db.commit()
-        db.refresh(service_db)
+        db.flush()
 
         product_stripe = stripe.Product.create(
             name=service.name,

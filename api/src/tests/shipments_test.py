@@ -3,6 +3,7 @@ import random
 
 import utils
 from src.schemas.shipment import ShipmentRead, ShipmentCreate
+from src.schemas.service import ServiceCreate
 from src.schemas.item import ItemCreate, ItemDimensionUnit
 
 endpoint = f'{utils.api_root}/shipments/'
@@ -27,7 +28,10 @@ def random_shipment():
         currency='usd',
         total_value=random.randint(0, 10000),
         comments=utils.fake.sentence(nb_words=10),
-        services=['packaging', 'insurance'],
+        services=[
+            ServiceCreate(name='packaging'),
+            ServiceCreate(name='insurance')
+        ],
         items=[random_item() for _ in range(random.randint(1, 5))],
     )
 
