@@ -193,10 +193,12 @@ export default class ShipmentView {
                     ) : ''}
                     <div class="px-4 mt-6 flex justify-between items-center">
                         <div class="flex flex-col">
-                            <div class="text-gray-500 mb-1">
-                                Pickup address
+                            <div class="flex items-center">
+                                <span class="text-gray-500">
+                                    Pickup address
+                                </span>
                             </div>
-                            <div class="text-black">
+                            <div class="mt-1 text-black">
                                 {this.shipment.pickup_address_formatted.line1}
                             </div>
                             {this.shipment.pickup_address_formatted.line2 ? (
@@ -209,10 +211,12 @@ export default class ShipmentView {
                             <Icon name="arrow-right" class="w-6 text-gray-300" />
                         </div>
                         <div class="flex flex-col">
-                            <div class="text-gray-500 mb-1">
-                                Delivery address
+                            <div class="flex items-center">
+                                <span class="text-gray-500">
+                                    Delivery address
+                                </span>
                             </div>
-                            <div class="text-black">
+                            <div class="mt-1 text-black">
                                 {this.shipment.delivery_address_formatted.line1}
                             </div>
                             {this.shipment.delivery_address_formatted.line2 ? (
@@ -317,7 +321,7 @@ export default class ShipmentView {
                                 && this.shipment.quotes.filter(q => q.owner_uuid === this.user.uuid).length === 0) ? (
                                 // hide (or disable with explaining tooltip) when user already has a quote posted
                                 <div class="flex justify-end">
-                                    <Button icon="plus" active={false} callback={() => {
+                                    <Button active={false} callback={() => {
                                         if (this.user && this.user.role === 'shipper') {
                                             // this.quote_create_show = true;
                                             m.route.set('/shipments/:id/quotes/new', {id: this.shipment.uuid});
@@ -325,7 +329,10 @@ export default class ShipmentView {
                                             m.route.set('/auth/signup');
                                         }
                                     }}>
-                                        Create quote
+                                        <Icon name="plus" class="w-5 mr-1.5" />
+                                        <span>
+                                            Create quote
+                                        </span>
                                     </Button>
                                 </div>
                             ) : ''}
@@ -372,7 +379,7 @@ export default class ShipmentView {
                                         </span>
                                     ) : (
                                         <div class="flex flex-col">
-                                            <span class="mt-6 text-xl font-bold text-black">
+                                            <span class="mt-6 text-xl font-semibold text-black">
                                                 Be first
                                             </span>
                                             <span class="my-1 text-gray-500">

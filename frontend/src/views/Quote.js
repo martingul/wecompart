@@ -12,7 +12,7 @@ import Button from '../components/Button';
 import Payment from '../components/Payment';
 import Actions from '../components/Actions';
 import Loading from '../components/Loading';
-import InfoMessage from '../components/InfoMessage';
+import ButtonLink from '../components/ButtonLink';
 
 export default class QuoteView {
     constructor(vnode) {
@@ -23,6 +23,8 @@ export default class QuoteView {
         this.loading = false;  
         this.show_payment = false;
         this.show_accept = false;
+        this.quote_accept_loading = false;
+        this.quote_download_loading = false;
     }
 
     accept_quote() {
@@ -45,6 +47,7 @@ export default class QuoteView {
     }
 
     download_quote() {
+        this.quote_download_loading = true;
         Api.download_quote({
             quote_id: this.quote.uuid
         }).then(res => {
@@ -55,6 +58,8 @@ export default class QuoteView {
             link.click();
         }).catch(e => {
             console.log(e);
+        }).finally(() => {
+            this.quote_download_loading = false;
         });
     }
 
@@ -108,7 +113,7 @@ export default class QuoteView {
                                     {this.quote.stripe_data.stripe_quote_number}
                                 </Title>
                                 <div class="ml-2 mt-1">
-                                    <Badge color={Quote.status_colors[this.quote.status]}>
+                                    <Badge color={() => this.quote.get_status_color()}>
                                         {Utils.capitalize(this.quote.status)}
                                     </Badge>
                                 </div>
@@ -119,15 +124,17 @@ export default class QuoteView {
                         </div>
                         {this.quote.is_accepted() ? (
                             <div class="flex items-center">
-                                <Button active={false} icon="download" callback={() => {
-                                    this.download_quote();
-                                }}>
+                                <Button active={false} icon="arrow-down"
+                                    loading={() => this.quote_download_loading}
+                                    callback={() => {
+                                        this.download_quote();
+                                    }}>
                                     Download
                                 </Button>
                             </div>
                         ) : (
                             <div class="flex items-center">
-                                <Button icon="check" active={false} callback={() => {
+                                <Button active={false} icon="check" callback={() => {
                                     this.show_accept = true;
                                 }}>
                                     Accept
@@ -159,17 +166,22 @@ export default class QuoteView {
                                     Cancel
                                 </Button>
                                 <div class="ml-2">
-                                    <Button callback={() => {
-                                        this.show_accept = false;
-                                        this.quote.status = 'accepted';
-                                        this.quote.update().then(q => {
-                                            console.log(q);
+                                    <Button loading={() => this.quote_accept_loading} callback={() => {
+                                        this.quote_accept_loading = true;
+                                        this.quote.update({
+                                            status: 'accepted'
+                                        }).then(q => {
+                                            this.quote = new Quote(q);
+                                            m.redraw();
                                             const invoice_url = q.stripe_data.stripe_invoice_url;
                                             if (invoice_url) {
                                                 window.open(invoice_url);
                                             }
                                         }).catch(e => {
                                             console.log(e);
+                                        }).finally(() => {
+                                            this.quote_accept_loading = false;
+                                            this.show_accept = false;
                                         });
                                     }}>
                                         Accept
@@ -186,15 +198,21 @@ export default class QuoteView {
                                 </span>
                             </div>
                             <div class="mt-4 flex justify-between">
-                                <Button active={false} callback={() => {
+                                <ButtonLink callback={() => {
                                     window.location.replace(this.quote.stripe_data.stripe_invoice_pdf);
                                 }}>
-                                    Download invoice {this.quote.stripe_data.stripe_invoice_number}
-                                </Button>
+                                    <Icon name="arrow-down" class="w-5 mr-1.5" />
+                                    <span>
+                                        Invoice {this.quote.stripe_data.stripe_invoice_number}
+                                    </span>
+                                </ButtonLink>
                                 <Button active={false} callback={() => {
-                                    window.location.replace(this.quote.stripe_data.stripe_invoice_url);
+                                    window.open(this.quote.stripe_data.stripe_invoice_url);
                                 }}>
-                                    Pay invoice
+                                    <span>
+                                        Pay invoice
+                                    </span>
+                                    <Icon name="external-link" class="w-4 ml-1.5" />
                                 </Button>
                             </div>
                         </div>

@@ -2,6 +2,8 @@ import m from 'mithril';
 import Icon from './Icon';
 import PasswordInput from './PasswordInput';
 import Button from './Button';
+import ButtonLink from './ButtonLink';
+import Loading from './Loading';
 
 export default class SignInForm {
     constructor(vnode) {
@@ -25,16 +27,6 @@ export default class SignInForm {
                 <div class="font-bold text-xl">
                     Log in
                 </div>
-                {this.auth.error !== '' ? (
-                    <div class="mt-2">
-                        <div class="flex items-center px-4 py-1 rounded bg-red-100 text-red-600" id="form-error">
-                            <Icon name="alert-triangle" class="w-4" />
-                            <span class="ml-4">
-                                {this.auth.error}
-                            </span>
-                        </div>
-                    </div>
-                ) : ''}
                 <div class="mt-4 flex flex-col">
                     <label class="text-gray-600 mb-1" for="email-input">
                         Email
@@ -56,30 +48,43 @@ export default class SignInForm {
                             Password
                         </label>
                         {/* <div class="flex flex-grow justify-end">
-                            <button type="button" class=" text-indigo-500 hover:text-indigo-600"
-                                type="button" id="forgot-password-btn" tabindex="-1">
-                                Forgot password?
-                            </button>
+                            Forgot password?
                         </div> */}
                     </div>
                     <PasswordInput bind={this.auth.password} />
                 </div>
                 <input class="hidden" type="submit"/>
+                {this.auth.error !== '' ? (
+                    <div class="mt-2">
+                        <div class="flex items-center px-4 py-1 rounded bg-red-100 text-red-600" id="form-error">
+                            <Icon name="alert-triangle" class="w-4" />
+                            <span class="ml-4">
+                                {this.auth.error}
+                            </span>
+                        </div>
+                    </div>
+                ) : ''}
                 <div class="mt-4 flex flex-col">
-                    <Button icon="arrow-right" loading={() => this.auth.loading}
-                        callback={(e) => this.signin(e)}>
-                        Log in
+                    <Button callback={(e) => this.signin(e)}>
+                        {this.auth.loading ? (
+                            <Loading color="light" class="w-8" /> 
+                        ) : (
+                            <Icon name="arrow-right" class="w-5 mr-1.5" />
+                        )}
+                        <span>
+                            Log in
+                        </span>
                     </Button>
                     <div class="mt-4 text-center">
-                        <span class="text-gray-700">
+                        <span class="text-gray-700 mr-2">
                             Don't have an account?
                         </span>
-                        <m.route.Link href="/auth/signup" options={{replace: true}}
-                            onclick={() => this.auth.switch_action()}>
-                            <button type="button" class="ml-2 text-indigo-500 hover:text-indigo-600">
-                                Sign up
-                            </button>
-                        </m.route.Link>
+                        <ButtonLink callback={() => {
+                            this.auth.switch_action();
+                            m.route.set('/auth/signup');
+                        }}>
+                            Sign up
+                        </ButtonLink>
                     </div>
                 </div>
             </form>

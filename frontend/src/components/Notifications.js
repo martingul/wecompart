@@ -7,6 +7,7 @@ import IconButton from './IconButton';
 import Badge from './Badge';
 import Notification from '../models/Notification';
 import NotificationStorage from '../models/NotificationStorage';
+import ButtonLink from './ButtonLink';
 
 export default class Notifications {
     constructor(vnode) {
@@ -72,12 +73,11 @@ export default class Notifications {
                 <div id="notifications-dropdown" class={this.show_dropdown ? 'block' : 'hidden'}>
                     <div class="absolute overflow-y-auto transform -translate-x-full ml-6 z-10 mt-1 rounded shadow-md border border-gray-100 bg-white">
                         <div class="flex items-center justify-between py-2 w-full border-b border-gray-200">
-                            <span class="px-4 font-bold text-black">
+                            <span class="px-4 font-semibold text-black">
                                 Notifications
                             </span>
-                            <button class={`px-4 text-sm font-bold whitespace-nowrap
-                                ${NotificationStorage.has_unread() ? 'text-indigo-600 hover:text-indigo-700' : 'text-gray-500 cursor-not-allowed'}`}
-                                onclick={() => {
+                            <span class="px-4">
+                                <ButtonLink callback={() => {
                                     NotificationStorage.get_unread().forEach(n => {
                                         n.read = true;
                                         // TODO batch into single request
@@ -94,10 +94,9 @@ export default class Notifications {
                                         });
                                     });
                                 }}>
-                                <span>
                                     Mark all as read
-                                </span>
-                            </button>
+                                </ButtonLink>
+                            </span>
                         </div>
                         <div class={this.loading ? 'py-4 flex items-center justify-center' : 'hidden'}>
                             <Loading class="w-8" />
@@ -131,12 +130,12 @@ export default class Notifications {
                                                     n.read = false;
                                                 });
                                             }
-                                            m.route.set('/shipments/:id', {id: quote.shipment_uuid});
+                                            m.route.set('/quotes/:id', {id: quote.uuid});
                                         }}>
                                         <div class="w-full flex justify-between items-start">
                                             <div class="flex flex-col items-start">
                                                 <span class="mb-1">
-                                                    A shipper placed a bid on your shipment.
+                                                    A shipper has sent you a quote for your shipment.
                                                 </span>
                                                 <Badge color="gray">
                                                     Bid: 12

@@ -5,6 +5,7 @@ import Loading from '../components/Loading';
 import Title from '../components/Title';
 import Table from '../components/Table';
 import Button from '../components/Button';
+import Icon from '../components/Icon';
 import ShipmentTableRow from '../components/ShipmentTableRow';
 import Shipment from '../models/Shipment';
 import ShipmentStorage from '../models/ShipmentStorage';
@@ -62,8 +63,11 @@ export default class ShipmentsView {
                                     Create a shipment listing to start receiving quotes from shippers.
                                 </span>
                                 <span class="mt-6 self-end">
-                                    <Button icon="plus" callback={() => m.route.set('/shipments/new')}>
-                                        Create shipment
+                                    <Button callback={() => m.route.set('/shipments/new')}>
+                                        <Icon name="plus" class="w-5 mr-1.5" />
+                                        <span>
+                                            Create shipment
+                                        </span>
                                     </Button>
                                 </span>
                             </div>
@@ -80,8 +84,11 @@ export default class ShipmentsView {
                         <Title>
                             Shipments
                         </Title>
-                        <Button active={false} icon="plus" callback={() => m.route.set('/shipments/new')}>
-                            Create shipment
+                        <Button active={false} callback={() => m.route.set('/shipments/new')}>
+                            <Icon name="plus" class="w-5 mr-1.5" />
+                            <span>
+                                Create shipment
+                            </span>
                         </Button>
                     </div>
                     <div class="mt-4">

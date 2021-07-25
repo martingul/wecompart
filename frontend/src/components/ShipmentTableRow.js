@@ -24,7 +24,7 @@ export default class ShipmentListRow {
             <tr class="whitespace-nowrap cursor-pointer transition-all
                 border-b border-gray-200 text-gray-600 hover:bg-gray-50 hover:shadow"
                 onclick={() => this.navigate()}>
-                <td class="w-1 py-2 pl-2">
+                <td class="w-1 py-2 pl-2 text-right">
                     <MoneyText currency={this.shipment.currency.value}>
                         {this.shipment.total_value.value}
                     </MoneyText>

@@ -40,6 +40,10 @@ export default class Quote {
         return this.bids.map(bid => bid.amount).reduce((a, c) => a + c, 0);
     }
 
+    get_status_color() {
+        return Quote.status_colors[this.status];
+    }
+
     is_pending() {
         return this.status === 'pending';
     }
@@ -76,10 +80,13 @@ export default class Quote {
         });
     }
 
-    update() {
+    update(patch = {}) {
+        if (!patch) {
+            patch = this.serialize();
+        }
         return Api.update_quote({
             quote_id: this.uuid,
-            patch: this.serialize()
+            patch: patch
         });
     }
 
