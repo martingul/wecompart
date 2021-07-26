@@ -19,14 +19,10 @@ import User from '../models/User';
 import Shipment from '../models/Shipment';
 
 export default class QuoteView {
-    constructor(vnode) {
+    constructor(vnode, user = User.load()) {
         this.quote_id = vnode.attrs.id;
+        this.user = user;
         this.quote = null;
-
-        this.user = User.load();
-        if (!this.user && !this.access_token) {
-            m.route.set('/auth/login');
-        }
         
         console.log('construct QuoteView', this.quote_id);
         this.show_payment = false;

@@ -20,15 +20,11 @@ import User from '../models/User';
 import AppView from './App';
 
 export default class ShipmentEditView {
-    constructor(vnode) {
+    constructor(vnode, user = User.load()) {
+        this.user = user;
         this.id = m.route.param('id');
         this.is_new = this.id === undefined;
         this.error_shipment_not_found = false;
-
-        this.user = User.load();
-        if (this.user === null) {
-            m.route.set('/auth/login');
-        }
 
         if (this.is_new) {
             this.shipment = new Shipment({});
@@ -179,7 +175,7 @@ export default class ShipmentEditView {
         return (
             <AppView>
                 <div class="flex flex-col">
-                    <div class="flex justify-between items-start pb-3 border-b border-gray-300">
+                    <div class="flex justify-between items-start pb-3 border-b border-gray-200">
                         <div class={this.is_new ? 'block' : 'hidden'}>
                             <Title>
                                 New Shipment

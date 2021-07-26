@@ -28,7 +28,6 @@ export default class ShipmentsView {
                 }
             }).catch(e => {
                 console.log(e);
-                m.route.set('/auth/login');
             }).finally(() => {
                 this.loading = false;
                 ShipmentStorage.fetched = true;
@@ -80,7 +79,7 @@ export default class ShipmentsView {
         return (
             <AppView>
                 <div class="flex flex-col">
-                    <div class="flex items-center justify-between pb-3 border-b border-gray-300">
+                    <div class="flex items-center justify-between pb-3 border-b border-gray-200">
                         <Title>
                             Shipments
                         </Title>

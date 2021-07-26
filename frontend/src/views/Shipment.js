@@ -25,14 +25,14 @@ import AppView from './App';
 import ButtonLink from '../components/ButtonLink';
 
 export default class ShipmentView {
-    constructor(vnode) {
+    constructor(vnode, user = User.load()) {
         console.log('construct ShipmentView');
+        this.user = user;
         this.id = m.route.param('id');
         this.access_token = m.route.param('access_token');
         this.error_shipment_not_found = false;
         this.shipment = null;
 
-        this.user = User.load();
         if (!this.user && !this.access_token) {
             m.route.set('/auth/login');
         }
@@ -382,7 +382,7 @@ export default class ShipmentView {
                                         {label: ''},
                                     ]}>
                                     {this.shipment.quotes.length > 0 ? this.shipment.quotes.map((quote, i) => 
-                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} shipment={this.shipment} />
+                                        <QuoteTableRow key={quote.uuid} index={i} user={this.user} quote={quote} shipment={this.shipment} />
                                     ) : ''}
                                 </Table>
                             </div>
@@ -399,7 +399,7 @@ export default class ShipmentView {
                                         {label: ''},
                                     ]}>
                                     {this.shipment.quotes.map((quote, i) => 
-                                        <QuoteTableRow key={quote.uuid} index={i} quote={quote} shipment={this.shipment} />
+                                        <QuoteTableRow key={quote.uuid} index={i} user={this.user} quote={quote} shipment={this.shipment} />
                                     )}
                                 </Table>
                             </div>

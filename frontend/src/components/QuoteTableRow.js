@@ -15,7 +15,7 @@ export default class QuoteTableRow {
         this.quote = vnode.attrs.quote;
         this.shipment = vnode.attrs.shipment;
         this.callback = vnode.attrs.callback;
-        this.user = User.load();
+        this.user = vnode.attrs.user;
         this.currency = 'usd';
         this.loading = false;
         this.is_quote_owner = this.quote.owner.uuid === this.user.uuid;

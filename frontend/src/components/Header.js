@@ -5,12 +5,11 @@ import IconButton from './IconButton';
 import Icon from './Icon';
 import Logo from './Logo';
 import SearchInput from './SearchInput';
-import User from '../models/User';
 import Navigation from './Navigation';
 
 export default class Header {
     constructor(vnode) {
-        this.user = User.load();
+        this.user = vnode.attrs.user;
         console.log('construct Header');
     }
 

@@ -6,9 +6,9 @@ import User from '../models/User';
 import Button from '../components/Button';
 
 export default class HomeView {
-    constructor(vnode) {
+    constructor(vnode, user = User.load()) {
         console.log('construct HomeView');
-        this.user = User.load();
+        this.user = user;
     }
 
     view(vnode) {

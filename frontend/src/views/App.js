@@ -6,18 +6,18 @@ import User from '../models/User';
 export default class AppView {
     static initialized = false;
 
-    constructor(vnode) {
+    constructor(vnode, user = User.load()) {
         console.log('construct AppView');
-        this.user = User.load();
+        this.user = user;
     }
 
     view(vnode) {
-        if (!this.user) {
-            const access_token = localStorage.getItem('access_token');
-            if (!access_token) {
-                m.route.set('/auth/signup');
-            }
-        }
+        // if (!this.user) {
+        //     const access_token = localStorage.getItem('access_token');
+        //     if (!access_token) {
+        //         m.route.set('/auth/signup');
+        //     }
+        // }
 
         return (
             <div class="flex w-full h-full min-h-screen antialiased">
@@ -25,7 +25,7 @@ export default class AppView {
                     <Navigation />
                 </div> */}
                 <div class="flex flex-col items-center w-full">
-                    <Header />
+                    <Header user={this.user} />
                     <div class="p-10 w-full">
                         {vnode.children}
                     </div>
