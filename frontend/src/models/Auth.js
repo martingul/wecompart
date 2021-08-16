@@ -4,6 +4,7 @@ import User from './User';
 export default class Auth {
     constructor(action) {
         this.fullname = {value: ''};
+        this.company = {value: ''};
         this.email = {value: ''};
         this.password = {value: ''};
         this.role = 'standard';
@@ -23,6 +24,12 @@ export default class Auth {
         return this.fullname.value && (String(this.fullname.value).length > 0);
     }
 
+    validate_company() {
+        return this.role === 'shipper'
+            ? this.company.value && (String(this.fullname.value).length > 0)
+            : true;
+    }
+
     validate_email() {
         const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         return this.email.value && re.test(String(this.email.value).toLowerCase());
@@ -33,7 +40,8 @@ export default class Auth {
     }
 
     is_valid() {
-        return this.email.value !== '' && this.password.value !== '';
+        return this.email.value !== ''
+            && this.password.value !== '';
     }
 
     authenticate() {
@@ -74,10 +82,20 @@ export default class Auth {
             return Promise.reject(new Error('invalid_password'));
         }
 
+        if (this.role === 'shipper') {
+            if (!this.validate_company()) {
+                this.error = 'Please enter a valid company name.';
+                return Promise.reject(new Error('invalid_company'));
+            }
+        } else {
+            this.company.value = '';
+        }
+
         const user = {
-            fullname: this.fullname.value,
             username: this.email.value,
             password: this.password.value,
+            fullname: this.fullname.value,
+            company: this.company.value,
             role: this.role,
         };
 

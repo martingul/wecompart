@@ -1,5 +1,6 @@
 *.csv
 *.sql
+*.sh
 credentials.json
 .venv
 test.py

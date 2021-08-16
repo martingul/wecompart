@@ -3,6 +3,7 @@ import Icon from '../components/Icon';
 import notepad from '../../assets/notepad.svg';
 import clock from '../../assets/clock.svg';
 import money from '../../assets/money.svg';
+import Logo from '../components/Logo';
 
 export default class LandingView {
     constructor(vnode) {
@@ -16,9 +17,7 @@ export default class LandingView {
                     <div class="px-8 w-full md:w-5/6 lg:w-2/3">
                         {/* header */}
                         <div class="flex justify-between items-center p-3 bg-white text-sm">
-                            <m.route.Link href="/" options={{ replace: true }} class="flex items-center whi=tespace-nowrap text-xl font-bold">
-                                wecompart &trade;
-                            </m.route.Link>
+                            <Logo />
                             <div class="flex items-center">
                                 <div>
                                     <m.route.Link href="/">
@@ -36,7 +35,7 @@ export default class LandingView {
                                 </div>
                                 <div>
                                     <m.route.Link href="/auth/signup">
-                                        <button class="p-3 text-accent-600 hover:text-accent-300">
+                                        <button class="p-3 text-blue-600 hover:text-blue-700">
                                             Start now
                                         </button>
                                     </m.route.Link>
@@ -59,7 +58,7 @@ export default class LandingView {
                             <div class="flex flex-col sm:flex-row items-center justify-center mt-8">
                                 <button class="flex items-center justify-center px-6 py-3 rounded shadow-md hover:shadow-lg font-bold mb-4 sm:mb-0 sm:mr-4
                                     transition duration-150 transform md:hover:-translate-y-px
-                                    bg-accent-500 hover:bg-accent-300 text-white">
+                                    bg-blue-500 hover:bg-blue-600 text-white">
                                     <span>
                                         Get started
                                     </span>
@@ -67,7 +66,7 @@ export default class LandingView {
                                 </button>
                                 <button class="flex flex-center justify-center px-6 py-3 rounded shadow-md hover:shadow-lg font-bold
                                     transition duration-150 transform md:hover:-translate-y-px
-                                    bg-white hover:text-gray-700 text-gray-800">
+                                    bg-white hover:text-black text-gray-800">
                                     <span>
                                         Contact us
                                     </span>
@@ -168,7 +167,7 @@ export default class LandingView {
                                 <div class="w-full flex flex-col items-stretch md:flex-row justify-between mt-12">
                                     <div class="w-1/2 flex flex-col md:mr-3 p-6 rounded-md border border-gray-200">
                                         <div class="flex flex-col items-start flex-grow">
-                                            <div class="font-bold text-lg text-accent-400">
+                                            <div class="font-bold text-lg text-blue-400">
                                                 Standard
                                             </div>
                                             <div class="flex items-baseline my-2">
@@ -186,19 +185,19 @@ export default class LandingView {
                                         <div class="flex flex-col">
                                             <div class="my-6">
                                                 <div class="flex items-center">
-                                                    <Icon name="check" class="w-5 mr-3 text-accent-400" />
+                                                    <Icon name="check" class="w-5 mr-3 text-blue-400" />
                                                     <span>
                                                         Personal dashboard to track shipments
                                                     </span>
                                                 </div>
                                                 <div class="flex items-center mt-4">
-                                                    <Icon name="check" class="w-5 mr-3 text-accent-400" />
+                                                    <Icon name="check" class="w-5 mr-3 text-blue-400" />
                                                     <span>
                                                         Access to a large database of shippers
                                                     </span>
                                                 </div>
                                                 <div class="flex items-center mt-4">
-                                                    <Icon name="check" class="w-5 mr-3 text-accent-400" />
+                                                    <Icon name="check" class="w-5 mr-3 text-blue-400" />
                                                     <span>
                                                         Live chat and support
                                                     </span>
@@ -207,7 +206,7 @@ export default class LandingView {
                                         </div>
                                         <div>
                                             <button class="flex items-center justify-center w-full rounded py-2 font-bold shadow-md hover:shadow-lg
-                                                bg-accent-500 hover:bg-accent-400 text-white transition duration-150">
+                                                bg-blue-500 hover:bg-blue-400 text-white transition duration-150">
                                                 <span>
                                                     Get started
                                                 </span>
@@ -230,8 +229,8 @@ export default class LandingView {
                                         <div class="flex flex-col">
                                             <div class="my-6">
                                                 <div class="flex items-center">
-                                                    <Icon name="corner-down-right" class="w-5 mr-3 text-accent-400" />
-                                                    <span class="font-bold text-accent-400">
+                                                    <Icon name="corner-down-right" class="w-5 mr-3 text-blue-400" />
+                                                    <span class="font-bold text-blue-400">
                                                         Everything in Standard
                                                     </span>
                                                 </div>

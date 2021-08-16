@@ -3,6 +3,7 @@ import Icon from './Icon';
 import PasswordInput from './PasswordInput';
 import Button from './Button';
 import ButtonLink from './ButtonLink';
+import Loading from './Loading';
 
 export default class SignUpForm {
     constructor(vnode) {
@@ -33,7 +34,7 @@ export default class SignUpForm {
                     <label class="text-gray-600">
                         You are
                     </label>
-                    <div class="mt-2 flex justify-evenly items-center">
+                    <div class="mt-4 flex justify-evenly items-center">
                         <div class={`py-1 px-4 font-bold cursor-pointer select-none
                             ${this.auth.role !== 'shipper'
                                 ? 'bg-blue-500 text-white border border-white hover:bg-blue-600'
@@ -41,7 +42,7 @@ export default class SignUpForm {
                             onclick={() => this.auth.role = 'standard'}>
                             Customer
                         </div>
-                        <div class="text-gray-400">
+                        <div class="text-gray-500">
                             or
                         </div>
                         <div class={`py-1 px-4 font-bold cursor-pointer select-none
@@ -68,6 +69,23 @@ export default class SignUpForm {
                             }
                         }}/>
                 </div>
+                {this.auth.role === 'shipper' ? (
+                   <div class="mt-2 flex flex-col">
+                        <label class="text-gray-600 mb-1" for="company-input">
+                            Company name
+                        </label>
+                        <input id="company-input" type="text" spellcheck="false" required
+                            value={this.auth.company.value}
+                            oninput={(e) => this.auth.company.value = e.target.value}
+                            onblur={() => {
+                                if (this.auth.validate_company() || this.auth.company.value === '') {
+                                    this.auth.error = '';
+                                } else {
+                                    this.auth.error = 'Please enter a valid company name.';
+                                }
+                            }}/>
+                    </div>
+                ) : ''}
                 <div class="mt-2 flex flex-col">
                     <label class="text-gray-600 mb-1" for="email-input">
                         Email

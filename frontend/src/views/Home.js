@@ -21,9 +21,8 @@ export default class HomeView {
                 <div>
                     <ul>
                         <li>Verify email address</li>
-                        <li>Link bank account</li>
                     </ul>
-                    {this.user.role === 'shipper' ? (
+                    {/* {this.user.role === 'shipper' ? (
                         // Maybe prefetch the onboard url before and show this
                         // as a link so that user can open in new tab (and quicker response)
                         // but this would send a request to stripe each time
@@ -37,7 +36,7 @@ export default class HomeView {
                         }}>
                             Complete profile
                         </Button>
-                    ) : ''}
+                    ) : ''} */}
                 </div>
             </AppView>
         );

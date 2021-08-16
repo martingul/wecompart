@@ -10,7 +10,7 @@ http_port: int = 5000
 
 smtp_host: str = 'mail.privateemail.com'
 smtp_port: int = 465
-smtp_username: str = os.environ.get('SMTP_USERNAME')
+smtp_user: str = os.environ.get('SMTP_USER')
 smtp_password: str = os.environ.get('SMTP_PASSWORD')
 
 google_maps_api_url: str = 'https://maps.googleapis.com/maps/api/'

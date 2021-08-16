@@ -13,6 +13,7 @@ class User(Base, Entity):
 
     shipper_uuid = Column(String, ForeignKey('shippers.uuid'), nullable=True)
     fullname = Column(String, nullable=False)
+    company = Column(String, nullable=True)
     role = Column(String, nullable=False, default='standard')
     ip_address = Column(String, nullable=False)
     currency = Column(String, nullable=False)

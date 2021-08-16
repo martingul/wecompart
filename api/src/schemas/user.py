@@ -11,8 +11,9 @@ class UserRole(str, Enum):
 
 class UserRead(BaseModel):
     uuid: str
-    fullname: str
     username: str
+    fullname: str
+    company: Optional[str]
     role: UserRole
     country_code: Optional[str]
     stripe_customer_id: Optional[str] # maybe do not show that publicly
@@ -25,9 +26,10 @@ class UserRead(BaseModel):
         orm_mode = True
 
 class UserCreate(BaseModel):
-    fullname: str
     username: str
     password: str
+    fullname: str
+    company: Optional[str]
     role: UserRole = UserRole.standard
     ip_address: Optional[str]
     currency: Optional[str]

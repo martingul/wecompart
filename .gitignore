@@ -1,7 +1,9 @@
 __pycache__
 .pytest_cache
-node_modules
 .vscode
+node_modules
+budibase
+
 .DS_Store
 docker-compose.yml
 .env

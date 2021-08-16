@@ -7,7 +7,7 @@ export default class Logo {
         // );
         return (
             <span class="text-xl font-bold">
-                wecompart &trade;
+                wecompart
             </span>
         )
     }
