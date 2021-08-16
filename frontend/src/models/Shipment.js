@@ -70,6 +70,7 @@ export default class Shipment {
     }
 
     serialize() {
+        console.log(this.services)
         return {
             status: this.status,
             pickup_address_id: this.pickup_address.place_id,

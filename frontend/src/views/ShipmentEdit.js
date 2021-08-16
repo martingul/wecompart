@@ -18,6 +18,7 @@ import Item from '../models/Item';
 import ShipmentStorage from '../models/ShipmentStorage';
 import User from '../models/User';
 import AppView from './App';
+import Service from '../models/Service';
 
 export default class ShipmentEditView {
     constructor(vnode, user = User.load()) {
@@ -29,7 +30,7 @@ export default class ShipmentEditView {
         if (this.is_new) {
             this.shipment = new Shipment({});
             this.shipment.items.push(new Item({key: Utils.generate_key()}));
-            this.shipment.services.push({name: 'shipping'});
+            this.shipment.services.push(new Service({name: 'shipping'}));
         } else {
             this.shipment = ShipmentStorage.get_by_id(this.id);
         }

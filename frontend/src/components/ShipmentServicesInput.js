@@ -1,4 +1,5 @@
 import m from 'mithril';
+import Service from '../models/Service';
 import Utils from '../Utils';
 import Icon from './Icon';
 
@@ -18,7 +19,7 @@ export default class ShipmentServicesInput {
         if (i >= 0) {
             this.services.splice(i, 1);
         } else {
-            this.services.push({name: service.name});
+            this.services.push(new Service({name: service.name}));
         }
     }
 
