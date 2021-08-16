@@ -1,8 +1,15 @@
 export default class Item {
     constructor({
-        index = 0, key = null,
-        uuid = null, description = '', quantity = 1, dim_unit = 'cm',
-        length = 0, width = 0, height = 0, weight = 0,
+        index = 0,
+        key = null,
+        uuid = null,
+        description = '',
+        quantity = 1,
+        dim_unit = 'cm',
+        length = 0,
+        width = 0,
+        height = 0,
+        weight = 0,
     }) {
         this.index = index;
         this.key = key;

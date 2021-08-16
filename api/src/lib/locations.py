@@ -8,7 +8,7 @@ def read_locations(q: str):
     params = {
         'input': q,
         'types': 'address',
-        'key': config.credentials.get('google_maps_key')
+        'key': config.google_maps_key
     }
 
     # TODO handle errors
@@ -27,7 +27,7 @@ def read_locations(q: str):
 
 def read_location(id: str):
     api_url = f'{config.google_maps_api_url}place/details/json'
-    key = config.credentials.get('google_maps_key')
+    key = config.google_maps_key
 
     # TODO handle errors
     res = requests.get(api_url, params={'place_id': id, 'key': key})

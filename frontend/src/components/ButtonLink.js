@@ -9,7 +9,7 @@ export default class ButtonLink {
     view(vnode) {
         return (
             <button type="button" class={`inline-flex items-center whitespace-nowrap font-semibold transition-all
-                ${this.active ? 'text-blue-600 hover:text-blue-700' : 'text-gray-800 hover:text-black'}`}
+                ${this.active ? 'text-blue-500 hover:text-blue-600' : 'text-gray-800 hover:text-black'}`}
                 onclick={this.callback}>
                 <span class="flex items-center">
                     {vnode.children}

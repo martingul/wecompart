@@ -42,7 +42,7 @@ export default class Navigation {
             return (
                 <div class="flex items-center">
                     {Navigation.views.map(v => (
-                        <button class={'flex items-center w-full mr-4 px-0.5 py-1 transition-all hover:text-black '
+                        <button class={'flex items-center w-full mr-4 px-0.5 py-0.5 transition-all hover:text-black '
                             + (Navigation.selected_view === v ? 'border-b border-dotted border-gray-800 text-black font-semibold' : 'text-gray-600')}
                             onclick={() => {
                                 Navigation.selected_view = v;

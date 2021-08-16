@@ -145,6 +145,21 @@ export default class ShipmentView {
                             }} />
                         </div>
                     ) : ''}
+                    {(this.is_owner
+                        && this.shipment.accepted_quote
+                        && !this.shipment.accepted_quote.is_paid()
+                        && !this.shipment.is_booked()) ? (
+                        <div class="mb-6 py-3 px-5 flex items-center justify-between rounded border border-gray-200">
+                            <span class="mr-4 text-gray-800">
+                                You have accepted a quote without providing payment. Please confirm and pay the associated invoice in order to complete your booking.
+                            </span>
+                            <Button active={false} callback={() => {
+                                m.route.set('/quotes/:id', {id: this.shipment.accepted_quote.uuid})
+                            }}>
+                                View quote
+                            </Button>
+                        </div>
+                    ) : ''}
                     <div class='flex justify-between items-end pb-3 border-b border-gray-200'>
                         <div class="flex flex-col">
                             <div class="mb-1 flex items-center text-gray-500">
@@ -201,20 +216,6 @@ export default class ShipmentView {
                             </div>
                         ) : ''}
                     </div>
-                    {(this.shipment.accepted_quote
-                        && !this.shipment.accepted_quote.is_paid()
-                        && !this.shipment.is_booked()) ? (
-                        <div class="mt-6 py-3 px-5 flex items-center justify-between rounded border border-gray-200">
-                            <span class="mr-4 text-gray-800">
-                                You have accepted a quote without providing payment. Please confirm and pay the associated invoice in order to complete your booking.
-                            </span>
-                            <Button active={false} callback={() => {
-                                m.route.set('/quotes/:id', {id: this.shipment.accepted_quote.uuid})
-                            }}>
-                                View quote
-                            </Button>
-                        </div>
-                    ) : ''}
                     {!this.is_owner ? (
                         <div class="px-4 mt-6 flex flex-col">
                             <span class="text-gray-500">

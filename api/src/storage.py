@@ -5,9 +5,8 @@ from models import base, shipper, user, session, shipment, item, quote,\
 import config
 
 engine = create_engine(
-    f'postgresql://postgres:{config.credentials.get("db_password")}'+
-    f'@{config.db_host}:{config.db_port}/{config.credentials.get("db_name")}',
-    # f'sqlite:///./{config.credentials.get("db_name")}.db',
+    f'postgresql://postgres:{config.db_password}'+
+    f'@{config.db_host}:{config.db_port}/{config.db_name}',
     echo=True
 )
 Session = sessionmaker(autocommit=False, autoflush=False, bind=engine)

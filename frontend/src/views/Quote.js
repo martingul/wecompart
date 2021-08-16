@@ -23,6 +23,7 @@ export default class QuoteView {
         this.quote_id = vnode.attrs.id;
         this.user = user;
         this.quote = null;
+        this.shipment = null;
         
         console.log('construct QuoteView', this.quote_id);
         this.show_payment = false;
@@ -104,14 +105,16 @@ export default class QuoteView {
         return (
             <AppView>
                 <div class="flex flex-col">
-                    {(this.quote.is_accepted() && !this.quote.is_paid()) ? (
+                    {(this.is_shipment_owner
+                        && this.quote.is_accepted()
+                        && !this.quote.is_paid()) ? (
                         <div class="mb-6 py-3 px-5 flex flex-col rounded border border-gray-200">
                             <div class="flex">
                                 <span class="text-gray-800">
                                     After having accepted a quote, you will need to pay the associated invoice in order to complete your booking.
                                 </span>
                             </div>
-                            <div class="mt-6 flex justify-between">
+                            <div class="mt-4 flex justify-between">
                                 <ButtonLink callback={() => {
                                     window.location.replace(this.quote.stripe_data.stripe_invoice_pdf);
                                 }}>
@@ -131,6 +134,16 @@ export default class QuoteView {
                             </div>
                         </div>
                     ) : ''}
+                    {(this.is_quote_owner
+                        && this.quote.is_accepted()) ? (
+                        <div class="mb-6 py-3 px-5 flex flex-col rounded border border-gray-200">
+                            <div class="flex">
+                                <span class="text-gray-800">
+                                    The customer has accepted your quote and should be contacting you soon.
+                                </span>
+                            </div>
+                        </div>
+                    ) : ''}
                     <div class='flex justify-between items-end pb-2 border-b border-gray-200'>
                         <div class="flex flex-col">
                             <div class="mb-1 flex items-center text-gray-500">
@@ -147,9 +160,17 @@ export default class QuoteView {
                                     {this.quote.stripe_data.stripe_quote_number}
                                 </Title>
                                 <div class="ml-2 mt-1">
-                                    <Badge color={() => this.quote.get_status_color()}>
-                                        {Utils.capitalize(this.quote.status)}
-                                    </Badge>
+                                    {(this.is_shipment_owner
+                                        && this.quote.is_accepted ()
+                                        && !this.quote.is_paid()) ? (
+                                        <Badge color="yellow">
+                                            Payment needed
+                                        </Badge>
+                                    ) : (
+                                        <Badge color={() => this.quote.get_status_color()}>
+                                            {Utils.capitalize(this.quote.status)}
+                                        </Badge>
+                                    )}
                                 </div>
                                 {/* <span class="ml-2 text-gray-400">
                                     created {Utils.relative_date(this.quote.created_at)}
@@ -218,7 +239,7 @@ export default class QuoteView {
                         <div class="mt-6 p-4 flex flex-col rounded border border-gray-200">
                             <div class="flex">
                                 <span class="text-gray-800">
-                                    Accepting a quote will require you to provide payment for your booking, which will be released to the service provider once your shipment is delivered.
+                                    Accepting a quote will require you to pay a small fee in order to contact the shipper.
                                 </span>
                             </div>
                             <div class="mt-4 flex justify-end">
@@ -289,7 +310,7 @@ export default class QuoteView {
                             <td class="pt-4 w-full whitespace-nowrap">
                                 <div class="flex flex-col">
                                     <span class="text-gray-500">
-                                        Delivery date
+                                        Expected delivery date
                                     </span>
                                     <span class="mt-0.5 text-gray-800">
                                         {Utils.absolute_date(this.quote.delivery_date.value, true)}
@@ -299,7 +320,7 @@ export default class QuoteView {
                             <td class="pt-4 whitespace-nowrap">
                                 <div class="flex flex-col">
                                     <span class="text-gray-500">
-                                        Expiration date
+                                        Quote expiration date
                                     </span>
                                     <span class="mt-0.5 text-gray-800">
                                         {Utils.absolute_date(this.quote.delivery_date.value, true)}
@@ -309,16 +330,16 @@ export default class QuoteView {
                         </tr>
                     </table>
                     <div class="mt-8 flex flex-col">
-                        <Table collection={this.services}
+                        <Table collection={this.shipment.services}
                             fields={[
                                 {label: 'item', type: 'string'},
                                 {label: 'quantity', type: 'number'},
                                 {label: 'price', type: 'number'},
                             ]}>
-                            {this.quote.bids.map(bid => (
+                            {this.shipment.services.map(service => (
                                 <tr class="border-b border-gray-200 text-gray-600">
                                     <td class="py-2 italic">
-                                        {`${Utils.capitalize(bid.service.name)} service`}
+                                        {`${Utils.capitalize(service.name)} service`}
                                     </td>
                                     <td class="py-2 text-right">
                                         <span class="text-sm text-gray-500">
@@ -330,7 +351,7 @@ export default class QuoteView {
                                     </td>
                                     <td class="py-2 text-right">
                                         <MoneyText currency="usd">
-                                            {bid.amount}
+                                            {this.quote.get_bid_by_service_uuid(service.uuid).amount}
                                         </MoneyText>
                                     </td>
                                 </tr>
@@ -338,7 +359,7 @@ export default class QuoteView {
                         </Table>
                         <div class="flex justify-end">
                             <table>
-                                <tr class="border-b border-gray-200">
+                                {/* <tr class="border-b border-gray-200">
                                     <td class="py-2 whitespace-nowrap text-gray-700">
                                         Subtotal
                                     </td>
@@ -364,7 +385,7 @@ export default class QuoteView {
                                             14
                                         </MoneyText>
                                     </td>
-                                </tr>
+                                </tr> */}
                                 <tr class="border-b border-gray-200">
                                     <td class="py-2 whitespace-nowrap text-black">
                                         Total
@@ -372,7 +393,7 @@ export default class QuoteView {
                                     <td class="py-2 pl-6">
                                         <MoneyText currency="usd">
                                             <span class="font-semibold">
-                                                119
+                                                {this.quote.get_total_bid()}
                                             </span>
                                         </MoneyText>
                                     </td>
@@ -380,14 +401,16 @@ export default class QuoteView {
                             </table>
                         </div>
                     </div>
-                    <div class="mt-8 flex flex-col">
-                        <span class="text-gray-500">
-                            Notes from shipper
-                        </span>
-                        <span class="mt-1 text-gray-800">
-                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam porta arcu sed consequat feugiat. Praesent vel justo suscipit, ultricies eros sed, feugiat orci.
-                        </span>
-                    </div>
+                    {this.quote.comments.value.length > 0 ? (
+                        <div class="mt-8 flex flex-col">
+                            <span class="text-gray-500">
+                                Notes from shipper
+                            </span>
+                            <span class="mt-1 text-gray-800">
+                                {this.quote.comments.value}
+                            </span>
+                        </div>
+                    ) : ''}
                     {this.show_payment ? (
                         <div class="mt-6">
                             <Payment quote_id={this.quote_id} close={() => {

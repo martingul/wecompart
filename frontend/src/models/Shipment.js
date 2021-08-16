@@ -2,6 +2,7 @@ import Api from '../Api';
 import Utils from '../Utils';
 import Item from './Item';
 import Quote from './Quote';
+import Service from './Service';
 
 export default class Shipment {
     static status_colors = {
@@ -58,7 +59,7 @@ export default class Shipment {
         this.currency = {value: currency};
         this.total_value = {value: total_value};
         this.comments = {value: comments};
-        this.services = services;
+        this.services = services.map(service => new Service(service));
         this.items = items.map(item => new Item(item));
         this.quotes = quotes.map(quote => new Quote(quote));
         this.created_at = created_at;
@@ -77,7 +78,7 @@ export default class Shipment {
             currency: this.currency.value,
             total_value: parseFloat(this.total_value.value),
             comments: this.comments.value,
-            services: this.services,
+            services: this.services.map(service => service.serialize()),
             items: this.items.map(item => item.serialize()),
         };
     }

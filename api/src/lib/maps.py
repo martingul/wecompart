@@ -7,7 +7,7 @@ def generate_map_url(path: list[str]) -> str:
     # and check permissions on image access
     # TODO return itinerary (ground + aerial) instead of geodesic path
     api_url = f'{config.google_maps_api_url}staticmap'
-    key = config.credentials.get('google_maps_key')
+    key = config.google_maps_key
     map_id = '3af1c97252ddb98f'
     format = 'jpg'
     size='500x500'

@@ -16,10 +16,12 @@ export default class QuoteEdit {
         this.quote = new Quote({
             shipment_uuid: this.shipment.uuid,
             status: 'pending',
-            bids: this.shipment.services.map(s => ({
-                service_uuid: s.uuid,
-                amount: 0,
-            }))
+            bids: this.shipment.services.map(s => {
+                return {
+                    service_uuid: s.uuid,
+                    amount: 0,
+                };
+            })
         });
     }
 
@@ -61,12 +63,21 @@ export default class QuoteEdit {
                                 {Utils.capitalize(s.name)} service cost
                             </label>
                             <input type="number" class="mt-1"
-                                value={this.quote.bids.filter(b => b.service_uuid === s.uuid)[0].amount}
+                                value={this.quote.get_bid_by_service_uuid(s.uuid).amount}
                                 oninput={(e) => {
-                                    this.quote.bids.filter(b => b.service_uuid === s.uuid)[0].amount = e.target.value;
+                                    this.quote.get_bid_by_service_uuid(s.uuid).amount = e.target.value;
                                 }} />
                         </div>
                     ))}
+                    <div class="mt-2 flex flex-col">
+                        <label for="delivery-date-input">
+                            Additional comments
+                        </label>
+                        <textarea class="mt-1" rows="2" class="max-h-64"
+                            oninput={(e) => this.quote.comments.value = e.target.value}
+                            value={this.quote.comments.value}>
+                        </textarea>	
+                    </div>
                 </div>
                 <div class="mt-6 flex justify-end">
                     <Button active={false} callback={() => this.close()}>

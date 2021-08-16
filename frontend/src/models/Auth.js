@@ -19,10 +19,6 @@ export default class Auth {
         this.action = this.action === 'signup' ? 'signin' : 'signup'; 
     }
 
-    switch_role() {
-        this.role = this.role === 'standard' ? 'shipper' : 'standard';
-    }
-
     validate_fullname() {
         return this.fullname.value && (String(this.fullname.value).length > 0);
     }
@@ -88,18 +84,19 @@ export default class Auth {
         this.loading = true;
         return Api.create_user({user})
             .then(res => this.authenticate())
-            .then(res => {
-                if (user.role === 'shipper') {
-                    return Api.onboard_user({})
-                }
-            })
-            .then(onboard_url => {
-                if (onboard_url) {
-                    window.location.replace(onboard_url);
-                } else {
-                    return true;
-                }
-            })
+            // .then(res => {
+            //     if (user.role === 'shipper') {
+            //         return Api.onboard_user({})
+            //     }
+            // })
+            // .then(onboard_url => {
+            //     if (onboard_url) {
+            //         window.location.replace(onboard_url);
+            //     } else {
+            //         return true;
+            //     }
+            // })
+            .then(() => true)
             .catch(e => {
                 this.loading = false;
                 if (e.response.detail === 'error_username_taken') {

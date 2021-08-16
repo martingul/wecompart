@@ -11,7 +11,6 @@ from error import ApiError
 
 def create_user(db: DatabaseSession, user: UserCreate):
     try:
-        # TODO rewrite it so there is no need to specify every field
         user_db = User(**user.dict())
         user_db.password = user.password
 

@@ -2,8 +2,7 @@ import stripe
 import config
 from tests import utils
 
-config.load_credentials()
-stripe.api_key = config.credentials.get('stripe_test_key')
+stripe.api_key = config.stripe_test_key
 
 def test_create_account():
     try:

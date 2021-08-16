@@ -34,21 +34,21 @@ export default class SignUpForm {
                         You are
                     </label>
                     <div class="mt-2 flex justify-evenly items-center">
-                        <div class={`py-1 px-4 font-bold cursor-pointer
+                        <div class={`py-1 px-4 font-bold cursor-pointer select-none
                             ${this.auth.role !== 'shipper'
-                                ? 'bg-blue-600 text-white border border-white hover:bg-blue-700'
-                                : 'bg-white text-blue-600 border border-blue-600 hover:text-blue-700 hover:border-blue-700'}`}
-                            onclick={() => this.auth.switch_role()}>
+                                ? 'bg-blue-500 text-white border border-white hover:bg-blue-600'
+                                : 'bg-white text-blue-500 border border-blue-500 hover:text-blue-600 hover:border-blue-600'}`}
+                            onclick={() => this.auth.role = 'standard'}>
                             Customer
                         </div>
                         <div class="text-gray-400">
                             or
                         </div>
-                        <div class={`py-1 px-4 font-bold cursor-pointer
+                        <div class={`py-1 px-4 font-bold cursor-pointer select-none
                             ${this.auth.role === 'shipper'
-                                ? 'bg-blue-600 text-white border border-white hover:bg-blue-700'
-                                : 'bg-white text-blue-600 border border-blue-600 hover:text-blue-700 hover:border-blue-700'}`}
-                            onclick={() => this.auth.switch_role()}>
+                                ? 'bg-blue-500 text-white border border-white hover:bg-blue-600'
+                                : 'bg-white text-blue-500 border border-blue-500 hover:text-blue-600 hover:border-blue-600'}`}
+                            onclick={() => this.auth.role = 'shipper'}>
                             Shipper
                         </div>
                     </div>

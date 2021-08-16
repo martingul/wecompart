@@ -4,7 +4,7 @@ import uvicorn
 import stripe
 import config
 
-stripe.api_key = config.credentials.get('stripe_test_key')
+stripe.api_key = config.stripe_test_key
 
 from routers import auth, shippers, users, shipments, items, quotes,\
     notifications, messages, locations, webhooks, websockets
@@ -76,10 +76,6 @@ api.add_middleware(
         'content-disposition'
     ]
 )
-
-@api.on_event('startup')
-async def startup():
-    config.load_credentials()
 
 def serve():
     uvicorn.run(

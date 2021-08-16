@@ -37,7 +37,11 @@ export default class AuthView {
                         </button>
                     </div>
                     <div class="flex flex-col mt-6 mx-2 p-4 rounded border border-gray-300">
-                        {this.auth.action === 'signin' ? <SignInForm auth={this.auth} /> : <SignUpForm auth={this.auth} />}
+                        {this.auth.action === 'signin' ? (
+                            <SignInForm auth={this.auth} />
+                        ) : (
+                            <SignUpForm auth={this.auth} />
+                        )}
                     </div>
                     {/* <Footer /> */}
                 </div>

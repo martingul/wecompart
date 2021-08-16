@@ -77,7 +77,7 @@ export default class QuoteTableRow {
                 </td>
                 <td class="w-full py-2 pr-2">
                     <span class="inline-flex items-center">
-                        {this.quote.is_accepted() ? (
+                        {(this.quote.is_accepted() && this.quote.is_paid()) ? (
                             <span class="inline-flex mx-0.5">
                                 <Badge color="green">
                                     Accepted
@@ -107,12 +107,12 @@ export default class QuoteTableRow {
                         ) : ''}
                         {(this.is_shipment_owner && this.quote.is_accepted() && !this.quote.is_paid()) ? (
                             <span class="inline-flex mx-0.5">
-                                <Badge color="yellow" icon="alert-circle">
+                                <Badge color="yellow">
                                     Payment needed
                                 </Badge>
                             </span>
                         ) : ''}
-                        {(this.is_quote_owner && !this.quote.is_accepted()) ? (
+                        {this.is_quote_owner ? (
                             <span class="inline-flex mx-0.5">
                                 <Badge color="blue">
                                     Your quote
