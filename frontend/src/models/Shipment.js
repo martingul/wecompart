@@ -22,13 +22,13 @@ export default class Shipment {
         owner = {},
         map_url = '',
         status = '',
-        pickup_address_id = '',
+        pickup_address_id = 'Eh5BYXJvbiBXYXksIFNhY3JhbWVudG8sIENBLCBVU0EiLiosChQKEgkHOGe4zM-agBGNYlLpRUPwExIUChIJ-ZeDsnLGmoAR238ZdKpqH5I',
         pickup_address_short = '',
-        pickup_address_long = '',
-        delivery_address_id = '',
+        pickup_address_long = 'Aaron Way, Sacramento, CA, USA',
+        delivery_address_id = 'Eh5CIEIgUSBXYXksIFNhbiBNYXJjb3MsIFRYLCBVU0EiLiosChQKEglpfOiYPKZchhEDyUY-dJDTVRIUChIJWUZBNCqnXIYRJzGOU2wzOi8',
         delivery_address_short = '',
-        delivery_address_long = '',
-        pickup_date = '',
+        delivery_address_long = 'B B Q Way, San Marcos, TX, USA',
+        pickup_date = '2021-08-20',
         currency = 'usd',
         total_value = 0,
         comments = '',
@@ -46,31 +46,50 @@ export default class Shipment {
         this.pickup_address = {
             value: pickup_address_long,
             place_id: pickup_address_id,
+            validate: () => this.pickup_address.place_id.length > 0
+                            && this.pickup_address.value.length > 0,
         };
         this.pickup_address_short = pickup_address_short;
         this.pickup_address_formatted = Utils.format_address(pickup_address_long);
         this.delivery_address = {
             value: delivery_address_long,
             place_id: delivery_address_id,
+            validate: () => this.delivery_address.place_id.length > 0
+                            && this.delivery_address.value.length > 0,
         };
         this.delivery_address_short = delivery_address_short;
         this.delivery_address_formatted = Utils.format_address(delivery_address_long);
-        this.pickup_date = {value: new Date(pickup_date)};
-        this.currency = {value: currency};
-        this.total_value = {value: total_value};
-        this.comments = {value: comments};
+        this.pickup_date = {
+            value: pickup_date,
+            validate: () => !isNaN(Date.parse(this.pickup_date.value)),
+        };
+        this.currency = {
+            value: currency
+        };
+        this.total_value = {
+            value: total_value
+        };
+        this.comments = {
+            value: comments
+        };
         this.services = services.map(service => new Service(service));
         this.items = items.map(item => new Item(item));
         this.quotes = quotes.map(quote => new Quote(quote));
         this.created_at = created_at;
         this.updated_at = updated_at;
 
+        this.errors = {
+            shipment_not_found: '',
+            shipment_info: ''
+        };
+
+        this.create_loading = false;
+
         this.accepted_quote = this.get_accepted_quote();
         this.flag_quotes();
     }
 
     serialize() {
-        console.log(this.services)
         return {
             status: this.status,
             pickup_address_id: this.pickup_address.place_id,
@@ -93,16 +112,21 @@ export default class Shipment {
     }
 
     get_total_item_quantity() {
-        return this.items.map(item => item.quantity).reduce((a, c) => a + c, 0);
+        return this.items.map(item => Number(item.quantity))
+            .reduce((a, c) => a + c, 0);
     }
 
     get_total_item_weight() {
-        return this.items.map(item => item.weight).reduce((a, c) => a + c, 0);
+        return this.items.map(item => item.weight)
+            .reduce((a, c) => a + c, 0);
     }
 
     create() {
+        this.create_loading = true;
         return Api.create_shipment({
             shipment: this.serialize()
+        }).finally(() => {
+            this.create_loading = false;
         });
     }
 

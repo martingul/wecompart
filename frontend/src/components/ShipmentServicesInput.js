@@ -25,13 +25,13 @@ export default class ShipmentServicesInput {
 
     style(service) {
         if (service.name === 'shipping') {
-            return 'bg-indigo-100 text-indigo-500 cursor-not-allowed';
+            return 'bg-blue-100 text-blue-500 cursor-not-allowed';
         }
 
         if (this.services.map(s => s.name).includes(service.name)) {
-            return 'bg-indigo-100 hover:bg-indigo-200 text-indigo-500 hover:text-indigo-600'
+            return 'bg-blue-100 hover:bg-blue-200 text-blue-500 hover:text-blue-600'
         } else {
-            return 'bg-gray-100 hover:bg-indigo-200 text-gray-500 hover:text-indigo-600'
+            return 'bg-gray-100 hover:bg-blue-200 text-gray-500 hover:text-blue-600'
         }
     }
     

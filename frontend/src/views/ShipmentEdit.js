@@ -19,13 +19,13 @@ import ShipmentStorage from '../models/ShipmentStorage';
 import User from '../models/User';
 import AppView from './App';
 import Service from '../models/Service';
+import ErrorMessage from '../components/ErrorMessage';
 
 export default class ShipmentEditView {
     constructor(vnode, user = User.load()) {
         this.user = user;
         this.id = m.route.param('id');
         this.is_new = this.id === undefined;
-        this.error_shipment_not_found = false;
 
         if (this.is_new) {
             this.shipment = new Shipment({});
@@ -37,7 +37,7 @@ export default class ShipmentEditView {
 
         console.log('contruct ShipmentEdit', this.is_new);
 
-        this.loading = false;
+        this.shipment_read_loading = false;
         this.save = false;
     }
 
@@ -50,7 +50,6 @@ export default class ShipmentEditView {
             not saying there isn't */
             console.log('create new');
             this.shipment.status = 'pending';
-            console.log(this.shipment.serialize());
             this.shipment.create().then(s => {
                 console.log(s);
                 const shipment = new Shipment(s);
@@ -109,9 +108,49 @@ export default class ShipmentEditView {
         });
     }
 
+    validate_shipment() {
+        if (!this.shipment.pickup_address.validate()) {
+            this.shipment.errors.shipment_info = 'Please select a valid pickup address.'
+            return false;
+        }
+        if (!this.shipment.delivery_address.validate()) {
+            this.shipment.errors.shipment_info = 'Please select a valid delivery address.';
+            return false;
+        }
+        if (!this.shipment.pickup_date.validate()) {
+            this.shipment.errors.shipment_info = 'Please specify a valid pickup date.';
+            return false;
+        }
+
+        let error_items = false;
+
+        for (let i = 0; i < this.shipment.items.length; i++) {
+            const item = this.shipment.items[i];
+            if (!item.description.validate()) {
+                item.error = 'Please enter a description for this item.';
+                error_items = true;
+                break;
+            }
+        }
+
+        if (error_items) {
+            return false;
+        }
+
+        return true;
+    }
+
     submit(e) {
         e.preventDefault();
         console.log('submit shipment', this.save);
+        console.log(this.shipment);
+
+        this.shipment.errors.shipment_info = '';
+        this.shipment.errors.shipment_not_found = '';
+        this.shipment.items.forEach(item => item.error = '');
+        if (!this.validate_shipment()) {
+            return;
+        }
 
         if (this.save) {
             this.save_shipment();
@@ -122,7 +161,7 @@ export default class ShipmentEditView {
 
     oninit(vnode) {
         if (!this.shipment) {    
-            this.loading = true;        
+            this.shipment_read_loading = true;        
             console.log('fetching shipment', this.id);
             const access_token = m.route.param('access_token');
     
@@ -140,16 +179,16 @@ export default class ShipmentEditView {
                 } else if (e.code === 403) {
                     m.route.set('/');
                 } else {
-                    this.error_shipment_not_found = true;
+                    this.shipment.errors.shipment_not_found = true;
                 }
             }).finally(() => {
-                this.loading = false;
+                this.shipment_read_loading = false;
             });
         }
     }
 
     view(vnode) {
-        if (!this.shipment && this.loading) {
+        if (!this.shipment && this.shipment_read_loading) {
             return (
                 <AppView>
                     <div class="flex justify-center">
@@ -161,10 +200,10 @@ export default class ShipmentEditView {
             );
         }
 
-        if (this.error_shipment_not_found) {
+        if (this.shipment.errors.shipment_not_found) {
             return (
                 <AppView>
-                    <div class={this.error_shipment_not_found ? 'block' : 'hidden'}>
+                    <div class={this.shipment.errors.shipment_not_found ? 'block' : 'hidden'}>
                         <div class="my-6 w-full text-center">
                             No such shipment
                         </div>
@@ -200,6 +239,13 @@ export default class ShipmentEditView {
                         <div class="mt-2 text-gray-600">
                             Shipment information
                         </div>
+                        {this.shipment.errors.shipment_info !== '' ? (
+                            <div class="mt-2">
+                                <ErrorMessage>
+                                    {this.shipment.errors.shipment_info}
+                                </ErrorMessage>
+                            </div>
+                        ) : ''}
                         <div class="mt-3 mx-2 flex justify-between">
                             <div class="mr-4 w-full flex flex-col">
                                 <label class="mb-1 whitespace-nowrap overflow-hidden overflow-ellipsis" for="from-input">
@@ -224,13 +270,13 @@ export default class ShipmentEditView {
                                 min={new Date(Date.now()).toISOString().split('T')[0]} />
                         </div>
                         <InfoMessage class="mt-4">
-                            Exact pickup date and time will be set once you accept a shipper's quote.
+                            Exact pickup date and time will be established once you accept a shipper's quote.
                         </InfoMessage>
                         <div class="flex flex-col mt-4">
-                            <div class="text-gray-600 w-full">
+                            <div class="text-gray-600">
                                 What items are you shipping?
                                 <span class="ml-1 italic">
-                                    ({this.shipment.items.map(item => item.quantity).reduce((a, b) => a + b, 0)} total)
+                                    ({this.shipment.get_total_item_quantity()} total)
                                 </span>
                             </div>
                             <ItemsEdit bind={this.shipment.items} />
@@ -245,7 +291,7 @@ export default class ShipmentEditView {
                                     {label: '€', value: 'eur'},
                                     {label: '£', value: 'eur'}
                                 ]} />
-                                <input class="ml-2" type="number" step="any" placeholder="Total value"
+                                <input class="ml-2" type="number" step="any" placeholder="Total value" min="0"
                                     oninput={(e) => this.shipment.total_value.value = e.target.value}
                                     value={this.shipment.total_value.value} />
                             </div>
@@ -270,27 +316,29 @@ export default class ShipmentEditView {
                         <div class="mt-8">
                             <div class="flex">
                                 <div class={!this.is_new ? 'block' : 'hidden'}>
-                                    <button class="flex justify-center items-center whitespace-nowrap px-4 py-1 rounded
-                                        text-red-800 hover:text-red-900 bg-red-200 hover:bg-red-300 hover:shadow transition-all"
-                                        onclick={() => Modal.create({
+                                    <Button active={false} callback={(e) => Modal.create({
                                             title: 'Delete shipment draft',
-                                            message: 'Are you sure you want to delete this draft?',
+                                            content: 'Are you sure you want to delete this draft?',
                                             confirm_label: 'Delete',
                                             confirm_color: 'red',
                                             confirm: () => this.delete_shipment()
                                         })}>
-                                        <Icon name="trash-2" class="w-4 h-4" />
-                                        <span class="ml-2">
+                                        <Icon name="trash-2" class="w-5 mr-1.5" />
+                                        <span>
                                             Delete
                                         </span>
-                                    </button>
+                                    </Button>
                                 </div>
                                 <div class="flex items-center justify-end w-full select-none">
                                     <Button active={false} callback={(e) => {
                                         this.save = true;
                                         this.submit(e)
                                     }}>
-                                        <Icon name="save" class="w-5 mr-1.5" />
+                                        {(this.shipment.create_loading && this.shipment.is_draft()) ? (
+                                            <Loading color="dark" class="w-8" /> 
+                                        ) : (
+                                            <Icon name="save" class="w-5 mr-1.5" />
+                                        )}
                                         <span>
                                             {`Save ${this.is_new ? 'as draft' : ''}`}
                                         </span>
@@ -298,9 +346,13 @@ export default class ShipmentEditView {
                                     <div class={this.is_new || this.shipment.is_draft() ? 'block ml-3' : 'hidden'}>
                                         <Button callback={(e) => {
                                             this.save = false;
-                                            this.submit(e)
+                                            this.submit(e);
                                         }}>
-                                            <Icon name="arrow-right" class="w-5 mr-1.5" />
+                                            {(this.shipment.create_loading && !this.shipment.is_draft()) ? (
+                                                <Loading color="light" class="w-8" /> 
+                                            ) : (
+                                                <Icon name="arrow-right" class="w-5 mr-1.5" />
+                                            )}
                                             <span>
                                                 Create
                                             </span>

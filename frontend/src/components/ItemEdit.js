@@ -2,6 +2,7 @@ import m from 'mithril';
 import Icon from './Icon';
 import SwitchInput from './SwitchInput';
 import IconButton from './IconButton';
+import ErrorMessage from './ErrorMessage';
 
 export default class ItemEdit {
     constructor(vnode) {
@@ -44,13 +45,21 @@ export default class ItemEdit {
                         </div>
                     </div>
                 </div>
+                {this.item.error !== '' ? (
+                    <div class="mt-2">
+                        <ErrorMessage>
+                            {this.item.error}
+                        </ErrorMessage>
+                    </div>
+                ) : ''}
                 <div class="flex flex-row my-2">
                     <div class="flex flex-col w-3/4">
                         <label class="mb-0.5" for={`item-description-${this.item.key}`}>
                             Description
                         </label>
                         <input id={`item-description-${this.item.key}`} type="text" placeholder="e.g. 1 table, 2 paintings..."
-                            oninput={(e) => this.item.description = e.target.value} value={this.item.description} />
+                            oninput={(e) => this.item.description.value = e.target.value}
+                            value={this.item.description.value} />
                     </div>
                     <div class="flex flex-col w-1/4 ml-2">
                         <label class="mb-0.5" for={`item-quantity-${this.item.key}`}>

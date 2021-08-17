@@ -1,4 +1,6 @@
 export default class Item {
+    static dim_units = ['cm', 'in'];
+
     constructor({
         index = 0,
         key = null,
@@ -16,18 +18,25 @@ export default class Item {
         this.delete = false;
 
         this.uuid = uuid;
-        this.description = description;
-        this.quantity = quantity;
-        this.dim_unit = {value: dim_unit};
-        this.length = length;
-        this.width = width;
-        this.height = height;
-        this.weight = weight;
+        this.description = {
+            value: description,
+            validate: () => this.description.value.length > 0,
+        };
+        this.quantity = Number(quantity);
+        this.dim_unit = {
+            value: dim_unit,
+            validate: () => Item.dim_units.includes(this.dim_unit.value),
+        };
+        this.length = Number(length);
+        this.width = Number(width);
+        this.height = Number(height);
+        this.weight = Number(weight);
+        this.error = '';
     }
 
     serialize() {
         return {
-            description: this.description,
+            description: this.description.value,
             quantity: this.quantity,
             dim_unit: this.dim_unit.value,
             length: this.length,
