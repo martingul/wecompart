@@ -5,5 +5,4 @@ node_modules
 budibase
 
 .DS_Store
-docker-compose.yml
 .env
