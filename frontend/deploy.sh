@@ -1,0 +1,1 @@
+docker cp dist/* nginx:/usr/share/nginx/html/
