@@ -1,8 +1,8 @@
 import m from 'mithril';
 import Icon from '../components/Icon';
-import notepad from '../../assets/notepad.svg';
-import clock from '../../assets/clock.svg';
-import money from '../../assets/money.svg';
+import notepad from '../assets/notepad.svg';
+import clock from '../assets/clock.svg';
+import money from '../assets/money.svg';
 import Logo from '../components/Logo';
 
 export default class LandingView {

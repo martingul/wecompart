@@ -1,5 +1,5 @@
 import m from 'mithril';
-import success_img from '../../assets/success.svg';
+import success_img from '../assets/success.svg';
 import Button from '../components/Button';
 import InfoMessage from '../components/InfoMessage';
 import AppView from './App';

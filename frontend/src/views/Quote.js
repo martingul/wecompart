@@ -1,5 +1,5 @@
 import m from 'mithril';
-import warning_img from '../../assets/warning.svg';
+import warning_img from '../assets/warning.svg';
 import Api from '../Api';
 import Utils from '../Utils';
 import AppView from './App';
