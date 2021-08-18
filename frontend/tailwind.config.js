@@ -1,9 +1,7 @@
 module.exports = {
     important: true,
     purge: [
-        './src/components/*.{html,js,ts,jsx,tsx}',
-        './src/views/*.{html,js,ts,jsx,tsx}',
-        './src/*.{html,js,ts,jsx,tsx}'
+        './dist/*.{html,js}',
     ],
     darkMode: false, // or 'media' or 'class'
     theme: {

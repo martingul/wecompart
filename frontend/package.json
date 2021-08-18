@@ -4,9 +4,11 @@
   "description": "",
   "main": "./src/main.js",
   "scripts": {
-    "serve": "http-server ./build -p 8080",
+    "serve": "http-server ./dist -p 8080",
     "start": "webpack --mode development --watch",
-    "build": "./build.sh"
+    "build:css": "npx tailwindcss --postcss -i ./src/style.css -o ./dist/style.css",
+    "build:prod": "webpack --mode production",
+    "build:dev": "webpack --mode development"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +21,7 @@
     "@babel/preset-env": "^7.12.10",
     "autoprefixer": "^10.3.0",
     "babel-loader": "^8.2.2",
-    "css-loader": "^5.0.1",
+    "css-loader": "^6.2.0",
     "cssnano": "^5.0.6",
     "eslint": "^7.16.0",
     "eslint-config-standard": "^16.0.2",
@@ -30,6 +32,8 @@
     "feather-icons": "^4.28.0",
     "file-loader": "^6.2.0",
     "file-saver": "^2.0.5",
+    "html-loader": "^2.1.2",
+    "html-webpack-plugin": "^5.3.2",
     "http-server": "^0.12.3",
     "mithril": "^2.0.4",
     "postcss": "^8.3.5",
