@@ -1,10 +1,13 @@
 import m from 'mithril';
 
 export default class Api {
-    static API_ROOT = 'http://localhost/api';
+    static API_HOST = (window.location.host === 'localhost'
+                    || window.location.host === '127.0.0.1')
+                    ? 'localhost' : '139.162.253.127';
+    static API_ROOT = `http://${API_HOST}/api`;
 
     static websocket = new WebSocket(
-        `ws://localhost/api/?key=${Api.encode_session(Api.get_session())}`
+        `ws://${API_HOST}/api/?key=${Api.encode_session(Api.get_session())}`
     );
 
     static websocket_handlers = [];
