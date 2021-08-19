@@ -1,5 +1,3 @@
-import './index.html';
-
 import m from 'mithril';
 import Api from './Api';
 import User from './models/User';

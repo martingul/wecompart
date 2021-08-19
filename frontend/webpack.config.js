@@ -1,16 +1,10 @@
-const HtmlWebpackPlugin = require('html-webpack-plugin');
 const path = require('path');
 
 const config = {
     entry: './src/main.js',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        clean: true,
     },
-    plugins: [new HtmlWebpackPlugin({
-        template: './src/index.html',
-        inject: 'body',
-    })],
     stats: {
         colors: true
     },
@@ -21,18 +15,6 @@ const config = {
                 exclude: /\/node_modules\//,
                 use: 'babel-loader',
             },
-            {
-                test: /\.html$/i,
-                use: 'html-loader',
-            },
-            // {
-            //     test: /\.css$/i,
-            //     use: [
-            //         'style-loader',
-            //         'css-loader',
-            //         'postcss-loader',
-            //     ],
-            // },
             {
                 test: /\.svg$/i,
                 use: {

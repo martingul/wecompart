@@ -1,10 +1,10 @@
 import m from 'mithril';
 
 export default class Api {
-    static API_ROOT = 'http://localhost:5000';
+    static API_ROOT = 'http://localhost/api';
 
     static websocket = new WebSocket(
-        `ws://localhost:5000/?key=${Api.encode_session(Api.get_session())}`
+        `ws://localhost/api/?key=${Api.encode_session(Api.get_session())}`
     );
 
     static websocket_handlers = [];

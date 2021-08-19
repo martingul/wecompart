@@ -1,10 +1,12 @@
-version: "3.9"
+version: "3"
 
 services:
     db:
         image: postgres
         restart: always
         container_name: db
+        networks:
+            - network_prod
         volumes:
             - db_data:/var/lib/postgresql/data
         ports:
@@ -13,12 +15,13 @@ services:
             POSTGRES_DB: ${DB_NAME}
             POSTGRES_USER: ${DB_USER}
             POSTGRES_PASSWORD: ${DB_PASSWORD}
-        profiles: ["backend"]
 
     api:
         build: ../api
         restart: always
         container_name: api
+        networks:
+            - network_prod
         ports:
             - 5000:5000
         depends_on:
@@ -32,28 +35,19 @@ services:
             SMTP_PASSWORD: ${SMTP_PASSWORD}
             GOOGLE_MAPS_KEY: ${GOOGLE_MAPS_KEY}
             STRIPE_TEST_KEY: ${STRIPE_TEST_KEY}
-        profiles: ["backend"]
 
-    nginx:
+    reverse:
         image: nginx
         restart: always
-        container_name: frontend
+        container_name: reverse
+        networks:
+            - network_prod
         volumes:
             - frontend_data:/usr/share/nginx/html
-            # - ./nginx.conf:/etc/nginx/conf.d/default.conf
+            - ./nginx.conf:/etc/nginx/nginx.conf
         ports:
             - 80:80
-        profiles: ["frontend"]
-
-    # frontend:
-    #     build: ./frontend
-    #     restart: always
-    #     container_name: frontend
-    #     volumes:
-    #         - frontend_data:/build
-    #     ports:
-    #         - 8080:80
-    #     profiles: ["frontend"]
+            - 443:443
 
     adminer:
         image: adminer
@@ -61,8 +55,10 @@ services:
         container_name: adminer
         ports:
             - 5001:8080
-        profiles: ["adminer"]
 
 volumes:
   db_data:
   frontend_data:
+
+networks:
+    network_prod:
