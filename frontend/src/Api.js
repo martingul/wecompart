@@ -4,10 +4,10 @@ export default class Api {
     static API_HOST = (window.location.host === 'localhost'
                     || window.location.host === '127.0.0.1')
                     ? 'localhost' : '139.162.253.127';
-    static API_ROOT = `http://${API_HOST}/api`;
+    static API_ROOT = `http://${Api.API_HOST}/api`;
 
     static websocket = new WebSocket(
-        `ws://${API_HOST}/api/?key=${Api.encode_session(Api.get_session())}`
+        `ws://${Api.API_HOST}/api/?key=${Api.encode_session(Api.get_session())}`
     );
 
     static websocket_handlers = [];
