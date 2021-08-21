@@ -1,4 +1,4 @@
 #!/bin/bash
-docker run \
+docker run --rm \
     -v frontend_data:/frontend/dist \
     frontend:build

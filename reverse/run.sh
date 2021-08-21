@@ -1,5 +1,5 @@
 #!/bin/bash
-docker run \
+docker run --rm \
     -v frontend_data:/usr/share/nginx/html \
     --network wecompart_prod \
     -p 80:80 \

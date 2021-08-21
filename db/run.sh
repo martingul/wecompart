@@ -1,5 +1,5 @@
 #!/bin/bash
-docker run \
+docker run --rm \
     --network wecompart_prod \
     -v db_data:/var/lib/postgresql/data \
     -p 5432:5432 \

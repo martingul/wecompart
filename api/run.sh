@@ -1,5 +1,5 @@
 #!/bin/bash
-docker run \
+docker run --rm \
     --network wecompart_prod \
     -p 5000:5000 \
     --env-file=.env \
