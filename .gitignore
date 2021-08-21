@@ -1,9 +1,6 @@
 __pycache__
 .pytest_cache
 .vscode
-budibase
-reverse-proxy
-concourse
 
 .DS_Store
 .env
