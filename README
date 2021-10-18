@@ -1,0 +1,8 @@
+(Work in progress) Wecompart is a website and side project allowing fine art owners to ship their art efficiently with the help of a carrier comparator, allowing them to get the best rates every time. Think uShip for fine art but where every carrier is a professional company with years of expertise.
+
+There are huge costs related to shipping fine art (national and international taxes, white-glove handling, etc.) thus empowering art lovers with multiple choices of carriers enables them to reduce some of these costs.
+
+Tech stack:
+Python (FastAPI) for backend, powered by Docker
+PostgreSQL for database, using SQLAlchemy ORM
+Mithril + Tailwind for frontend
